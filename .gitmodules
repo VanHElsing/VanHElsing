@@ -1,0 +1,3 @@
+[submodule "contrib/males"]
+	path = contrib/males
+	url = https://code.google.com/p/males/
