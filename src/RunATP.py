@@ -5,14 +5,16 @@ Created on May 8, 2014
 '''
 
 import shlex,subprocess,os
-from time import sleep,time
+from time import time
 from TimeoutThread import processTimeout
 
 
 class RunATP(object):
     def __init__(self,binary,timeString,default = ''):
         '''
-        Example call
+        Example call:
+        atp = RunATP('eprover','--cpu-limit=','--tstp-format -s --proof-object --memory-limit=2048')
+        atp.run('--auto-schedule',10,PUZ001+1.p)
         '''
         self.binary = binary
         self.timeString = timeString
@@ -68,6 +70,5 @@ if __name__ == '__main__':
     
     #eprover --auto-schedule --tstp-format -s --proof-object --memory-limit=2048 --cpu-limit=%d %s  
     atp = RunATP('/home/daniel/TPTP/E1.8/PROVER/eprover','--cpu-limit=','--tstp-format -s --proof-object --memory-limit=2048')
-    print 'start'
     print atp.run('--auto-schedule',10,pFileExtended)
     
