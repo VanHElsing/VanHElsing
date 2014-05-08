@@ -34,6 +34,6 @@ Tests
 Tests can be run using:
 
 ```
-$ cd src/tests
+$ cd tests
 $ ./test_all
 ```
