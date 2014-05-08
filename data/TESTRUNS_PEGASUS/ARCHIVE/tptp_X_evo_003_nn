@@ -1,0 +1,3 @@
+Arguments: -s --delete-bad-limit=1024000000 -H'(5*Clauseweight(ConstPrio, 2,1,1),1*FIFOWeight(ConstPrio))' --subsumption-indexing=None --fp-index=NoIndex -tKBO --no-preprocessing --ac-handling=None
+Time limit: 300
+Include: ~/EPROVER/TPTP_5.4.0_FLAT/all_problem_list

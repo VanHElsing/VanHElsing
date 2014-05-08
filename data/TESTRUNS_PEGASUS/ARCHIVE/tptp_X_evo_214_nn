@@ -1,0 +1,3 @@
+Arguments: -s --delete-bad-limit=1024000000 -H'(1*ConjectureRelativeSymbolWeight(SimulateSOS,0.5, 100, 100, 100, 100, 1.5, 1.5, 1),4*ConjectureRelativeSymbolWeight(ConstPrio,0.1, 100, 100, 100, 100, 1.5, 1.5, 1.5),1*FIFOWeight(PreferProcessed),1*ConjectureRelativeSymbolWeight(PreferNonGoals,0.5, 100, 100, 100, 100, 1.5, 1.5, 1),4*Refinedweight(SimulateSOS,3,2,2,1.5,2))' -tKBO -winvfreqrank -c1 -Ginvfreq -WSelectMaxLComplexAvoidPosPred --subsumption-indexing=None --fp-index=NoIndex --no-preprocessing --ac-handling=None
+Time limit: 300
+Include: ~/EPROVER/TPTP_5.4.0_FLAT/all_problem_list
