@@ -1,4 +1,18 @@
+#!/bin/bash
+
+# Stop at first error
+set -e
+
+echo -e "\033[32mInstalling pip dependencies\033[0m"
 pip install --user \
     numpy \
     scipy \
     scikit-learn
+
+echo -e "\033[32mCompiling E theorem prover\033[0m"
+pushd contrib/E
+./configure
+make -j2
+popd
+
+echo -e "\033[32mDone installing deps\033[0m"

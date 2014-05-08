@@ -1,3 +1,6 @@
 [submodule "contrib/males"]
 	path = contrib/males
 	url = https://code.google.com/p/males/
+[submodule "contrib/E"]
+	path = contrib/E
+	url = https://github.com/Wassasin/E.git

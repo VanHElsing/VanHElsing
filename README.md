@@ -11,13 +11,13 @@ This project has been tested with:
 * Python 2.7.4
 
 VanHElsing can be used without root access to the host machine. The only
-requirement is the availability of Python and Pip, the alternative package
-manager for python.
+requirement is the availability of Python, basic compilation tools like GCC and
+Pip. (the alternative package manager for python)
 
 On any Debian-like OS using aptitude, use: (with root)
 
 ```
-# apt-get install python python-pip
+# apt-get install python python-pip build-essential
 ```
 
 Then, clone this git repository and run:
