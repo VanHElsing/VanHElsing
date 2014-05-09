@@ -40,7 +40,3 @@ def run_command(command,timeOut):
         stdout, stderr = p.communicate()        
     resultcode = p.wait()
     return resultcode, stdout, stderr
-
-
-#TODO: Write Test
-#expand_filename('xx')
