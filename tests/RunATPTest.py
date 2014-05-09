@@ -1,6 +1,15 @@
 import unittest
 from src import RunATP 
 from src import globalVars
+
+class RunATPTestCase(unittest.TestCase):
+    def wrongBinaryRaisesError(self):
+        atp = RunATP('foo','bar')
+        with self.assertRaises(IOError) as context:
+            atp.run('--auto-schedule',10,'p')
+
+        self.assertEqual(context.exception.message, 'Cannot find ATP binary foo')
+
 """        
     problemFile = 'PUZ001+1.p'
     pFileExtended = os.path.join(globalVars.PATH,'data',problemFile)
@@ -11,7 +20,3 @@ from src import globalVars
     print atp.run('--auto-schedule',10,pFileExtended)
     
 """
-class RunATPTestCase(unittest.TestCase):
-    def wrongBinaryRaisesError(self):
-        atp = RunATP('foo','bar')
-        self.assertRaises(IOError, atp.run(),'--auto-schedule',10,'p')
