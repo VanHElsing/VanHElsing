@@ -54,9 +54,7 @@ class EFeatures(Features):
                 features.append(float(i))
         return features
 
-# TODO: Cleanup and write tests
-#X = EFeatures()
-#print X.get('../data/PUZ001+1.px')
+# TODO: Cleanup
 
 '''
 def load_data(fileName):
