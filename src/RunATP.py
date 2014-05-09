@@ -4,12 +4,12 @@ Created on May 8, 2014
 @author: Daniel Kuehlwein
 '''
 
-import shlex,subprocess,os
+import os
 from time import time
-from TimeoutThread import processTimeout
+from src import IO
 
 
-class RunATP(object):
+class ATP(object):
     def __init__(self,binary,timeString,default = ''):
         '''
         Example call:
@@ -20,7 +20,7 @@ class RunATP(object):
         self.timeString = timeString
         self.default = default
     
-    def run(self,strategy,timeLimit,problemFile):
+    def run(self,strategy,timeOut,problemFile):
         '''
         Run a command with a timeout after which it will be forcibly
         killed.
@@ -28,14 +28,10 @@ class RunATP(object):
         if not os.path.exists(self.binary):
             raise IOError(10,'Cannot find ATP binary %s' % self.binary)
         # TODO: timeString is E specific!
-        timeString = self.timeString + str(timeLimit)
+        timeString = self.timeString + str(timeOut)
         command = ' '.join([self.binary,self.default,strategy,timeString,problemFile])
-        args = shlex.split(command)        
         startTime = time()
-        self.process = subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,preexec_fn=os.setsid)
-        with processTimeout(timeLimit, self.process.pid):
-            stdout, _stderr = self.process.communicate()        
-        resultcode = self.process.wait()
+        resultcode, stdout, _stderr = IO.run_command(command, timeOut)
         if resultcode < 0:
             return False,False,None,self.runTime
         usedTime = time() - startTime
@@ -58,17 +54,4 @@ class RunATP(object):
             if line.startswith('# SZS status CounterSatisfiable') or line.startswith('% SZS status CounterSatisfiable'):
                     countersat = True
         return proofFound,countersat
-
-
-    
-if __name__ == '__main__':  
-    from os.path import realpath,dirname
-    testDir = dirname(dirname(realpath(__file__)))    
-    problemFile = 'PUZ001+1.p'
-    pFileExtended = os.path.join(testDir,'data',problemFile)
-    print pFileExtended
-    
-    #eprover --auto-schedule --tstp-format -s --proof-object --memory-limit=2048 --cpu-limit=%d %s  
-    atp = RunATP('/home/daniel/TPTP/E1.8/PROVER/eprover','--cpu-limit=','--tstp-format -s --proof-object --memory-limit=2048')
-    print atp.run('--auto-schedule',10,pFileExtended)
     
