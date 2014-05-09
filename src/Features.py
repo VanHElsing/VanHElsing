@@ -18,7 +18,6 @@ class Features(object):
     '''
     Meta class for feature computations.
     '''
-
     def __init__(self):
         self.binary = None
         self.args = None
@@ -35,8 +34,8 @@ class Features(object):
             raise IOError(10,'Could not compute features. Try running %s' % command)
         return self.parse_output(stdout)
         
-        def parse_output(self,output):
-            raise NotImplementedError
+    def parse_output(self,output):
+        raise NotImplementedError
 
 class EFeatures(Features):
     def __init__(self):

@@ -13,7 +13,7 @@ class ATP(object):
     def __init__(self,binary,timeString,default = ''):
         '''
         Example call:
-        atp = RunATP('eprover','--cpu-limit=','--tstp-format -s --proof-object --memory-limit=2048')
+        atp = ATP('eprover','--cpu-limit=','--tstp-format -s --proof-object --memory-limit=2048')
         atp.run('--auto-schedule',10,PUZ001+1.p)
         '''
         self.binary = binary

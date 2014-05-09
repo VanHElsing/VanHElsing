@@ -1,5 +1,5 @@
 '''
-Contains general IO functions.
+General IO functions.
 
 Created on May 9, 2014
 
