@@ -6,13 +6,57 @@ Created on May 3, 2013
 @author: Daniel Kuehlwein
 '''
 
-import os,logging,sys,subprocess,shlex
+import os,logging,sys
 from numpy import mat
 from multiprocessing import Pool,cpu_count
 from cPickle import dump,load
 from TimeoutThread import processTimeout
+from src import IO
+from src import globalVars
 
+class Features(object):
+    '''
+    Meta class for feature computations.
+    '''
+    def __init__(self):
+        self.binary = None
+        self.args = None
 
+    def get(self,filename):
+        '''
+        Return the features of the problem at filename
+        '''
+        self.filename = IO.expand_filename(filename)
+        command = ' '.join([self.binary,self.args,self.filename])
+        #print command
+        resultcode, stdout, _stderr = IO.run_command(command,300)
+        if resultcode < 0:
+            raise IOError(10,'Could not compute features. Try running %s' % command)
+        return self.parse_output(stdout)
+        
+    def parse_output(self,output):
+        raise NotImplementedError
+
+class EFeatures(Features):
+    def __init__(self):
+        self.binary = os.path.join(globalVars.EPATH,'classify_problem')
+        self.args = '-caaaaaaaaaaaaa --tstp-in'
+     
+    def parse_output(self,output):   
+        features = []
+        for line in output.split('\n'):
+            if not line.startswith(self.filename):
+                continue
+            line = line.split('(')[1]
+            line = line.split(')')[0]
+            featuresStr = line.split(',')
+            for i in featuresStr:
+                features.append(float(i))
+        return features
+
+# TODO: Cleanup
+
+'''
 def load_data(fileName):
     IS = open(fileName)
     data = load(IS)
@@ -25,44 +69,16 @@ def dump_data(data,fileName):
     OS.close()
     return
 
-def expand_filename(filename):
-    logger = logging.getLogger(__file__)
-    # Try input name
-    if os.path.isfile(filename):
-        return filename
-    # Try TPTP env
-    TPTP = os.getenv('TPTP', '')
-    if filename.startswith('/scratch/kuehlwein'):
-        filename = filename.split('/')
-        filename = '/'.join(filename[-3:])    
-    filename = os.path.join(TPTP,filename)
-    if os.path.isfile(filename):
-        return filename
-    # Cannot find file
-    logger.warning('Cannot find problem file %s. Aborting.' % filename)
-    sys.exit(-1)        
-
-
 def get_tptp_plus_leo_features(filename):
     tptpFeatures = get_TPTP_features(filename)
     leoFeatures = get_leo_features(filename)
     return tptpFeatures+leoFeatures  
 
-def run_command(command,timeOut = 10):
-    args = shlex.split(command)
-    p = subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,preexec_fn=os.setsid)    
-    with processTimeout(timeOut, p.pid):
-        stdout, _stderr = p.communicate()        
-    resultcode = p.wait()
-    if resultcode < 0:
-        return ''
-    return stdout    
-
 def get_leo_features(filename):
     """ Return the leo features of a tptp problem """
     logger = logging.getLogger(__file__)
     features = []
-    filename = expand_filename(filename)
+    filename = IO.expand_filename(filename)
     path = os.path.realpath(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     command = "%s/bin/leo -a %s" % (path,filename)
     #command = "/home/daniel/Downloads/leo2/bin/leo -a %s" % filename
@@ -103,28 +119,6 @@ def get_TPTP_features(filename):
     logger.warning(command)
     sys.exit(-1)
 
-def get_e_features(filename):
-    """ Return the e features of a tptp problem """
-    logger = logging.getLogger(__file__)
-    features = []
-    filename = expand_filename(filename)
-    path = os.path.realpath(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    command = "%s/bin/classify_problem -caaaaaaaaaaaaa --tstp-in %s" % (path,filename)
-    #print command
-    lines = run_command(command,300)     
-    for line in lines.split('\n'):
-        if not line.startswith(filename):
-            continue
-        line = line.split('(')[1]
-        line = line.split(')')[0]
-        featuresStr = line.split(',')
-        for i in featuresStr:
-            features.append(float(i))
-        return features
-    logger.warning('Could not compute features. Try running:')
-    logger.warning(command)
-    sys.exit(-1)
-
 def pick_feature_function(featureStyle):
     if featureStyle == 'E':
         featureFunction = get_e_features
@@ -135,7 +129,6 @@ def pick_feature_function(featureStyle):
     else:
         featureFunction = get_TPTP_features    
     return featureFunction
-
 
 def get_normalized_features(problemFile,featureStyle,minVals,maxVals):
     featureFunction = pick_feature_function(featureStyle)
@@ -188,7 +181,11 @@ def normalize_featureDict(featureDict,maxVals,minVals):
             assert keyF[0,i] >= 0
     return featureDict
 
-
+'''
 #get_leo_features('/home/daniel/TPTP/TPTP-v5.4.0/Problems/SWW/SWW478^3.p')
 #print get_TPTP_features('/home/daniel/TPTP/TPTP-v5.4.0/Problems/SWW/SWW478^3.p')
 #print get_e_features('/home/daniel/TPTP/TPTP-v5.4.0/Problems/SWW/SWW478^3.p')
+
+
+
+
