@@ -1,7 +1,7 @@
 import unittest
 import os
-from src import RunATP 
-from src import globalVars
+import RunATP 
+import globalVars
 
 class RunATPTestCase(unittest.TestCase):
     def test_wrong_binary_raises_error(self):

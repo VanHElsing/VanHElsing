@@ -1,7 +1,7 @@
 import unittest
 import os
-from src import Features
-from src import globalVars
+import Features
+import globalVars
 
 class IOTestCase(unittest.TestCase):
     def setUp(self):
@@ -14,4 +14,5 @@ class IOTestCase(unittest.TestCase):
         realFeatures = [5.0, 10.0, 15.0, 24.0, 68.0, 3.0, 5.0, 5.0, 7.0, 3.0, 1.0, 5.0, 2.0, 5.0, 7.0, 0.0, 0.714286, 1.0, 1.0, 1.0, 2.0, 1.0]
         self.assertEqual(features, realFeatures)
 
-
+    
+        
