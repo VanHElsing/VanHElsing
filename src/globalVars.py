@@ -6,7 +6,15 @@ Created on May 9, 2014
 @author: Daniel Kuehlwein
 '''
 
-import logging,sys,os
+import logging
+import os
+import sys
+
+
+try:
+    from signal import SIGKILL
+except:
+    SIGKILL = 9
 
 PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 EPATH = os.path.join(PATH,'contrib','E','PROVER')
