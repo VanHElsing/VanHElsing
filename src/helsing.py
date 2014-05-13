@@ -9,7 +9,7 @@ Created on May 14, 2014
 @author: Sil van de Leemput
 """
 
-from RunATP import RunATP
+from RunATP import ATP
 from StrategyScheduler import StrategyScheduler
 from StrategySchedulerModel import StrategySchedulerModel
 
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     start_time = time()
 
     # init ATP TODO verify correctness
-    atp = RunATP('eprover','--cpu-limit=','--tstp-format -s --proof-object --memory-limit=2048')        
+    atp = ATP('eprover','--cpu-limit=','--tstp-format -s --proof-object --memory-limit=2048')        
     
     # init predictor from file or memory
     SSM = StrategySchedulerModel()
