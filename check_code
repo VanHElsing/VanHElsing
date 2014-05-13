@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Stop at first error
+set -e
+
+echo -e "\033[32mRunning pep8\033[0m"
+pep8 src tests
+
+echo -e "\033[32mRunning pylint\033[0m"
+pylint src tests
