@@ -1,5 +1,8 @@
-import threading,os,errno
+import threading
+import os
+import errno
 from contextlib import contextmanager
+
 
 class TimeoutThread(object):
     def __init__(self, seconds):
@@ -30,6 +33,7 @@ class TimeoutThread(object):
         """The timeout has expired."""
         raise NotImplementedError
 
+
 class KillProcessThread(TimeoutThread):
     def __init__(self, seconds, pid):
         super(KillProcessThread, self).__init__(seconds)
@@ -43,8 +47,9 @@ class KillProcessThread(TimeoutThread):
             if e.errno not in (errno.EPERM, errno. ESRCH):
                 raise e
 
+
 @contextmanager
-def processTimeout(seconds, pid):
+def processTimeout(seconds, pid):  # NOQA
     timeout = KillProcessThread(seconds, pid)
     timeout.run()
     try:

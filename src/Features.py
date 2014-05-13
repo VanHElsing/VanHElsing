@@ -6,13 +6,16 @@ Created on May 3, 2013
 @author: Daniel Kuehlwein
 '''
 
-import os,logging,sys
-from numpy import mat
-from multiprocessing import Pool,cpu_count
-from cPickle import dump,load
-from TimeoutThread import processTimeout
+import os
+# import logging
+# import sys
+# from numpy import mat
+# from multiprocessing import Pool, cpu_count
+# from cPickle import dump, load
+# from TimeoutThread import processTimeout
 from src import IO
 from src import globalVars
+
 
 class Features(object):
     '''
@@ -22,34 +25,36 @@ class Features(object):
         self.binary = None
         self.args = None
 
-    def get(self,filename,timeOut = 300):
+    def get(self, filename, time_out=300):
         '''
         Return the features of the problem at filename
         '''
         self.filename = IO.expand_filename(filename)
-        command = ' '.join([self.binary,self.args,self.filename])
-        resultcode, stdout, _stderr = IO.run_command(command,timeOut)
+        command = ' '.join([self.binary, self.args, self.filename])
+        resultcode, stdout, _stderr = IO.run_command(command, time_out)
         if resultcode < 0:
-            raise IOError(10,'Could not compute features. Try running %s' % command)
+            raise IOError(10, 'Could not compute features. ' +
+                              'Try running %s' % command)
         return self.parse_output(stdout)
-        
-    def parse_output(self,output):
+
+    def parse_output(self, output):
         raise NotImplementedError
+
 
 class EFeatures(Features):
     def __init__(self):
-        self.binary = os.path.join(globalVars.EPATH,'classify_problem')
+        self.binary = os.path.join(globalVars.EPATH, 'classify_problem')
         self.args = '-caaaaaaaaaaaaa --tstp-in'
-     
-    def parse_output(self,output):   
+
+    def parse_output(self, output):
         features = []
         for line in output.split('\n'):
             if not line.startswith(self.filename):
                 continue
             line = line.split('(')[1]
             line = line.split(')')[0]
-            featuresStr = line.split(',')
-            for i in featuresStr:
+            features_str = line.split(',')
+            for i in features_str:
                 features.append(float(i))
         return features
 
@@ -59,7 +64,7 @@ EF = EFeatures()
 TPTP = '/home/daniel/TPTP/TPTP-v6.0.0/Problems/ALG/'
 
 pL = os.listdir('/home/daniel/TPTP/TPTP-v6.0.0/Problems/ALG')
-#with open('/home/daniel/workspace/males/E/data/CASC24Training') as IS:    
+#with open('/home/daniel/workspace/males/E/data/CASC24Training') as IS:
 for line in pL:
     print line,
     print EF.get(TPTP+line.strip(),300)
@@ -80,19 +85,20 @@ def dump_data(data,fileName):
 def get_tptp_plus_leo_features(filename):
     tptpFeatures = get_TPTP_features(filename)
     leoFeatures = get_leo_features(filename)
-    return tptpFeatures+leoFeatures  
+    return tptpFeatures+leoFeatures
 
 def get_leo_features(filename):
     """ Return the leo features of a tptp problem """
     logger = logging.getLogger(__file__)
     features = []
     filename = IO.expand_filename(filename)
-    path = os.path.realpath(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    path = os.path.realpath(os.path.dirname(
+                            os.path.dirname(os.path.abspath(__file__))))
     command = "%s/bin/leo -a %s" % (path,filename)
     #command = "/home/daniel/Downloads/leo2/bin/leo -a %s" % filename
-    lines = run_command(command)    
+    lines = run_command(command)
     foundF = False
-    for line in lines.split('\n'):        
+    for line in lines.split('\n'):
         if line.startswith('#'):
             foundF = not foundF
             continue
@@ -110,17 +116,18 @@ def get_TPTP_features(filename):
     logger = logging.getLogger(__file__)
     features = []
     filename = expand_filename(filename)
-    path = os.path.realpath(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    path = os.path.realpath(os.path.dirname(
+                            os.path.dirname(os.path.abspath(__file__))))
     command = "%s/bin/TPTP_features -i %s" % (path,filename)
     #print command
-    lines = run_command(command)  
+    lines = run_command(command)
     for line in lines.split('\n'):
         line = line.split()
         for word in line:
-            try: 
+            try:
                 features.append(float(word))
             except:
-                continue   
+                continue
     if (len(features)> 0):
         return features
     logger.warning('Could not compute features. Try running:')
@@ -131,11 +138,11 @@ def pick_feature_function(featureStyle):
     if featureStyle == 'E':
         featureFunction = get_e_features
     elif featureStyle == 'LEO':
-        featureFunction = get_leo_features   
+        featureFunction = get_leo_features
     elif featureStyle == 'TPTP+LEO':
-        featureFunction = get_tptp_plus_leo_features             
+        featureFunction = get_tptp_plus_leo_features
     else:
-        featureFunction = get_TPTP_features    
+        featureFunction = get_TPTP_features
     return featureFunction
 
 def get_normalized_features(problemFile,featureStyle,minVals,maxVals):
@@ -143,7 +150,8 @@ def get_normalized_features(problemFile,featureStyle,minVals,maxVals):
     problemFeatures = featureFunction(problemFile)
     for i in range(len(problemFeatures)):
         if not maxVals[i] == minVals[i]:
-            problemFeatures[i] = (problemFeatures[i] - minVals[i]) / (maxVals[i] - minVals[i]) 
+            problemFeatures[i] = (problemFeatures[i] - minVals[i]) /
+                                  (maxVals[i] - minVals[i])
         else:
             problemFeatures[i] = 0
     normalizedFeatures = mat(problemFeatures)
@@ -156,19 +164,19 @@ def compute_features(problemsList,featureStyle,cores):
     setUp = False
     #IS = open(problemsFile,'r')
     #problems = [line.strip() for line in IS]
-    featureFunction = pick_feature_function(featureStyle)    
-    pool = Pool(processes = cores)            
-    results = pool.map_async(featureFunction,problemsList)       
+    featureFunction = pick_feature_function(featureStyle)
+    pool = Pool(processes = cores)
+    results = pool.map_async(featureFunction,problemsList)
     pool.close()
-    pool.join() 
+    pool.join()
     for problem,features in zip(problemsList,results.get()):
         if not setUp:
             maxVals = list(features)
             minVals = list(features)
-            setUp = True        
+            setUp = True
         assert len(features) == len(maxVals)
         # Max/Min Values
-        for i in range(len(features)):            
+        for i in range(len(features)):
             if features[i] > maxVals[i]:
                 maxVals[i] = features[i]
             if  features[i] < minVals[i]:
@@ -184,16 +192,14 @@ def normalize_featureDict(featureDict,maxVals,minVals):
             if maxVals[i] == minVals[i]:
                 keyF[0,i] = 0
             else:
-                keyF[0,i] = (keyF[0,i] - minVals[i]) / (maxVals[i] - minVals[i]) 
+                keyF[0,i] = (keyF[0,i] - minVals[i]) /
+                            (maxVals[i] - minVals[i])
             assert keyF[0,i] <= 1
             assert keyF[0,i] >= 0
     return featureDict
 
+get_leo_features('/home/daniel/TPTP/TPTP-v5.4.0/Problems/SWW/SWW478^3.p')
+print get_TPTP_features('/home/daniel/TPTP/TPTP-v5.4.0/' +
+                          'Problems/SWW/SWW478^3.p')
+print get_e_features('/home/daniel/TPTP/TPTP-v5.4.0/Problems/SWW/SWW478^3.p')
 '''
-#get_leo_features('/home/daniel/TPTP/TPTP-v5.4.0/Problems/SWW/SWW478^3.p')
-#print get_TPTP_features('/home/daniel/TPTP/TPTP-v5.4.0/Problems/SWW/SWW478^3.p')
-#print get_e_features('/home/daniel/TPTP/TPTP-v5.4.0/Problems/SWW/SWW478^3.p')
-
-
-
-

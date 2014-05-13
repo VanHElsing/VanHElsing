@@ -10,48 +10,50 @@ import IO
 
 
 class ATP(object):
-    def __init__(self,binary,timeString,default = ''):
+    def __init__(self, binary, time_string, default=''):
         '''
         Example call:
-        atp = ATP('eprover','--cpu-limit=','--tstp-format -s --proof-object --memory-limit=2048')
+        atp = ATP('eprover', '--cpu-limit=',
+                  '--tstp-format -s --proof-object --memory-limit=2048')
         atp.run('--auto-schedule',10,PUZ001+1.p)
         '''
         self.binary = binary
-        self.timeString = timeString
+        self.time_string = time_string
         self.default = default
-    
-    def run(self,strategy,timeOut,problemFile):
+
+    def run(self, strategy, time_out, problem_file):
         '''
-        Run a command with a timeout after which it will be forcibly
-        killed.
+        Run a command with a time_out after which it will be forcibly killed.
         '''
         if not os.path.exists(self.binary):
-            raise IOError(10,'Cannot find ATP binary %s' % self.binary)
-        # TODO: timeString is E specific!
-        timeString = self.timeString + str(timeOut)
-        command = ' '.join([self.binary,self.default,strategy,timeString,problemFile])
-        startTime = time()
-        resultcode, stdout, _stderr = IO.run_command(command, timeOut)
+            raise IOError(10, 'Cannot find ATP binary %s' % self.binary)
+        # TODO: time_string is E specific!
+        time_string = self.time_string + str(time_out)
+        command = ' '.join([self.binary, self.default, strategy, time_string,
+                            problem_file])
+        start_time = time()
+        resultcode, stdout, _stderr = IO.run_command(command, time_out)
         if resultcode < 0:
-            return False,False,None,self.runTime
-        usedTime = time() - startTime
-        proofFound,countersat = self.parse_output(stdout)
-        return proofFound,countersat,stdout,usedTime 
-    
-    def parse_output(self,output):
+            return False, False, None, self.run_time
+        used_time = time() - start_time
+        proof_found, countersat = self.parse_output(stdout)
+        return proof_found, countersat, stdout, used_time
+
+    def parse_output(self, output):
         '''
         Checks whether the ATP found a proof or a counterexample.
         '''
-        proofFound = False
+        proof_found = False
         countersat = False
         for line in output.split('\n'):
             # FOF - Theorem
-            if line.startswith('# SZS status Theorem') or line.startswith('% SZS status Theorem') :
-                    proofFound = True
-            # CNF Theorem 
+            if line.startswith('# SZS status Theorem') or \
+               line.startswith('% SZS status Theorem'):
+                proof_found = True
+            # CNF Theorem
             if line.startswith('# SZS status Unsatisfiable'):
-                    proofFound = True
-            if line.startswith('# SZS status CounterSatisfiable') or line.startswith('% SZS status CounterSatisfiable'):
-                    countersat = True
-        return proofFound,countersat
-    
+                proof_found = True
+            if line.startswith('# SZS status CounterSatisfiable') or \
+               line.startswith('% SZS status CounterSatisfiable'):
+                countersat = True
+        return proof_found, countersat
