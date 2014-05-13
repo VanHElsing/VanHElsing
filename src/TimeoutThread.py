@@ -1,5 +1,4 @@
 import threading,os,errno
-from signal import SIGKILL
 from contextlib import contextmanager
 
 class TimeoutThread(object):
@@ -38,7 +37,7 @@ class KillProcessThread(TimeoutThread):
 
     def timed_out(self):
         try:
-            os.killpg(self.pid, SIGKILL)
+            os.killpg(self.pid, 9)
         except OSError as e:
             # If the process is already gone, ignore the error.
             if e.errno not in (errno.EPERM, errno. ESRCH):

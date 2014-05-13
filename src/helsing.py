@@ -11,7 +11,7 @@ Created on May 14, 2014
 
 from RunATP import ATP
 from StrategyScheduler import StrategyScheduler
-from StrategySchedulerModel import StrategySchedulerModel
+from time import time
 
 if __name__ == '__main__':  
     # TODO obtain from CLI
@@ -25,8 +25,8 @@ if __name__ == '__main__':
     atp = ATP('eprover','--cpu-limit=','--tstp-format -s --proof-object --memory-limit=2048')        
     
     # init predictor from file or memory
-    SSM = StrategySchedulerModel()
-    SS = StrategyScheduler(prob, time_limit, SSM)
+    #SSM = StrategySchedulerModel()
+    SS = StrategyScheduler(problem, time_limit, None)
 
     # main loop
     proofFound = False

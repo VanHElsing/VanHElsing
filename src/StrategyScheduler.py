@@ -34,6 +34,8 @@ class StrategyScheduler(object):
 
         return (strat, t) strat: strategy_id, t: time strat should run (sec)
         """
+        strat = ""
+        t = 0
         return strat, t
 
     def update(self):

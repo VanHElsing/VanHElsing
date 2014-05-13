@@ -6,7 +6,7 @@ Created on May 8, 2014
 
 import os
 from time import time
-from src import IO
+import IO
 
 
 class ATP(object):
