@@ -22,16 +22,16 @@ EPATH = os.path.join(PATH, 'contrib', 'E', 'PROVER')
 """
 
 # TODO: Define logfile name
-logFile = os.path.join(PATH, 'log')
+LOGFILE = os.path.join(PATH, 'log')
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s' +
                            '%(message)s',
                     datefmt='%d-%m %H:%M:%S',
-                    filename=logFile,
+                    filename=LOGFILE,
                     filemode='w')
-console = logging.StreamHandler(sys.stdout)
-console.setLevel(logging.INFO)
-formatter = logging.Formatter('%% %(message)s')
-console.setFormatter(formatter)
+CONSOLE = logging.StreamHandler(sys.stdout)
+CONSOLE.setLevel(logging.INFO)
+FORMATTER = logging.Formatter('%% %(message)s')
+CONSOLE.setFormatter(FORMATTER)
 LOGGER = logging.getLogger('')
-LOGGER.addHandler(console)
+LOGGER.addHandler(CONSOLE)

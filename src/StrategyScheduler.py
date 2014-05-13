@@ -14,9 +14,9 @@ class StrategyScheduler(object):
         timeLimit - time limit for solving the problem
         model - input trained model
         """
-        self._x = problem
-        self._tlimit = time_limit
-        self._model = model
+        self.x = problem
+        self.time_limit = time_limit
+        self.model = model
         pass
 
     def fit(self, X, Y):  # NOQA
@@ -33,11 +33,13 @@ class StrategyScheduler(object):
         This method is to be called to determining the next best (strat, t)
         pair for solving the problem
 
-        return (strat, t) strat: strategy_id, t: time strat should run (sec)
+        return (strategy, time)
+            strategy: strategy_id,
+            time: time strategy should run (sec)
         """
-        strat = ""
-        t = 0
-        return strat, t
+        strategy = ""
+        time = 0
+        return strategy, time
 
     def update(self):
         """

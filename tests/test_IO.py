@@ -1,14 +1,14 @@
 import unittest
 import os
 import IO
-import globalVars
+import GlobalVars
 
 
 class IOTestCase(unittest.TestCase):
-    def setUp(self):  # NOQA
-        self.problemFile = 'PUZ001+1.p'
-        self.pFileExtended = os.path.join(globalVars.PATH, 'data',
-                                          self.problemFile)
+    def setUp(self):  # NOQA, pylint: disable=C0103
+        self.problem_file = 'PUZ001+1.p'
+        self.p_file_extended = os.path.join(GlobalVars.PATH, 'data',
+                                            self.problem_file)
 
     def test_file_does_not_exist(self):
         with self.assertRaises(IOError) as context:
@@ -17,14 +17,14 @@ class IOTestCase(unittest.TestCase):
                         context.exception.errno == 12)
 
     def test_file_does_exist(self):
-        p_file_expanded = IO.expand_filename(self.pFileExtended)
-        self.assertEqual(self.pFileExtended, p_file_expanded)
+        p_file_expanded = IO.expand_filename(self.p_file_extended)
+        self.assertEqual(self.p_file_extended, p_file_expanded)
 
     def test_run_e_works(self):
-        eprover_path = os.path.join(globalVars.EPATH, 'eprover')
+        eprover_path = os.path.join(GlobalVars.EPATH, 'eprover')
         command = ' '.join([eprover_path,
                             '--cpu-limit=10 --tstp-format -s --proof-object',
                             ' --memory-limit=2048--auto-schedule',
-                            self.pFileExtended])
+                            self.p_file_extended])
         resultcode, _stdout, _stderr = IO.run_command(command, 10)
         self.assertTrue(resultcode)

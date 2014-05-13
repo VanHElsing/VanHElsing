@@ -1,7 +1,7 @@
 import unittest
 import os
 import RunATP
-import globalVars
+import GlobalVars
 
 
 class RunATPTestCase(unittest.TestCase):
@@ -14,8 +14,8 @@ class RunATPTestCase(unittest.TestCase):
 
     def test_can_solve_problems(self):
         problem_file = 'PUZ001+1.p'
-        p_file_extended = os.path.join(globalVars.PATH, 'data', problem_file)
-        eprover_path = os.path.join(globalVars.EPATH, 'eprover')
+        p_file_extended = os.path.join(GlobalVars.PATH, 'data', problem_file)
+        eprover_path = os.path.join(GlobalVars.EPATH, 'eprover')
         atp = RunATP.ATP(eprover_path, '--cpu-limit=',
                          '--tstp-format -s --proof-object --memory-limit=2048')
         proof_found, _cs, _stdout, used_time = atp.run('--auto-schedule',

@@ -34,7 +34,7 @@ class ATP(object):
         start_time = time()
         resultcode, stdout, _stderr = IO.run_command(command, time_out)
         if resultcode < 0:
-            return False, False, None, self.run_time
+            return False, False, None, time() - start_time
         used_time = time() - start_time
         proof_found, countersat = self.parse_output(stdout)
         return proof_found, countersat, stdout, used_time

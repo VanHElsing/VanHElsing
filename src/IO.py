@@ -21,17 +21,17 @@ def expand_filename(file_name):
     if os.path.isfile(file_name):
         return file_name
     # Try TPTP env
-    TPTP = os.getenv('TPTP')  # NOQA
+    TPTP = os.getenv('TPTP')  # NOQA, pylint: disable=C0103
     try:
-        TPTPfile_name = os.path.join(TPTP, file_name)  # NOQA
+        file_path = os.path.join(TPTP, file_name)
     except:
         raise IOError(11, ('Cannot find problem file %s and the TPTP ' +
                            'environment is not defined.') % file_name)
-    if os.path.isfile(TPTPfile_name):
-        return TPTPfile_name
+    if os.path.isfile(file_path):
+        return file_path
     # Cannot find file
     raise IOError(12, 'Cannot find problem file %s or %s. ' %
-                      (file_name, TPTPfile_name))
+                      (file_name, file_path))
 
 
 def run_command(command, time_out):
@@ -39,9 +39,10 @@ def run_command(command, time_out):
     Runs command with a time_out and return the resultcode, stdout and stderr
     '''
     args = shlex.split(command)
-    p = subprocess.Popen(args, stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT, preexec_fn=os.setsid)
-    with TimeoutThread.processTimeout(time_out, p.pid):
-        stdout, stderr = p.communicate()
-    resultcode = p.wait()
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT, preexec_fn=os.setsid)
+    # pylint: disable=E1101
+    with TimeoutThread.processTimeout(time_out, proc.pid):
+        stdout, stderr = proc.communicate()
+    resultcode = proc.wait()
     return resultcode, stdout, stderr

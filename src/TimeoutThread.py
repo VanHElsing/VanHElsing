@@ -49,7 +49,7 @@ class KillProcessThread(TimeoutThread):
 
 
 @contextmanager
-def processTimeout(seconds, pid):  # NOQA
+def processTimeout(seconds, pid):  # NOQA, pylint: disable=C0103
     timeout = KillProcessThread(seconds, pid)
     timeout.run()
     try:

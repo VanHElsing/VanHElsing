@@ -7,14 +7,17 @@ Created on May 3, 2013
 '''
 
 import os
-# import logging
-# import sys
-# from numpy import mat
-# from multiprocessing import Pool, cpu_count
-# from cPickle import dump, load
-# from TimeoutThread import processTimeout
 from src import IO
-from src import globalVars
+from src import GlobalVars
+
+''' Old imports
+import logging
+import sys
+from numpy import mat
+from multiprocessing import Pool, cpu_count
+from cPickle import dump, load
+from TimeoutThread import processTimeout
+'''
 
 
 class Features(object):
@@ -24,6 +27,7 @@ class Features(object):
     def __init__(self):
         self.binary = None
         self.args = None
+        self.filename = None
 
     def get(self, filename, time_out=300):
         '''
@@ -43,7 +47,9 @@ class Features(object):
 
 class EFeatures(Features):
     def __init__(self):
-        self.binary = os.path.join(globalVars.EPATH, 'classify_problem')
+        Features.__init__(self)
+
+        self.binary = os.path.join(GlobalVars.EPATH, 'classify_problem')
         self.args = '-caaaaaaaaaaaaa --tstp-in'
 
     def parse_output(self, output):
@@ -59,7 +65,7 @@ class EFeatures(Features):
         return features
 
 # TODO: Cleanup
-"""
+'''
 EF = EFeatures()
 TPTP = '/home/daniel/TPTP/TPTP-v6.0.0/Problems/ALG/'
 
@@ -68,8 +74,7 @@ pL = os.listdir('/home/daniel/TPTP/TPTP-v6.0.0/Problems/ALG')
 for line in pL:
     print line,
     print EF.get(TPTP+line.strip(),300)
-#"""
-'''
+
 def load_data(fileName):
     IS = open(fileName)
     data = load(IS)
