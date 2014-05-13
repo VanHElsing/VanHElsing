@@ -22,14 +22,13 @@ class Features(object):
         self.binary = None
         self.args = None
 
-    def get(self,filename):
+    def get(self,filename,timeOut = 300):
         '''
         Return the features of the problem at filename
         '''
         self.filename = IO.expand_filename(filename)
         command = ' '.join([self.binary,self.args,self.filename])
-        #print command
-        resultcode, stdout, _stderr = IO.run_command(command,300)
+        resultcode, stdout, _stderr = IO.run_command(command,timeOut)
         if resultcode < 0:
             raise IOError(10,'Could not compute features. Try running %s' % command)
         return self.parse_output(stdout)
@@ -55,7 +54,16 @@ class EFeatures(Features):
         return features
 
 # TODO: Cleanup
+"""
+EF = EFeatures()
+TPTP = '/home/daniel/TPTP/TPTP-v6.0.0/Problems/ALG/'
 
+pL = os.listdir('/home/daniel/TPTP/TPTP-v6.0.0/Problems/ALG')
+#with open('/home/daniel/workspace/males/E/data/CASC24Training') as IS:    
+for line in pL:
+    print line,
+    print EF.get(TPTP+line.strip(),300)
+#"""
 '''
 def load_data(fileName):
     IS = open(fileName)
