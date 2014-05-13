@@ -18,6 +18,15 @@ class StrategyScheduler(object):
         self._model = model
         pass
 
+    def fit(self, X, Y):
+        """
+        X - input problem features (problems x features)
+        Y - label strategy times (problems x strategies)
+        """
+        # TODO implement Pickable model
+        model = None
+        return model
+
     def predict(self, time_left):
         """
         This method is to be called to determining the next best (strat, t) pair for 
