@@ -1,7 +1,7 @@
 import unittest
 import os
-from src import RunATP 
-from src import globalVars
+import RunATP 
+import globalVars
 
 class RunATPTestCase(unittest.TestCase):
     def test_wrong_binary_raises_error(self):
@@ -17,6 +17,6 @@ class RunATPTestCase(unittest.TestCase):
         atp = RunATP.ATP(eproverPath,'--cpu-limit=','--tstp-format -s --proof-object --memory-limit=2048')
         proofFound,_countersat,_stdout,usedTime = atp.run('--auto-schedule',10,pFileExtended)
         self.assertTrue(proofFound)
-        self.assertLess(usedTime, 0.1)
+        self.assertLess(usedTime, 0.5)
         
 
