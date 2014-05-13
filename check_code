@@ -3,8 +3,32 @@
 # Stop at first error
 set -e
 
-echo -e "\033[32mRunning flake8\033[0m"
+echo -e "\033[32mChecking code with flake8\033[0m"
 flake8 src tests
 
-echo -e "\033[32mRunning pylint\033[0m"
-pylint src tests
+echo -e "\033[32mChecking code with pylint\033[0m"
+# --good-names => whitelist of variables
+# -rn => 
+# -iy => include msgids
+# -d ... => disable msgs
+# C0111 documentation
+# R0904 Too many public methods (46/20)
+# R0922 Abstract class is only referenced 1 times
+# W0511 TODO's
+# W0403 Relative import 'TimeoutThread', should be 'src.TimeoutThread'
+# R0801 Similar lines in 2 files
+# I0011 Locally disabling C0103
+# W0105 String statement has no effect (block comments in Python)
+# W0107 Unnecessary pass statement
+# W0613 Unused argument 'X'
+# R0201 Method could be a function (i.e. does not use self)
+
+PYTHONPATH=$PYTHONPATH:.:./src pylint \
+    --good-names=x,y,X,Y,e,i,j \
+    -rn \
+    -iy \
+    -dC0111,R0904,R0922,W0511,W0403,R0801,I0011,W0105,W0107,W0613,R0201 \
+    --module-rgx="(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+)|(test_[a-zA-Z0-9]+))$" \
+    src tests
+
+echo -e "\033[32mCode has been found to be correct\033[0m"

@@ -7,7 +7,10 @@ echo -e "\033[32mInstalling pip dependencies\033[0m"
 pip install --user \
     numpy \
     scipy \
-    scikit-learn
+    scikit-learn \
+    pep8 \
+    pep8-naming \
+    flake8
 
 echo -e "\033[32mCompiling E theorem prover\033[0m"
 pushd contrib/E
