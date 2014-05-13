@@ -9,14 +9,24 @@ Created on May 14, 2014
 @author: Sil van de Leemput
 """
 
-from RunATP import ATP
-from src.schedulers import StrategyScheduler
+import os
+import sys
 from time import time
 
-if __name__ == '__main__':  
+from argparse import ArgumentParser
+from globalVars import LOGGER,PATH
+from RunATP import ATP
+from src.schedulers import StrategyScheduler
+
+parser = ArgumentParser(description='Van HElsing 0.1 --- May 2014.')
+parser.add_argument('-t','--time',help='Maximum runtime of Van HElsing.',type=int,default=10)
+parser.add_argument('-p','--problem',help='The location of the problem.',default = os.path.join(PATH,'data/PUZ001+1.p'))
+
+def main(argv = sys.argv[1:]):
+    args = parser.parse_args(argv)
     # TODO obtain from CLI
-    problem = "something"
-    time_limit = 300
+    problem = args.problem
+    time_limit = args.time
 
     # start tracking time
     start_time = time()
@@ -40,6 +50,9 @@ if __name__ == '__main__':
 
     # TODO output results
     if proofFound:
-        print "Problem {} solved in {}/{}".format(problem, (time() - start_time), time_limit)
+        LOGGER.info("Problem {} solved in {}/{}".format(problem, (time() - start_time), time_limit))
     else:
-        print "No solution found for Problem {} within time limit ({})".format(problem, time_limit)
+        LOGGER.info("No solution found for Problem {} within time limit ({})".format(problem, time_limit))
+        
+if __name__ == '__main__':
+    sys.exit(main())        
