@@ -10,26 +10,55 @@ Created on May 14, 2014
 @author: Sil van de Leemput
 """
 
-from RunATP import ATP
-from StrategyScheduler import StrategyScheduler
+import ConfigParser
+import os
+import sys
 from time import time
 
+from argparse import ArgumentParser
+from GlobalVars import LOGGER, PATH
+from RunATP import get_ATP_from_config
+from src.schedulers import StrategyScheduler
 
-def run():
+
+# TODO: Set up content of config.ini during installation
+def load_config(config_file):
+    configuration = ConfigParser.SafeConfigParser()
+    configuration.optionxform = str
+    configuration.read(config_file)
+    return configuration
+
+
+def main(argv=sys.argv[1:]):
+    parser = ArgumentParser(description='Van HElsing 0.1 --- May 2014.')
+    parser.add_argument('-t', '--time', help='Maximum runtime of Van HElsing.',
+                        type=int, default=10)
+    parser.add_argument('-p', '--problem', help='The location of the problem.',
+                        default=os.path.join(PATH, 'data/PUZ001+1.p'))
+    parser.add_argument('-c', '--configuration',
+                        help='Which configuration file to use.',
+                        default=os.path.join(PATH, 'config.ini'))
+
+    args = parser.parse_args(argv)
+    if not os.path.exists(args.configuration):
+        raise IOError(10, 'Cannot find configuration file %s' %
+                      args.configuration)
+    configuration = load_config(args.configuration)
+
     # TODO obtain from CLI
-    problem = "something"
-    time_limit = 300
+    problem = args.problem
+    time_limit = args.time
 
     # start tracking time
     start_time = time()
 
     # init ATP TODO verify correctness
-    atp = ATP('eprover', '--cpu-limit=',
-              '--tstp-format -s --proof-object --memory-limit=2048')
+    atp = get_ATP_from_config(configuration)
+    # print atp.run('--auto-schedule', 10, '../data/PUZ001+1.p')
 
     # init predictor from file or memory
     # ssm = StrategySchedulerModel()
-    scheduler = StrategyScheduler(problem, time_limit, None)
+    scheduler = StrategyScheduler.StrategyScheduler(problem, time_limit, None)
 
     # main loop
     proof_found = False
@@ -44,12 +73,12 @@ def run():
 
     # TODO output results
     if proof_found:
-        print "Problem {} solved in {}/{}".format(problem,
-                                                  (time() - start_time),
-                                                  time_limit)
+        LOGGER.info("Problem {} solved in {}/{}".format(problem,
+                                                        (time() - start_time),
+                                                        time_limit))
     else:
-        print "No solution found for Problem {} " + \
-              "within time limit ({})".format(problem, time_limit)
+        LOGGER.info("No solution found for Problem {} " +
+                    "within time limit ({})".format(problem, time_limit))
 
 if __name__ == '__main__':
-    run()
+    sys.exit(main())

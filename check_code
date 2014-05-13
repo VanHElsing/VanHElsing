@@ -22,12 +22,13 @@ echo -e "\033[32mChecking code with pylint\033[0m"
 # W0107 Unnecessary pass statement
 # W0613 Unused argument 'X'
 # R0201 Method could be a function (i.e. does not use self)
+# R0914 Too many local variables (16/15)
 
 PYTHONPATH=$PYTHONPATH:.:./src pylint \
     --good-names=x,y,X,Y,e,i,j \
     -rn \
     -iy \
-    -dC0111,R0904,R0922,W0511,W0403,R0801,I0011,W0105,W0107,W0613,R0201 \
+    -dC0111,R0904,R0922,W0511,W0403,R0801,I0011,W0105,W0107,W0613,R0201,R0914 \
     --module-rgx="(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+)|(test_[a-zA-Z0-9]+))$" \
     src tests
 

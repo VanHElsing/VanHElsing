@@ -7,19 +7,17 @@ Created on May 9, 2014
 '''
 
 import logging
-import sys
 import os
+import sys
 
+
+try:
+    from signal import SIGKILL  # unused import, pylint: disable=W0611
+except ImportError:
+    SIGKILL = 9
 
 PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 EPATH = os.path.join(PATH, 'contrib', 'E', 'PROVER')
-
-# TODO: Config Parser
-"""
-    atpConfig = ConfigParser.SafeConfigParser()
-    atpConfig.optionxform = str
-    atpConfig.read(args.ATP)
-"""
 
 # TODO: Define logfile name
 LOGFILE = os.path.join(PATH, 'log')

@@ -9,6 +9,13 @@ from time import time
 import IO
 
 
+def get_ATP_from_config(configuration):  # NOQA, pylint: disable=C0103
+    binary = configuration.get('ATP Settings', 'binary')
+    time_str = configuration.get('ATP Settings', 'time')
+    default = configuration.get('ATP Settings', 'default')
+    return ATP(binary, time_str, default)
+
+
 class ATP(object):
     def __init__(self, binary, time_string, default=''):
         '''
