@@ -20,6 +20,7 @@ except:
 PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 EPATH = os.path.join(PATH,'contrib','E','PROVER')
 
+# TODO: Set up content of config.ini during installation
 CONFIG = ConfigParser.SafeConfigParser()
 CONFIG.optionxform = str
 CONFIG.read(os.path.join(PATH,'config.ini'))
