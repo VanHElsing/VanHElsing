@@ -7,7 +7,7 @@ Dependencies
 ============
 
 This project has been tested with:
-* Ubuntu 13.10
+* Ubuntu 13.10, 14.04
 * Python 2.7.4
 
 VanHElsing can be used without root access to the host machine. The only
