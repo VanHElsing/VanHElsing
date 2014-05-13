@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ln -sf ../../check_code .git/hooks/pre-commit
