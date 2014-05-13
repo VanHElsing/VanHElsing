@@ -10,7 +10,7 @@ Created on May 14, 2014
 """
 
 from RunATP import ATP
-from StrategyScheduler import StrategyScheduler
+from src.schedulers import StrategyScheduler
 from time import time
 
 if __name__ == '__main__':  

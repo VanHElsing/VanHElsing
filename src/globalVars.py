@@ -6,6 +6,7 @@ Created on May 9, 2014
 @author: Daniel Kuehlwein
 '''
 
+import ConfigParser
 import logging
 import os
 import sys
@@ -19,13 +20,10 @@ except:
 PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 EPATH = os.path.join(PATH,'contrib','E','PROVER')
 
-# TODO: Config Parser
-"""
-    atpConfig = ConfigParser.SafeConfigParser()
-    atpConfig.optionxform = str
-    atpConfig.read(args.ATP)
-""" 
-
+CONFIG = ConfigParser.SafeConfigParser()
+CONFIG.optionxform = str
+CONFIG.read(os.path.join(PATH,'config.ini'))
+ 
 # TODO: Define logfile name
 logFile = os.path.join(PATH,'log')
 logging.basicConfig(level=logging.DEBUG,
