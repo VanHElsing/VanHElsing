@@ -9,21 +9,34 @@ Created on May 14, 2014
 @author: Sil van de Leemput
 """
 
+import ConfigParser
 import os
 import sys
 from time import time
 
 from argparse import ArgumentParser
 from globalVars import LOGGER,PATH
-from RunATP import ATP
+from RunATP import get_ATP_from_config
 from src.schedulers import StrategyScheduler
 
 parser = ArgumentParser(description='Van HElsing 0.1 --- May 2014.')
 parser.add_argument('-t','--time',help='Maximum runtime of Van HElsing.',type=int,default=10)
 parser.add_argument('-p','--problem',help='The location of the problem.',default = os.path.join(PATH,'data/PUZ001+1.p'))
+parser.add_argument('-c','--configuration',help='Which configuration file to use.',default = os.path.join(PATH,'config.ini'))
+
+# TODO: Set up content of config.ini during installation
+def load_config(configFile):
+    configuration = ConfigParser.SafeConfigParser()
+    configuration.optionxform = str
+    configuration.read(configFile)    
+    return configuration
 
 def main(argv = sys.argv[1:]):
     args = parser.parse_args(argv)
+    if not os.path.exists(args.configuration):
+        raise IOError(10,'Cannot find configuration file %s' % args.configuration)
+    configuration = load_config(args.configuration)
+
     # TODO obtain from CLI
     problem = args.problem
     time_limit = args.time
@@ -32,7 +45,8 @@ def main(argv = sys.argv[1:]):
     start_time = time()
 
     # init ATP TODO verify correctness
-    atp = ATP('eprover','--cpu-limit=','--tstp-format -s --proof-object --memory-limit=2048')        
+    atp = get_ATP_from_config(configuration)        
+    #print atp.run('--auto-schedule', 10, '../data/PUZ001+1.p')
     
     # init predictor from file or memory
     #SSM = StrategySchedulerModel()

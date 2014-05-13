@@ -9,6 +9,12 @@ from time import time
 import IO
 
 
+def get_ATP_from_config(configuration):
+    binary = configuration.get('ATP Settings','binary')
+    timeString = configuration.get('ATP Settings','time')
+    default = configuration.get('ATP Settings','default')
+    return ATP(binary,timeString,default)
+
 class ATP(object):
     def __init__(self,binary,timeString,default = ''):
         '''
