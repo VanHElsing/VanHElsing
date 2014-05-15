@@ -6,6 +6,7 @@ Created on May 9, 2014
 @author: Daniel Kuehlwein
 '''
 
+import ConfigParser
 import os
 import subprocess
 import shlex
@@ -32,6 +33,17 @@ def expand_filename(file_name):
     # Cannot find file
     raise IOError(12, 'Cannot find problem file %s or %s. ' %
                       (file_name, file_path))
+
+
+# TODO: Set up content of config.ini during installation
+def load_config(config_file):
+    if not os.path.exists(config_file):
+        raise IOError(10, 'Cannot find configuration file %s' %
+                      config_file)
+    configuration = ConfigParser.SafeConfigParser()
+    configuration.optionxform = str
+    configuration.read(config_file)
+    return configuration
 
 
 def run_command(command, time_out):
