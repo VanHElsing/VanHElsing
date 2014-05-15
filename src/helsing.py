@@ -51,8 +51,10 @@ def main(argv=sys.argv[1:]):
     time_left = args.time - (time() - start_time)
     while not proof_found and time_left > 0:
         strat, strat_time = scheduler.predict(time_left)
+        # TODO: Check this here or in the scheduler?
+        run_time = min(time_left, strat_time)
         proof_found, _cs, _stdout, _used_time = atp.run(args.problem,
-                                                        strat_time, strat)
+                                                        run_time, strat)
         print _stdout
         if not proof_found:
             scheduler.update()

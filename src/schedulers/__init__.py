@@ -1,4 +1,4 @@
-from src.schedulers.EAuto import EAutoScheduler
+import src.schedulers.BasicSchedulers as bs
 
 
 def init_scheduler(problem, time_limit, scheduler_id, model=None):
@@ -9,6 +9,8 @@ def init_scheduler(problem, time_limit, scheduler_id, model=None):
 
 def choose_scheduler(scheduler_id):
     if scheduler_id == 'EAuto':
-        return EAutoScheduler
+        return bs.EAutoScheduler
+    if scheduler_id == 'Single':
+        return bs.SingleStrategyScheduler
     else:
-        raise IOError(99, 'Unknown scheduler ID %s ' % scheduler_id)
+        raise IOError(99, 'Unknown scheduler ID %s '% scheduler_id)
