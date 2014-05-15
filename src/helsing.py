@@ -17,8 +17,9 @@ from time import time
 
 from argparse import ArgumentParser
 from RunATP import get_ATP_from_config
-from src.schedulers import SchedulerTemplate, init_scheduler
+from src.schedulers import init_scheduler
 from src.GlobalVars import PATH, LOGGER
+
 
 # TODO: Set up content of config.ini during installation
 def load_config(config_file):
@@ -30,6 +31,7 @@ def load_config(config_file):
     configuration.read(config_file)
     return configuration
 
+
 def set_up_parser():
     parser = ArgumentParser(description='Van HElsing 0.1 --- May 2014.')
     parser.add_argument('-t', '--time', help='Maximum runtime of Van HElsing.',
@@ -40,6 +42,7 @@ def set_up_parser():
                         help='Which configuration file to use.',
                         default=os.path.join(PATH, 'config.ini'))
     return parser
+
 
 def main(argv=sys.argv[1:]):
     parser = set_up_parser()
@@ -69,7 +72,7 @@ def main(argv=sys.argv[1:]):
         LOGGER.info("Problem {} solved in {}/{}".format(args.problem,
                                                         (time() - start_time),
                                                         args.time))
-    else:        
+    else:
         LOGGER.info("No solution found for Problem {} " +
                     "within time limit ({})".format(args.problem, args.time))
 

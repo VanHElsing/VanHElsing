@@ -6,8 +6,6 @@ Created on May 14, 2014
 @author: Sil van de Leemput
 """
 
-from src.DataSet import DataSet
-
 
 class StrategyScheduler(object):
     def __init__(self, problem, time_limit, model=None):
@@ -22,7 +20,7 @@ class StrategyScheduler(object):
         raise NotImplementedError
         pass
 
-    def fit(self, DataSet):  # NOQA
+    def fit(self, data_set):
         """
         feature_matrix - input problem features (problems x features)
         strategy_matrix - strategy times (problems x strategies)
