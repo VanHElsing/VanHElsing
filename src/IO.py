@@ -9,7 +9,7 @@ Created on May 9, 2014
 import os
 import subprocess
 import shlex
-import TimeoutThread
+from lib import TimeoutThread
 
 
 def expand_filename(file_name):

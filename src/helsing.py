@@ -16,20 +16,21 @@ import sys
 from time import time
 
 from argparse import ArgumentParser
-from GlobalVars import LOGGER, PATH
 from RunATP import get_ATP_from_config
 from src.schedulers import StrategyScheduler
-
+from src.GlobalVars import PATH, LOGGER
 
 # TODO: Set up content of config.ini during installation
 def load_config(config_file):
+    if not os.path.exists(config_file):
+        raise IOError(10, 'Cannot find configuration file %s' %
+                      config_file)
     configuration = ConfigParser.SafeConfigParser()
     configuration.optionxform = str
     configuration.read(config_file)
     return configuration
 
-
-def main(argv=sys.argv[1:]):
+def set_up_parser():
     parser = ArgumentParser(description='Van HElsing 0.1 --- May 2014.')
     parser.add_argument('-t', '--time', help='Maximum runtime of Van HElsing.',
                         type=int, default=10)
@@ -38,11 +39,11 @@ def main(argv=sys.argv[1:]):
     parser.add_argument('-c', '--configuration',
                         help='Which configuration file to use.',
                         default=os.path.join(PATH, 'config.ini'))
+    return parser
 
+def main(argv=sys.argv[1:]):
+    parser = set_up_parser()
     args = parser.parse_args(argv)
-    if not os.path.exists(args.configuration):
-        raise IOError(10, 'Cannot find configuration file %s' %
-                      args.configuration)
     configuration = load_config(args.configuration)
 
     # TODO obtain from CLI
