@@ -32,7 +32,6 @@ echo -e "Checking code with pylint\c"
 pylint_result=$(PYTHONPATH=$PYTHONPATH:.:./src pylint \
     --good-names=x,y,X,Y,e,i,j \
     -rn \
-    -iy \
     -dC0111,R0904,R0922,W0511,W0403,R0801,I0011,W0105,W0107,W0613,R0201,R0914 \
     --module-rgx="(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+)|(test_[a-zA-Z0-9]+))$" \
     src tests)
@@ -49,7 +48,7 @@ if [ $flake_status -eq 0 ] && [ $pylint_status -eq 0 ]
 then
     echo -e "\033[32mCode was good, you can commit this.\033[0m"
 else
-    echo $flake_result
-    echo $pylint_result
+    echo "$flake_result"
+    echo "$pylint_result"
     echo -e "\033[31mCode was not conformant. If you really want to commit, you can use --no-verify.\033[0m"
 fi

@@ -10,7 +10,8 @@ pip install --user \
     scikit-learn \
     pep8 \
     pep8-naming \
-    flake8
+    flake8 \
+    pylint
 
 echo -e "\033[32mCompiling E theorem prover\033[0m"
 pushd contrib/E

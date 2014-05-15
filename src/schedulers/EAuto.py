@@ -4,8 +4,8 @@ Created on May 15, 2014
 @author: Daniel Kuehlwein
 '''
 
-from src.DataSet import DataSet
 from src.schedulers.SchedulerTemplate import StrategyScheduler
+
 
 class EAutoScheduler(StrategyScheduler):
     '''
@@ -20,7 +20,7 @@ class EAutoScheduler(StrategyScheduler):
         """
         pass
 
-    def fit(self, DataSet):
+    def fit(self, data_set):
         pass
 
     def predict(self, time_left):
