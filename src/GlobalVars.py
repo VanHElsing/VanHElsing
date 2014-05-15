@@ -27,9 +27,11 @@ logging.basicConfig(level=logging.DEBUG,
                     datefmt='%d-%m %H:%M:%S',
                     filename=LOGFILE,
                     filemode='w')
+FORMATTER = logging.Formatter('%% %(message)s')
 CONSOLE = logging.StreamHandler(sys.stdout)
 CONSOLE.setLevel(logging.INFO)
-FORMATTER = logging.Formatter('%% %(message)s')
 CONSOLE.setFormatter(FORMATTER)
 LOGGER = logging.getLogger('')
-LOGGER.addHandler(CONSOLE)
+# TODO: Better check if CONSOLE is already a handler
+if len(LOGGER.handlers) < 2:
+    LOGGER.addHandler(CONSOLE)
