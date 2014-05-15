@@ -17,7 +17,6 @@ class StrategyScheduler(object):
         """
         data_set: As defined in DataSet.py
         """
-        # TODO implement Pickable model
         pass
 
     @abstractmethod
@@ -29,6 +28,13 @@ class StrategyScheduler(object):
         return (strategy, time)
             strategy: strategy string,
             time: time strategy should run (sec)
+        """
+        pass
+
+    @abstractmethod
+    def set_problem(self, problem_file):
+        """
+        Saves the problem file name.
         """
         pass
 

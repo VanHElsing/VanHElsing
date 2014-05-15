@@ -9,10 +9,18 @@ Created on May 15, 2014
 import src.schedulers.BasicSchedulers as bs
 
 
-def init_scheduler(problem, time_limit, scheduler_id, model=None):
-    # TODO: Read ID from config file
-    scheduler = choose_scheduler(scheduler_id)
-    return scheduler(problem, time_limit, model)
+def load_scheduler(scheduler_file):
+    raise NotImplementedError
+
+
+def save_scheduler(scheduler, scheduler_file):
+    raise NotImplementedError
+
+
+def init_scheduler(problem, scheduler_file):
+    scheduler = load_scheduler(scheduler_file)
+    scheduler.set_problem(problem)
+    return scheduler
 
 
 def choose_scheduler(scheduler_id):

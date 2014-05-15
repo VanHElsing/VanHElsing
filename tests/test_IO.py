@@ -1,7 +1,7 @@
 import unittest
 import os
-import IO
-import GlobalVars
+from src import IO
+from src import GlobalVars
 
 
 class IOTestCase(unittest.TestCase):

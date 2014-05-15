@@ -1,7 +1,7 @@
 import unittest
 import os
-import RunATP
-import GlobalVars
+from src import RunATP
+from src import GlobalVars
 
 
 class RunATPTestCase(unittest.TestCase):

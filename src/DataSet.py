@@ -1,7 +1,7 @@
 '''
 Created on May 15, 2014
 
-@author: Daniel Kuehlwein
+@author: Frank Dorsser
 '''
 
 from os import listdir
