@@ -13,4 +13,4 @@ def choose_scheduler(scheduler_id):
     if scheduler_id == 'Single':
         return bs.SingleStrategyScheduler
     else:
-        raise IOError(99, 'Unknown scheduler ID %s '% scheduler_id)
+        raise IOError(99, 'Unknown scheduler ID %s ' % scheduler_id)

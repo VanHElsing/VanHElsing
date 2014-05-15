@@ -26,5 +26,5 @@ class IOTestCase(unittest.TestCase):
                             '--cpu-limit=10 --tstp-format -s --proof-object',
                             ' --memory-limit=2048--auto-schedule',
                             self.p_file_extended])
-        resultcode, _stdout, _stderr = IO.run_command(command, 10)
+        resultcode, dummy_stdout, dummy_stderr = IO.run_command(command, 10)
         self.assertTrue(resultcode)

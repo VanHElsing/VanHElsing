@@ -18,8 +18,9 @@ class RunATPTestCase(unittest.TestCase):
         eprover_path = os.path.join(GlobalVars.EPATH, 'eprover')
         atp = RunATP.ATP(eprover_path, '--cpu-limit=',
                          '--tstp-format -s --proof-object --memory-limit=2048')
-        proof_found, _cs, _stdout, used_time = atp.run('--auto-schedule',
-                                                       10, p_file_extended)
+        proof_found, dummy_cs, dummy_o, used_time = atp.run('--auto-schedule',
+                                                            10,
+                                                            p_file_extended)
         self.assertTrue(proof_found)
         self.assertLess(used_time, 0.5)
 
@@ -29,7 +30,8 @@ class RunATPTestCase(unittest.TestCase):
         eprover_path = os.path.join(GlobalVars.EPATH, 'eprover')
         atp = RunATP.ATP(eprover_path, '--cpu-limit=',
                          '--tstp-format -s --proof-object --memory-limit=2048')
-        proof_found, _cs, _stdout, used_time = atp.run('--auto-schedule',
-                                                       0.75, p_file_extended)
+        proof_found, dummy_cs, dummy_o, used_time = atp.run('--auto-schedule',
+                                                            0.75,
+                                                            p_file_extended)
         self.assertTrue(proof_found)
         self.assertLess(used_time, 0.5)

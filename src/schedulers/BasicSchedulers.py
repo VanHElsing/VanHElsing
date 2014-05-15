@@ -36,6 +36,7 @@ class SingleStrategyScheduler(StrategyScheduler):
             self.strategy_index = 0
         else:
             self.strategy_index = strategy_index
+        self.data_set = None
 
     def fit(self, data_set):
         self.data_set = data_set
