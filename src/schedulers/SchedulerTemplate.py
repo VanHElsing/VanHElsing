@@ -15,8 +15,7 @@ class StrategyScheduler(object):
     @abstractmethod
     def fit(self, data_set):
         """
-        feature_matrix - input problem features (problems x features)
-        strategy_matrix - strategy times (problems x strategies)
+        data_set: As defined in DataSet.py
         """
         # TODO implement Pickable model
         pass

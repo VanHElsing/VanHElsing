@@ -18,7 +18,7 @@ from argparse import ArgumentParser
 from src.GlobalVars import PATH, LOGGER
 from src.IO import load_config
 from src.RunATP import get_ATP_from_config
-from src.schedulers import init_scheduler
+from src.schedulers.util import init_scheduler
 
 
 def set_up_parser():
