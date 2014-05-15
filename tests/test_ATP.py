@@ -22,3 +22,14 @@ class RunATPTestCase(unittest.TestCase):
                                                        10, p_file_extended)
         self.assertTrue(proof_found)
         self.assertLess(used_time, 0.5)
+
+    def test_float_times(self):
+        problem_file = 'PUZ001+1.p'
+        p_file_extended = os.path.join(GlobalVars.PATH, 'data', problem_file)
+        eprover_path = os.path.join(GlobalVars.EPATH, 'eprover')
+        atp = RunATP.ATP(eprover_path, '--cpu-limit=',
+                         '--tstp-format -s --proof-object --memory-limit=2048')
+        proof_found, _cs, _stdout, used_time = atp.run('--auto-schedule',
+                                                       0.75, p_file_extended)
+        self.assertTrue(proof_found)
+        self.assertLess(used_time, 0.5)
