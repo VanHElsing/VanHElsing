@@ -17,7 +17,7 @@ from time import time
 
 from argparse import ArgumentParser
 from RunATP import get_ATP_from_config
-from src.schedulers import StrategyScheduler
+from src.schedulers import SchedulerTemplate
 from src.GlobalVars import PATH, LOGGER
 
 # TODO: Set up content of config.ini during installation
@@ -59,7 +59,7 @@ def main(argv=sys.argv[1:]):
 
     # init predictor from file or memory
     # ssm = StrategySchedulerModel()
-    scheduler = StrategyScheduler.StrategyScheduler(problem, time_limit, None)
+    scheduler = SchedulerTemplate.StrategyScheduler(problem, time_limit, None)
 
     # main loop
     proof_found = False
