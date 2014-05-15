@@ -8,6 +8,8 @@ import os
 from time import time
 import IO
 
+from src.GlobalVars import LOGGER
+
 
 def get_ATP_from_config(configuration):  # NOQA, pylint: disable=C0103
     binary = configuration.get('ATP Settings', 'binary')
@@ -34,10 +36,12 @@ class ATP(object):
         '''
         if not os.path.exists(self.binary):
             raise IOError(10, 'Cannot find ATP binary %s' % self.binary)
-        # TODO: time_string is E specific!
-        time_string = self.time_string + str(time_out)
+        # TODO: time_string and round_time is E specific!
+        rounded_time = int(time_out+1)
+        time_string = self.time_string + str(rounded_time)
         command = ' '.join([self.binary, self.default, strategy, time_string,
                             problem_file])
+        LOGGER.info('Running %s'% command)
         start_time = time()
         resultcode, stdout, _stderr = IO.run_command(command, time_out)
         if resultcode < 0:

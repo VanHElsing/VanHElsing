@@ -17,7 +17,7 @@ from time import time
 
 from argparse import ArgumentParser
 from RunATP import get_ATP_from_config
-from src.schedulers import SchedulerTemplate
+from src.schedulers import SchedulerTemplate, init_scheduler
 from src.GlobalVars import PATH, LOGGER
 
 # TODO: Set up content of config.ini during installation
@@ -46,40 +46,32 @@ def main(argv=sys.argv[1:]):
     args = parser.parse_args(argv)
     configuration = load_config(args.configuration)
 
-    # TODO obtain from CLI
-    problem = args.problem
-    time_limit = args.time
-
     # start tracking time
     start_time = time()
 
     # init ATP TODO verify correctness
     atp = get_ATP_from_config(configuration)
-    # print atp.run('--auto-schedule', 10, '../data/PUZ001+1.p')
-
-    # init predictor from file or memory
-    # ssm = StrategySchedulerModel()
-    scheduler = SchedulerTemplate.StrategyScheduler(problem, time_limit, None)
+    scheduler = init_scheduler(args.problem, args.time, 'EAuto')
 
     # main loop
     proof_found = False
-    time_left = time_limit - (time() - start_time)
+    time_left = args.time - (time() - start_time)
     while not proof_found and time_left > 0:
         strat, strat_time = scheduler.predict(time_left)
-        proof_found, _cs, _stdout, _used_time = atp.run('--auto-schedule',
+        proof_found, _cs, _stdout, _used_time = atp.run(args.problem,
                                                         strat_time, strat)
         if not proof_found:
             scheduler.update()
-            time_left = time_limit - (time() - start_time)
+            time_left = args.time - (time() - start_time)
 
     # TODO output results
     if proof_found:
-        LOGGER.info("Problem {} solved in {}/{}".format(problem,
+        LOGGER.info("Problem {} solved in {}/{}".format(args.problem,
                                                         (time() - start_time),
-                                                        time_limit))
-    else:
+                                                        args.time))
+    else:        
         LOGGER.info("No solution found for Problem {} " +
-                    "within time limit ({})".format(problem, time_limit))
+                    "within time limit ({})".format(args.problem, args.time))
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -18,7 +18,7 @@ class EAutoScheduler(StrategyScheduler):
         timeLimit - time limit for solving the problem
         model - input trained model
         """
-        self.time_limit = time_limit
+        pass
 
     def fit(self, DataSet):
         pass
@@ -32,10 +32,7 @@ class EAutoScheduler(StrategyScheduler):
             strategy: strategy_id,
             time: time strategy should run (sec)
         """
-        raise NotImplementedError
-        strategy = ""
-        time = 0
-        return strategy, time
+        return '--auto-schedule', time_left
 
     def update(self):
         """
@@ -43,4 +40,4 @@ class EAutoScheduler(StrategyScheduler):
         predict failed to solve the problem in order to update a possible
         internal model
         """
-        raise NotImplementedError
+        pass

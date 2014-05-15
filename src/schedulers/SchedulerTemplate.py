@@ -38,7 +38,7 @@ class StrategyScheduler(object):
         pair for solving the problem
 
         return (strategy, time)
-            strategy: strategy_id,
+            strategy: strategy string,
             time: time strategy should run (sec)
         """
         raise NotImplementedError
