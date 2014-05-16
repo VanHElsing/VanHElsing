@@ -7,14 +7,21 @@ Created on May 15, 2014
 '''
 
 import src.schedulers.BasicSchedulers as bs
-
+from src.schedulers.SchedulerTemplate import StrategyScheduler
+from src.IO import load_object, save_object
 
 def load_scheduler(scheduler_file):
-    raise NotImplementedError
+    scheduler = load_object(scheduler_file)
+    if not isinstance(dataset, StrategyScheduler):
+        raise "file: {} is not of type StrategyScheduler".format(scheduler_file)
+    return 
 
 
 def save_scheduler(scheduler, scheduler_file):
-    raise NotImplementedError
+    if not isinstance(scheduler, StrategyScheduler):
+        raise "input object is not of type StrategyScheduler"
+    save_object(scheduler, scheduler_file)
+    return
 
 
 def init_scheduler(problem, scheduler_file):
