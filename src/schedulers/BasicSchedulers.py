@@ -13,7 +13,8 @@ class EAutoScheduler(StrategyScheduler):
     Basic scheduler for Eprover that just runs E's Auto mode.
     '''
 
-    def __init__(self):
+    def __init__(self, config=None):
+        StrategyScheduler.__init__(self, config)
         pass
 
     def fit(self, data_set):
@@ -35,11 +36,12 @@ class SingleStrategyScheduler(StrategyScheduler):
     for its average time.
     '''
 
-    def __init__(self, strategy_index=None):
-        if strategy_index is None:
+    def __init__(self, config=None):
+        StrategyScheduler.__init__(self, config)
+        if config == None:
             self.strategy_index = 0
         else:
-            self.strategy_index = strategy_index
+            self.strategy_index = config.get("SingleStrategyScheduler", "strategy_index")
         self.data_set = None
         self.problem_file = None
 

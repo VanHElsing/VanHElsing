@@ -13,13 +13,13 @@ from src.IO import load_object, save_object
 def load_scheduler(scheduler_file):
     scheduler = load_object(scheduler_file)
     if not isinstance(scheduler, StrategyScheduler):
-        raise "file: {} is not of type StrategyScheduler".format(scheduler_file)
+        raise IOError(99, "file: {} is not of type StrategyScheduler".format(scheduler_file))
     return scheduler
 
 
 def save_scheduler(scheduler, scheduler_file):
     if not isinstance(scheduler, StrategyScheduler):
-        raise "input object is not of type StrategyScheduler"
+        raise IOError(99, "Input object is not of type StrategyScheduler")
     save_object(scheduler, scheduler_file)
     return
 

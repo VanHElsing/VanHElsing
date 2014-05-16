@@ -7,8 +7,10 @@ Created on May 15, 2014
 import os
 import sys
 from time import time
-
+import numpy as np
+from sklearn.cross_validation import KFold
 from argparse import ArgumentParser
+
 from src.GlobalVars import PATH, LOGGER
 from src.IO import load_config, load_object, save_object
 from src.RunATP import get_ATP_from_config
@@ -35,7 +37,7 @@ def load_dataset(args, configuration):
     dataset = None
     if not os.path.isfile(args.dataset):
         print "No dataset found for {}.".format(args.dataset)
-        if configuration.get('Learner', 'generatedataset') == 'True':
+        if is_option_enabled(configuration, 'generatedataset'):
             print "Generating dataset...".format(args.dataset)
             dataset = DataSet(configuration.get('Scheduler', 'datatype'))
             save_object(dataset, args.dataset)
@@ -50,6 +52,10 @@ def load_dataset(args, configuration):
     return dataset
 
 
+def is_option_enabled(configuration, option):
+    return configuration.get('Learner', option).lower() == 'true'
+
+
 def main(argv=sys.argv[1:]):
     """
     input: Config file, dataset
@@ -59,34 +65,42 @@ def main(argv=sys.argv[1:]):
     parser = set_up_parser()
     args = parser.parse_args(argv)
     configuration = load_config(args.configuration)
-    eval_kfolds = configuration.get('Learner', 'evalkfolds') == 'True'
-    eval_whole = configuration.get('Learner', 'evalwhole') == 'True'
-    export_model = configuration.get('Learner', 'exportmodel') == 'True'
+
+    eval_kfolds = is_option_enabled(configuration, 'evalkfolds')
+    eval_whole = is_option_enabled(configuration, 'evalwhole')
+    export_model = is_option_enabled(configuration, 'exportmodel')
     scheduler_id = configuration.get('Learner', 'scheduler')
+
+
+
+    # init strategy scheduler model using a preset (class & config) 
+    scheduler_class = choose_scheduler(scheduler_id)
+    scheduler = scheduler_class(configuration)
 
     # load dataset 
     dataset = load_dataset(args, configuration)
-
-    # init_model(config) TODO pass config
-    scheduler_class = choose_scheduler(scheduler_id)
-    scheduler = scheduler_class()
-    # load model params/preprocessing options TODO
+    # TODO execute model / dataset preprocessing options 
     
     if eval_kfolds:
-        kfolds = int(configuration.get('Learner', 'kfolds'))
-        # TODO partition dataset
+        kfolds = max(int(configuration.get('Learner', 'kfolds')), 2)
+        folds = KFold(len(dataset.problems), n_folds = kfolds, indices = False)
+        print "TRAINING & PREDICTION (Cross-validation folds:", kfolds, "):"
+        for i, fold in enumerate(folds):
+            print "fold: ", (i + 1)
+            train_idx, test_idx = fold
+            train_features = dataset.feature_matrix[train_idx]
+            test_features = dataset.feature_matrix[test_idx]
+            train_labels = dataset.strategy_matrix[train_idx]
+            #scheduler.fit(train_features, train_labels)
 
-        # TODO cross validation loop 
-            #scheduler.fit(dataset[kfoldpartition,:])
-            # evaluate scheduler 
-           # scheduler.predict()
+            # TODO evaluation of scheduler
 
     if eval_whole or export_model:
         # fit scheduler on complete dataset
         # TODO perform preprocessing 
         scheduler.fit(dataset)
         if eval_whole:
-            # eval scheduler on complete dataset
+            # TODO eval scheduler on complete dataset
             print 'eval whole'
         if export_model:
             save_scheduler(scheduler, args.outputfile)
