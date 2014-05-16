@@ -44,7 +44,7 @@ def main(argv=sys.argv[1:]):
     # init ATP TODO verify correctness
     atp = get_ATP_from_config(configuration)
     scheduler_file = configuration.get('Scheduler', 'modelfile')
-    scheduler = init_scheduler(args.problem,scheduler_file)
+    scheduler = init_scheduler(args.problem, scheduler_file)
 
     # main loop
     proof_found = False
