@@ -12,9 +12,9 @@ from src.IO import load_object, save_object
 
 def load_scheduler(scheduler_file):
     scheduler = load_object(scheduler_file)
-    if not isinstance(dataset, StrategyScheduler):
+    if not isinstance(scheduler, StrategyScheduler):
         raise "file: {} is not of type StrategyScheduler".format(scheduler_file)
-    return 
+    return scheduler
 
 
 def save_scheduler(scheduler, scheduler_file):

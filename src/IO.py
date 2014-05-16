@@ -61,14 +61,14 @@ def run_command(command, time_out):
 
 
 def load_object(filename):
-    f = open(filename)
-    data = load(f)
-    f.close()
+    handle = open(filename)
+    data = load(handle)
+    handle.close()
     return data
 
 
 def save_object(obj, filename):
-    f = open(filename,'w')
-    dump(obj,f)
-    f.close()
+    handle = open(filename,'w')
+    dump(obj, handle)
+    handle.close()
     return
