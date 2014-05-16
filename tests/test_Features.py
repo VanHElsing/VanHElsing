@@ -1,7 +1,7 @@
 import unittest
 import os
-import Features
-import GlobalVars
+from src import Features
+from src import GlobalVars
 
 
 class IOTestCase(unittest.TestCase):
