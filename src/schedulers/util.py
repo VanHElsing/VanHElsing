@@ -11,11 +11,12 @@ from src.schedulers.FirstNScheduler import FirstNScheduler
 from src.schedulers.SchedulerTemplate import StrategyScheduler
 from src.IO import load_object, save_object
 
+
 def load_scheduler(scheduler_file):
     scheduler = load_object(scheduler_file)
     if not isinstance(scheduler, StrategyScheduler):
         raise IOError(99, "file: {} is not of type StrategyScheduler"
-            .format(scheduler_file))
+                      .format(scheduler_file))
     return scheduler
 
 

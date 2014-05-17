@@ -41,7 +41,7 @@ class SingleStrategyScheduler(StrategyScheduler):
 
     def __init__(self, config=None):
         StrategyScheduler.__init__(self, config)
-        if config == None:
+        if config is None:
             self.strategy_index = 0
         else:
             idx = int(config.get("SingleStrategyScheduler", "strategy_index"))

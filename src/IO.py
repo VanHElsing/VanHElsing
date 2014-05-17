@@ -13,6 +13,7 @@ import shlex
 from lib import TimeoutThread
 from cPickle import dump, load
 
+
 def expand_filename(file_name):
     '''
     Tries to find file_name in both the local directory and the TPTP directory.
@@ -68,7 +69,7 @@ def load_object(filename):
 
 
 def save_object(obj, filename):
-    handle = open(filename,'w')
+    handle = open(filename, 'w')
     dump(obj, handle)
     handle.close()
     return

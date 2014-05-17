@@ -17,7 +17,7 @@ class StrategyScheduler(object):
         """
         config: Load settings from a SafeConfigParser instance
         """
-        pass        
+        pass
 
     @abstractmethod
     def fit(self, data_set, max_time):
@@ -52,7 +52,7 @@ class StrategyScheduler(object):
         problem_file: absolute path to the problem
         problem_features: features of the problem as numpy.array
         """
-        pass    
+        pass
 
     @abstractmethod
     def update(self):

@@ -61,8 +61,12 @@ class ATP(object):
             if line.startswith('# SZS status Theorem') or \
                line.startswith('% SZS status Theorem'):
                 proof_found = True
+            if line.startswith('# SZS status Satisfiable') or \
+               line.startswith('% SZS status Satisfiable'):
+                countersat = True
             # CNF Theorem
-            if line.startswith('# SZS status Unsatisfiable'):
+            if line.startswith('# SZS status Unsatisfiable') or \
+               line.startswith('% SZS status Unsatisfiable'):
                 proof_found = True
             if line.startswith('# SZS status CounterSatisfiable') or \
                line.startswith('% SZS status CounterSatisfiable'):
