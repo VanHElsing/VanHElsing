@@ -20,9 +20,10 @@ class StrategyScheduler(object):
         pass        
 
     @abstractmethod
-    def fit(self, data_set):
+    def fit(self, data_set, max_time):
         """
         data_set: As defined in DataSet.py
+        max_time: Maximum time for scheduling
         """
         pass
 

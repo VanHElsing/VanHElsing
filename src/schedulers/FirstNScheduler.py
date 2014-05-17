@@ -16,23 +16,20 @@ class FirstNScheduler(StrategyScheduler):
     def __init__(self, config=None):
         StrategyScheduler.__init__(self, config)
         if config == None:
-            self._maxruntime = 300
             self._nstrats = 10
             self._random = False
         else:
-            maxrt = float(config.get('FirstNScheduler', 'maxruntime'))
-            self._maxruntime = maxrt
             self._nstrats = int(config.get('FirstNScheduler', 'n'))
             self._random = config.get('FirstNScheduler', 'n').lower() == 'true'
-        self._timeslice = self._maxruntime / float(self._nstrats)
-        self._count = 0
+        self._count = self._timeslice = self._maxruntime = 0
         self.strategies = None
         random.seed()
         pass
 
-
-    def fit(self, data_set):
+    def fit(self, data_set, max_time):
         self.strategies = data_set.strategies
+        self._maxruntime = max_time
+        self._timeslice = max_time / float(self._nstrats)
         pass
 
     def predict(self, time_left):
@@ -40,7 +37,7 @@ class FirstNScheduler(StrategyScheduler):
             strategy = self.strategies[random.randint(0, len(self.strategies))]
         else:
             strategy = self.strategies[self._count]
-        return strategy, min(time_left, self._timeslice)
+        return strategy, self._timeslice
 
     def set_problem(self, problem_file):
         self._count = 0

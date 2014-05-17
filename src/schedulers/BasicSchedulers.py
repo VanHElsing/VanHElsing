@@ -17,7 +17,7 @@ class EAutoScheduler(StrategyScheduler):
         StrategyScheduler.__init__(self, config)
         pass
 
-    def fit(self, data_set):
+    def fit(self, data_set, max_time):
         pass
 
     def predict(self, time_left):
@@ -46,7 +46,7 @@ class SingleStrategyScheduler(StrategyScheduler):
         self._avg_time = self._strategy = 0
         pass
 
-    def fit(self, data_set):
+    def fit(self, data_set, max_time):
         strat_col = data_set.strategy_matrix[:, self.strategy_index]
         mask_invalid_times = strat_col != -1
         avg = np.average(strat_col, axis=0, weights=mask_invalid_times)
