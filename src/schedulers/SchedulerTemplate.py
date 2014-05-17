@@ -13,6 +13,13 @@ class StrategyScheduler(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
+    def __init__(self, config):
+        """
+        config: Load settings from a SafeConfigParser instance
+        """
+        pass        
+
+    @abstractmethod
     def fit(self, data_set):
         """
         data_set: As defined in DataSet.py

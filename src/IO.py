@@ -11,7 +11,7 @@ import os
 import subprocess
 import shlex
 from lib import TimeoutThread
-
+from cPickle import dump, load
 
 def expand_filename(file_name):
     '''
@@ -58,3 +58,17 @@ def run_command(command, time_out):
         stdout, stderr = proc.communicate()
     resultcode = proc.wait()
     return resultcode, stdout, stderr
+
+
+def load_object(filename):
+    handle = open(filename)
+    data = load(handle)
+    handle.close()
+    return data
+
+
+def save_object(obj, filename):
+    handle = open(filename,'w')
+    dump(obj, handle)
+    handle.close()
+    return

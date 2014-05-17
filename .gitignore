@@ -58,3 +58,5 @@ docs/_build/
 /config.ini~
 /test.py
 /check_code~
+/config.ini
+/.gitignore~

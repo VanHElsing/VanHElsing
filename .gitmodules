@@ -4,3 +4,4 @@
 [submodule "contrib/E"]
 	path = contrib/E
 	url = https://github.com/Wassasin/E.git
+	ignore = dirty
