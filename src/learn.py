@@ -14,7 +14,7 @@ from src.IO import load_config, load_object, save_object
 from src.schedulers.util import choose_scheduler
 from src.schedulers.util import save_scheduler
 from src.DataSet import DataSet
-from src.eval.evaluations import eval_against_dataset
+from src.eval.ml_evaluations import eval_against_dataset
 
 
 def set_up_parser():
