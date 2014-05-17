@@ -97,25 +97,26 @@ def main(argv=sys.argv[1:]):
             LOGGER.info("Fitting model.")
             scheduler.fit(train_dataset, max_time)
             LOGGER.info("Evaluating model.")
-            score = eval_against_dataset(test_dataset, scheduler)
+            solved, _score = eval_against_dataset(test_dataset, scheduler)
             try:
-                sumscore += score
+                sumscore += solved
             except TypeError:
                 LOGGER.warn("Evaluation score is not a number.")
-                score = 0
-            LOGGER.info("Score: {}".format(score))
+                solved = 0
+            LOGGER.info("Solved: {}".format(solved))
         LOGGER.info("Total score: {}".format(sumscore / kfolds))
     if eval_whole or export_model:
         LOGGER.info("TRAINING (Whole dataset):")
         scheduler.fit(dataset, max_time)
         if eval_whole:
             LOGGER.info("EVALUATING (Whole dataset):.")
-            score = eval_against_dataset(dataset, scheduler)
+            solved, score = eval_against_dataset(dataset, scheduler)
             try:
-                score += 0
+                solved += 0
             except TypeError:
                 LOGGER.warn("Evaluation score is not a number.")
-                score = 0
+                solved = 0
+            LOGGER.info("Solved: {}".format(solved))
             LOGGER.info("Score: {}".format(score))
         if export_model:
             exportfile = args.outputfile
