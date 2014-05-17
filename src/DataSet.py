@@ -14,7 +14,7 @@ class DataSet(object):
     classdocs
     '''
 
-    def __init__(self, data_type):
+    def __init__(self):
         '''
         Constructor
         '''
@@ -22,23 +22,31 @@ class DataSet(object):
         self.strategy_matrix = None
         self.strategies = None
         self.problems = None
-        self.data_type = data_type
-        self.parse()
+        pass
 
-    def parse(self):
-        if self.data_type == 'E':
+    def mask(self, mask):
+        copy = DataSet()
+        copy.feature_matrix = self.feature_matrix[mask]
+        copy.strategy_matrix = self.strategy_matrix[mask]
+        copy.strategies = self.strategies
+        copy.problems = self.problems[mask]
+        return copy
+
+    def load(self, data_type):
+        if data_type == 'E':
             self.parse_E_data()
         else:
             raise IOError('Cannot parse unknown data type %s.'
-                          % self.data_type)
+                          % data_type)
 
     def parse_E_data(self):  # NOQA
         sdict = self.load_strategies()
         fdict = self.load_features(sdict)
         self.feature_matrix = self.generate_feature_matrix(fdict)
         self.strategy_matrix = self.generate_strategy_matrix(fdict)
-        self.strategies = self.get_strategy_file_names()
-        self.problems = fdict.keys()
+        self.strategies = np.array(self.get_strategy_file_names())
+        self.problems = np.array(fdict.keys())
+        pass
 
     def is_relevant_strategy(self, filename):
         whitelist = ['protokoll_G', 'protokoll_H', 'protokoll_U']

@@ -20,7 +20,8 @@ from src.DataSet import DataSet
 
 
 def set_up_parser():
-    parser = ArgumentParser(description='Van HElsing strategy scheduler learner and tester 0.1 --- May 2014.')
+    parser = ArgumentParser(description='Van HElsing ' +
+        'strategy scheduler learner and tester 0.1 --- May 2014.')
     parser.add_argument('-d', '--dataset', 
                         help='The dataset file to fit/train the model on.',
                         default='')
@@ -34,7 +35,7 @@ def set_up_parser():
 
 
 def load_dataset(args, configuration):
-    dataset = None
+    dataset = DataSet()
     datasetfile = args.dataset
     if datasetfile == '':
         datasetfile = configuration.get('Learner', 'datasetfile')
@@ -42,7 +43,7 @@ def load_dataset(args, configuration):
         print "No dataset found for {}.".format(datasetfile)
         if is_option_enabled(configuration, 'generatedataset'):
             print "Generating dataset...".format(datasetfile)
-            dataset = DataSet(configuration.get('Scheduler', 'datatype'))
+            dataset.load(configuration.get('Scheduler', 'datatype'))
             save_object(dataset, datasetfile)
             print "Dataset generated and saved to: {}.".format(datasetfile)
         else:
@@ -73,7 +74,7 @@ def main(argv=sys.argv[1:]):
     eval_whole = is_option_enabled(configuration, 'evalwhole')
     export_model = is_option_enabled(configuration, 'exportmodel')
     scheduler_id = configuration.get('Learner', 'scheduler')
-
+    max_time = float(configuration.get('Learner', 'maxruntime'))
 
 
     # init strategy scheduler model using a preset (class & config) 
@@ -88,20 +89,20 @@ def main(argv=sys.argv[1:]):
         kfolds = max(int(configuration.get('Learner', 'kfolds')), 2)
         folds = KFold(len(dataset.problems), n_folds = kfolds, indices = False)
         print "TRAINING & PREDICTION (Cross-validation folds:", kfolds, "):"
-        for i, fold in enumerate(folds):
-            print "fold: ", (i + 1)
-            train_idx, test_idx = fold
-            train_features = dataset.feature_matrix[train_idx]
-            test_features = dataset.feature_matrix[test_idx]
-            train_labels = dataset.strategy_matrix[train_idx]
-            #scheduler.fit(train_features, train_labels)
+        for i, (train_idx, test_idx) in enumerate(folds):
+            train_dataset = dataset.mask(train_idx)
+            test_dataset = dataset.mask(test_idx)
+            print "Fold: {} -- #train: {}/{}".format(
+                i + 1, len(train_dataset.problems), len(dataset.problems))
+            print "Fitting model."
+            scheduler.fit(train_dataset, max_time)
 
             # TODO evaluation of scheduler
 
     if eval_whole or export_model:
         # fit scheduler on complete dataset
         # TODO perform preprocessing 
-        scheduler.fit(dataset)
+        scheduler.fit(dataset, max_time)
         if eval_whole:
             # TODO eval scheduler on complete dataset
             print 'eval whole'
@@ -110,7 +111,8 @@ def main(argv=sys.argv[1:]):
             if exportfile == '':
                 exportfile = configuration.get('Learner', 'exportfile')            
             save_scheduler(scheduler, exportfile)
-            print 'Scheduler with id {} exported to {}'.format(scheduler_id, exportfile)
+            print 'Scheduler with id {} exported to {}'.format(
+                scheduler_id, exportfile)
 
     pass
 
