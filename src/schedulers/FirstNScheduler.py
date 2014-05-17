@@ -39,6 +39,10 @@ class FirstNScheduler(StrategyScheduler):
             strategy = self.strategies[self._count]
         return strategy, self._timeslice
 
+    def set_problem_and_features(self, problem_file, features):
+        self.set_problem(problem_file)
+        pass
+
     def set_problem(self, problem_file):
         self._count = 0
         pass

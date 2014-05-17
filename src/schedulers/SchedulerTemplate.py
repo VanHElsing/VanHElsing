@@ -47,6 +47,16 @@ class StrategyScheduler(object):
         pass
 
     @abstractmethod
+    def set_problem_and_features(self, problem_file, features):
+        """
+        Give the problem file names and the precalculated features
+        for fast testing
+        problem_file: reference to the problem
+        features: precalculated features
+        """
+        pass
+
+    @abstractmethod
     def update(self):
         """
         This method is to be called if the predicted (strat, t) pair from

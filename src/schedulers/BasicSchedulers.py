@@ -26,6 +26,9 @@ class EAutoScheduler(StrategyScheduler):
     def set_problem(self, problem_file):
         pass
 
+    def set_problem_and_features(self, problem_file, features):
+        pass
+
     def update(self):
         pass
 
@@ -58,6 +61,9 @@ class SingleStrategyScheduler(StrategyScheduler):
         return self._strategy, self._avg_time
 
     def set_problem(self, problem_file):
+        pass
+
+    def set_problem_and_features(self, problem_file, features):
         pass
 
     def update(self):
