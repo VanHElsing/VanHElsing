@@ -56,3 +56,5 @@ docs/_build/
 /README.md~
 /install_deps~
 /config.ini~
+/test.py
+/check_code~
