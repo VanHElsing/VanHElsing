@@ -42,19 +42,17 @@ class StrategyScheduler(object):
     @abstractmethod
     def set_problem(self, problem_file):
         """
-        Saves the problem file name.
+        problem_file: absolute path to the problem
         """
         pass
 
     @abstractmethod
-    def set_problem_and_features(self, problem_file, features):
+    def set_problem_and_features(self, problem_file, problem_features):
         """
-        Give the problem file names and the precalculated features
-        for fast testing
-        problem_file: reference to the problem
-        features: precalculated features
+        problem_file: absolute path to the problem
+        problem_features: features of the problem as numpy.array
         """
-        pass
+        pass    
 
     @abstractmethod
     def update(self):

@@ -11,7 +11,8 @@ class IOTestCase(unittest.TestCase):
         self.problem_file = 'PUZ001+1.p'
         self.p_file_extended = os.path.join(GlobalVars.PATH, 'data',
                                             self.problem_file)
-        self.data_set = DataSet.DataSet('E')
+        self.data_set = DataSet.DataSet()
+        self.data_set.parse_E_data()
 
     def test_single_strategy_scheduler(self):  # NOQA, pylint: disable=C0103
         strategy_index = 0
