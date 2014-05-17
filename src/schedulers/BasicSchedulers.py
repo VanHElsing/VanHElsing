@@ -41,22 +41,24 @@ class SingleStrategyScheduler(StrategyScheduler):
         if config == None:
             self.strategy_index = 0
         else:
-            self.strategy_index = config.get("SingleStrategyScheduler", "strategy_index")
-        self.data_set = None
-        self.problem_file = None
+            idx = int(config.get("SingleStrategyScheduler", "strategy_index"))
+            self.strategy_index = idx
+        self._avg_time = self._strategy = 0
+        pass
 
     def fit(self, data_set):
-        self.data_set = data_set
+        strat_col = data_set.strategy_matrix[:, self.strategy_index]
+        mask_invalid_times = strat_col != -1
+        avg = np.average(strat_col, axis=0, weights=mask_invalid_times)
+        self._avg_time = avg
+        self._strategy = data_set.strategies[self.strategy_index]
+        pass
 
     def predict(self, time_left):
-        strat_col = self.data_set.strategy_matrix[:, self.strategy_index]
-        mask_invalid_times = strat_col != -1
-        avg_time = np.average(strat_col, axis=0, weights=mask_invalid_times)
-        strategy = self.data_set.strategies[self.strategy_index]
-        return strategy, avg_time
+        return self._strategy, self._avg_time
 
     def set_problem(self, problem_file):
-        self.problem_file = problem_file
+        pass
 
     def update(self):
         pass

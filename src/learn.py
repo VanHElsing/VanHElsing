@@ -23,10 +23,10 @@ def set_up_parser():
     parser = ArgumentParser(description='Van HElsing strategy scheduler learner and tester 0.1 --- May 2014.')
     parser.add_argument('-d', '--dataset', 
                         help='The dataset file to fit/train the model on.',
-                        default=os.path.join(PATH, 'data/train.data'))
+                        default='')
     parser.add_argument('-o', '--outputfile', 
                         help='The file to save the trained model to.',
-                        default=os.path.join(PATH, 'models/export.ss'))
+                        default='') 
     parser.add_argument('-c', '--configuration',
                         help='Which configuration file to use.',
                         default=os.path.join(PATH, 'config.ini'))
@@ -35,20 +35,23 @@ def set_up_parser():
 
 def load_dataset(args, configuration):
     dataset = None
-    if not os.path.isfile(args.dataset):
-        print "No dataset found for {}.".format(args.dataset)
+    datasetfile = args.dataset
+    if datasetfile == '':
+        datasetfile = configuration.get('Learner', 'datasetfile')
+    if not os.path.isfile(datasetfile):
+        print "No dataset found for {}.".format(datasetfile)
         if is_option_enabled(configuration, 'generatedataset'):
-            print "Generating dataset...".format(args.dataset)
+            print "Generating dataset...".format(datasetfile)
             dataset = DataSet(configuration.get('Scheduler', 'datatype'))
-            save_object(dataset, args.dataset)
-            print "Dataset generated and saved to: {}.".format(args.dataset)
+            save_object(dataset, datasetfile)
+            print "Dataset generated and saved to: {}.".format(datasetfile)
         else:
             print "Warning: continuing without dataset!"
     else:
-        dataset = load_object(args.dataset)
+        dataset = load_object(datasetfile)
         if not isinstance(dataset, DataSet):
-            raise "file: {} is not of type DataSet".format(args.dataset)
-        print "Dataset: {} loaded.".format(args.dataset)           
+            raise "file: {} is not of type DataSet".format(datasetfile)
+        print "Dataset: {} loaded.".format(datasetfile)           
     return dataset
 
 
@@ -103,8 +106,11 @@ def main(argv=sys.argv[1:]):
             # TODO eval scheduler on complete dataset
             print 'eval whole'
         if export_model:
-            save_scheduler(scheduler, args.outputfile)
-            print 'Scheduler with id {} exported to {}'.format(scheduler_id, args.outputfile)
+            exportfile = args.outputfile
+            if exportfile == '':
+                exportfile = configuration.get('Learner', 'exportfile')            
+            save_scheduler(scheduler, exportfile)
+            print 'Scheduler with id {} exported to {}'.format(scheduler_id, exportfile)
 
     pass
 
