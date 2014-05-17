@@ -41,13 +41,13 @@ class DataSet(object):
                           % data_type)
 
     def parse_E_data(self):  # NOQA
+        self.strategies = []
         sdict = self.load_strategies()
         fdict = self.load_features(sdict)
         self.feature_matrix = self.generate_feature_matrix(fdict)
-        self.strategy_matrix = self.generate_strategy_matrix(fdict)
-        self.strategies = np.array(self.get_strategy_file_names())
+        self.strategy_matrix = self.generate_strategy_matrix(fdict)        
         self.problems = np.array(fdict.keys())
-        pass
+        self.strategies = np.array(self.strategies)
 
     def is_relevant_strategy(self, filename):
         whitelist = ['protokoll_G', 'protokoll_H', 'protokoll_U']
@@ -76,7 +76,8 @@ class DataSet(object):
             with open(path+sfile, 'r') as inputstream:
                 for line in inputstream:
                     if firstline:
-                        firstline = False
+                        firstline = False                        
+                        self.strategies.append(line[2:])
                     else:
                         sline = line.split()
                         if sline[1] != 'T':
