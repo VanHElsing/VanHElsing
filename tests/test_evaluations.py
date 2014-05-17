@@ -3,7 +3,7 @@ import os
 
 from src import DataSet
 from src import GlobalVars
-from src.eval.evaluations import eval_against_dataset
+from src.eval.ml_evaluations import eval_against_dataset
 from src.schedulers.BasicSchedulers import SingleStrategyScheduler
 
 
