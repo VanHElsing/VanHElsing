@@ -6,17 +6,15 @@ Created on May 15, 2014
 
 import os
 import sys
-from time import time
-import numpy as np
 from sklearn.cross_validation import KFold
 from argparse import ArgumentParser
 
 from src.GlobalVars import PATH, LOGGER
 from src.IO import load_config, load_object, save_object
-from src.RunATP import get_ATP_from_config
 from src.schedulers.util import choose_scheduler
 from src.schedulers.util import save_scheduler
 from src.DataSet import DataSet
+from src.eval.evaluations import eval_against_dataset
 
 
 def set_up_parser():
@@ -39,20 +37,21 @@ def load_dataset(args, configuration):
     datasetfile = args.dataset
     if datasetfile == '':
         datasetfile = configuration.get('Learner', 'datasetfile')
-    if not os.path.isfile(datasetfile):
-        print "No dataset found for {}.".format(datasetfile)
-        if is_option_enabled(configuration, 'generatedataset'):
-            print "Generating dataset...".format(datasetfile)
-            dataset.load(configuration.get('Scheduler', 'datatype'))
-            save_object(dataset, datasetfile)
-            print "Dataset generated and saved to: {}.".format(datasetfile)
-        else:
-            print "Warning: continuing without dataset!"
+    if is_option_enabled(configuration, 'generatedataset'):
+        LOGGER.info("Generating dataset...")
+        dataset.load(configuration.get('Learner', 'datatype'))
+        save_object(dataset, datasetfile)
+        LOGGER.info("Dataset generated and saved to: %s.", datasetfile)        
+    elif not os.path.isfile(datasetfile):
+        LOGGER.warn("No dataset found for %s.", datasetfile)
+        LOGGER.warn("Continuing without dataset!")
     else:
         dataset = load_object(datasetfile)
         if not isinstance(dataset, DataSet):
-            raise "file: {} is not of type DataSet".format(datasetfile)
-        print "Dataset: {} loaded.".format(datasetfile)           
+            msg = "file: %s is not of type DataSet" % datasetfile
+            LOGGER.error(msg)
+            raise IOError(99, msg)
+        LOGGER.info("Dataset: %s loaded.", datasetfile)        
     return dataset
 
 
@@ -83,37 +82,49 @@ def main(argv=sys.argv[1:]):
 
     # load dataset 
     dataset = load_dataset(args, configuration)
-    # TODO execute model / dataset preprocessing options 
+    # TODO dataset preprocessing options 
     
     if eval_kfolds:
         kfolds = max(int(configuration.get('Learner', 'kfolds')), 2)
         folds = KFold(len(dataset.problems), n_folds = kfolds, indices = False)
-        print "TRAINING & PREDICTION (Cross-validation folds:", kfolds, "):"
+        LOGGER.info("TRAINING + PREDICTION (Cross-validation folds %i)", kfolds)
+        sumscore = 0
         for i, (train_idx, test_idx) in enumerate(folds):
             train_dataset = dataset.mask(train_idx)
             test_dataset = dataset.mask(test_idx)
-            print "Fold: {} -- #train: {}/{}".format(
+            LOGGER.info("Fold: %i -- #train: %i/%i",
                 i + 1, len(train_dataset.problems), len(dataset.problems))
-            print "Fitting model."
+            LOGGER.info("Fitting model.")
             scheduler.fit(train_dataset, max_time)
-
-            # TODO evaluation of scheduler
-
+            LOGGER.info("Evaluating model.")
+            score = eval_against_dataset(test_dataset, scheduler)
+            try:
+                sumscore += score
+            except TypeError:
+                LOGGER.warn("Evaluation score is not a number.")
+                score = 0
+            LOGGER.info("Score: {}".format(score))
+        LOGGER.info("Total score: {}".format(sumscore / kfolds))
     if eval_whole or export_model:
-        # fit scheduler on complete dataset
-        # TODO perform preprocessing 
+        LOGGER.info("TRAINING (Whole dataset):")
         scheduler.fit(dataset, max_time)
         if eval_whole:
-            # TODO eval scheduler on complete dataset
-            print 'eval whole'
+            LOGGER.info("EVALUATING (Whole dataset):.")
+            score = eval_against_dataset(dataset, scheduler)
+            try:
+                score += 0
+            except TypeError:
+                LOGGER.warn("Evaluation score is not a number.")
+                score = 0
+            LOGGER.info("Score: {}".format(score))
         if export_model:
             exportfile = args.outputfile
             if exportfile == '':
-                exportfile = configuration.get('Learner', 'exportfile')            
+                exportfile = configuration.get('Learner', 'exportfile')
+            LOGGER.info("EXPORTING to: %s", exportfile)
             save_scheduler(scheduler, exportfile)
-            print 'Scheduler with id {} exported to {}'.format(
+            LOGGER.info('Scheduler with id %s exported to %s',
                 scheduler_id, exportfile)
-
     pass
 
 if __name__ == '__main__':

@@ -4,6 +4,7 @@ Created on May 15, 2014
 @author: Frank Dorssers
 '''
 
+from src.GlobalVars import PATH
 from os import listdir
 from os.path import isfile, join
 import numpy as np
@@ -52,7 +53,7 @@ class DataSet(object):
         whitelist = ['protokoll_G', 'protokoll_H', 'protokoll_U']
         return any(map(filename.startswith, whitelist))
 
-    def get_strategy_file_names(self, path='../data/TESTRUNS_PEGASUS/'):
+    def get_strategy_file_names(self, path=join(PATH, 'data/TESTRUNS_PEGASUS/')):
         return [f for f in listdir(path) if
                 isfile(join(path, f)) and self.is_relevant_strategy(f)]
 
@@ -67,7 +68,7 @@ class DataSet(object):
                     sdict[line.split()[0]] = [[], []]
         return sdict
 
-    def load_strategies(self, path='../data/TESTRUNS_PEGASUS/'):
+    def load_strategies(self, path=join(PATH, 'data/TESTRUNS_PEGASUS/')):
         sfiles = self.get_strategy_file_names()
         sdict = self.initialize_dict_with_problems(sfiles[0], path)
         for sfile in sfiles:
@@ -84,7 +85,7 @@ class DataSet(object):
                             sdict[sline[0]][0].append(float(sline[2]))
         return sdict
 
-    def load_features(self, fdict, path='../data/'):
+    def load_features(self, fdict, path=join(PATH, 'data/')):
         ffile = 'pegasusFeatures'
         with open(path+ffile, 'r') as inputstream:
             firstline = True
