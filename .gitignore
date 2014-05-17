@@ -60,3 +60,4 @@ docs/_build/
 /check_code~
 /config.ini
 /.gitignore~
+/src/train.data
