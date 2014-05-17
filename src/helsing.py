@@ -62,12 +62,11 @@ def main(argv=sys.argv[1:]):
 
     # TODO output results
     if proof_found:
-        LOGGER.info("Problem {} solved in {}/{}".format(args.problem,
-                                                        (time() - start_time),
-                                                        args.time))
+        LOGGER.info("Problem %s solved in %f/%f", 
+            args.problem, (time() - start_time), args.time)
     else:
-        LOGGER.info("No solution found for Problem {} " +
-                    "within time limit ({})".format(args.problem, args.time))
+        LOGGER.info("No solution found for Problem %s within time limit (%f)",
+            args.problem, args.time)
 
 if __name__ == '__main__':
     sys.exit(main())
