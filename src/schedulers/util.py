@@ -3,7 +3,7 @@ Contains utility functions for schedulers
 
 Created on May 15, 2014
 
-@author: daniel
+@author: Daniel Kuehlwein
 '''
 
 import src.schedulers.BasicSchedulers as bs

@@ -40,6 +40,13 @@ class StrategyScheduler(object):
         pass
 
     @abstractmethod
+    def reset(self):
+        """        
+        Restores the model the it's initial state before any updates are done.
+        """
+        pass
+
+    @abstractmethod
     def set_problem(self, problem_file):
         """
         problem_file: absolute path to the problem
@@ -48,7 +55,7 @@ class StrategyScheduler(object):
 
     @abstractmethod
     def set_problem_and_features(self, problem_file, problem_features):
-        """
+        """        
         problem_file: absolute path to the problem
         problem_features: features of the problem as numpy.array
         """
