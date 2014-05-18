@@ -48,5 +48,5 @@ class FirstNScheduler(StrategyScheduler):
         pass
 
     def update(self):
-        self._count += 1        
+        self._count = (self._count + 1) % len(self.strategies)
         pass
