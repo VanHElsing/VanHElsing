@@ -41,7 +41,7 @@ class ATP(object):
         time_string = self.time_string + str(rounded_time)
         command = ' '.join([self.binary, self.default, strategy, time_string,
                             problem_file])
-        LOGGER.info('Running %s', command)
+        LOGGER.debug('Running %s', command)
         start_time = time()
         resultcode, stdout, _stderr = IO.run_command(command, time_out)
         if resultcode < 0:
