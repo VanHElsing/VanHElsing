@@ -23,7 +23,6 @@ class DataSet(object):
         self.strategy_matrix = None
         self.strategies = None
         self.problems = None
-        pass
 
     def mask(self, mask):
         copy = DataSet()
@@ -45,7 +44,7 @@ class DataSet(object):
         sdict = self.load_strategies()
         fdict = self.load_features(sdict)
         self.feature_matrix = self.generate_feature_matrix(fdict)
-        self.strategy_matrix = self.generate_strategy_matrix(fdict)        
+        self.strategy_matrix = self.generate_strategy_matrix(fdict)
         self.problems = np.array(fdict.keys())
         self.strategies = np.array(self.strategies)
 
@@ -53,7 +52,8 @@ class DataSet(object):
         whitelist = ['protokoll_G', 'protokoll_H', 'protokoll_U']
         return any(map(filename.startswith, whitelist))
 
-    def get_strategy_file_names(self, path=join(PATH, 'data/TESTRUNS_PEGASUS/')):
+    def get_strategy_file_names(self, path=join(PATH,
+                                                'data/TESTRUNS_PEGASUS/')):
         return [f for f in listdir(path) if
                 isfile(join(path, f)) and self.is_relevant_strategy(f)]
 
@@ -76,8 +76,8 @@ class DataSet(object):
             with open(path+sfile, 'r') as inputstream:
                 for line in inputstream:
                     if firstline:
-                        firstline = False                        
-                        self.strategies.append(line[2:])
+                        firstline = False
+                        self.strategies.append(line[2:].strip())
                     else:
                         sline = line.split()
                         if sline[1] != 'T':

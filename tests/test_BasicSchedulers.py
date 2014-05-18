@@ -15,13 +15,12 @@ class IOTestCase(unittest.TestCase):
         self.data_set.parse_E_data()
 
     def test_single_strategy_scheduler(self):  # NOQA, pylint: disable=C0103
-        strategy_index = 0
         self.assertEqual(self.data_set.strategies[0],
-                         'protokoll_G-E--_107_B03_F1_PI_AE_Q4_CS_SP_PS_S0Y')
-        scheduler = SingleStrategyScheduler(strategy_index)
+                         "--definitional-cnf=24 --tstp-in --split-clauses=4 --split-reuse-defs --simul-paramod --forward-context-sr --destructive-er-aggressive --destructive-er --presat-simplify --prefer-initial-clauses -tLPO4 -Ginvarity -F1 -s --delete-bad-limit=1024000000 -WSelectMaxLComplexAvoidPosPred -H'(4*RelevanceLevelWeight2(SimulateSOS,0,2,1,2,100,100,100,400,1.5,1.5,1),3*ConjectureGeneralSymbolWeight(PreferNonGoals,200,100,200,50,50,1,100,1.5,1.5,1),1*Clauseweight(PreferProcessed,1,1,1),1*FIFOWeight(PreferProcessed))'")  # NOQA
+        scheduler = SingleStrategyScheduler()
         scheduler.set_problem(self.p_file_extended)
-        scheduler.fit(self.data_set)
+        scheduler.fit(self.data_set, 300)
         strat, strat_time = scheduler.predict(10)
         self.assertEqual(strat,
-                         'protokoll_G-E--_107_B03_F1_PI_AE_Q4_CS_SP_PS_S0Y')
+                         "--definitional-cnf=24 --tstp-in --split-clauses=4 --split-reuse-defs --simul-paramod --forward-context-sr --destructive-er-aggressive --destructive-er --presat-simplify --prefer-initial-clauses -tLPO4 -Ginvarity -F1 -s --delete-bad-limit=1024000000 -WSelectMaxLComplexAvoidPosPred -H'(4*RelevanceLevelWeight2(SimulateSOS,0,2,1,2,100,100,100,400,1.5,1.5,1),3*ConjectureGeneralSymbolWeight(PreferNonGoals,200,100,200,50,50,1,100,1.5,1.5,1),1*Clauseweight(PreferProcessed,1,1,1),1*FIFOWeight(PreferProcessed))'")  # NOQA
         self.assertAlmostEqual(strat_time, 10.4048506749)

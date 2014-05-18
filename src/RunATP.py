@@ -41,7 +41,7 @@ class ATP(object):
         time_string = self.time_string + str(rounded_time)
         command = ' '.join([self.binary, self.default, strategy, time_string,
                             problem_file])
-        LOGGER.info('Running %s', command)
+        LOGGER.debug('Running %s', command)
         start_time = time()
         resultcode, stdout, _stderr = IO.run_command(command, time_out)
         if resultcode < 0:
@@ -61,8 +61,12 @@ class ATP(object):
             if line.startswith('# SZS status Theorem') or \
                line.startswith('% SZS status Theorem'):
                 proof_found = True
+            if line.startswith('# SZS status Satisfiable') or \
+               line.startswith('% SZS status Satisfiable'):
+                countersat = True
             # CNF Theorem
-            if line.startswith('# SZS status Unsatisfiable'):
+            if line.startswith('# SZS status Unsatisfiable') or \
+               line.startswith('% SZS status Unsatisfiable'):
                 proof_found = True
             if line.startswith('# SZS status CounterSatisfiable') or \
                line.startswith('% SZS status CounterSatisfiable'):

@@ -61,3 +61,5 @@ docs/_build/
 /config.ini
 /.gitignore~
 /src/train.data
+/tmp/export.ss
+/tmp/train.data
