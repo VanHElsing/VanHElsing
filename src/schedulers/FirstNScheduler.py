@@ -24,13 +24,11 @@ class FirstNScheduler(StrategyScheduler):
         self._count = self._timeslice = self._maxruntime = 0
         self.strategies = None
         random.seed()
-        pass
 
     def fit(self, data_set, max_time):
         self.strategies = data_set.strategies
         self._maxruntime = max_time
         self._timeslice = max_time / float(self._nstrats)
-        pass
 
     def predict(self, time_left):
         if (self._random):
@@ -41,12 +39,12 @@ class FirstNScheduler(StrategyScheduler):
 
     def set_problem_and_features(self, problem_file, features):
         self.set_problem(problem_file)
-        pass
 
     def set_problem(self, problem_file):
         self._count = 0
-        pass
 
     def update(self):
         self._count += 1        
-        pass
+    
+    def reset(self):
+        self._count = 0
