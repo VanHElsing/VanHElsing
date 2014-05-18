@@ -45,7 +45,7 @@ def compare_cpu_with_data_set(runs = None):
     LOGGER.info('Starting CPU measurements')
     for p_name, p_time in test_data[:2]:
         LOGGER.info('Problem %s', p_name)        
-        p_path = os.path.join(TPTPPath,'Problems', p_name[:3], p_name)
+        p_path = os.path.join(TPTPPath, 'Problems', p_name[:3], p_name)
         measured_times = []
         measured_times_diff = []
         for i in range(runs):
