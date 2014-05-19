@@ -44,13 +44,16 @@ def plot_results(result_tuples, axisVals = None):
 
 if __name__ == '__main__':
     axisVals = [0.1,300,0,11000]
+    best_times = (os.path.join(PATH,'runs','bestTimes'),'Best')
+    best_times_wo_X = (os.path.join(PATH,'runs','bestTimesWithoutX'),'Best without X')
     NN10 = (os.path.join(PATH,'runs','NN10'),'NN10')
     NN10Local = (os.path.join(PATH,'runs','NN10Local'),'NN10Local')
     NN20Local = (os.path.join(PATH,'runs','NN20Local'),'NN20Local')
     E =  (os.path.join(PATH,'runs','EAuto'),'E 1.8')    
     result_tuples = []
     result_tuples.append(E)
-    result_tuples.append(NN10)
+    result_tuples.append(best_times)
+    result_tuples.append(best_times_wo_X)
     result_tuples.append(NN10Local)
-    result_tuples.append(NN20Local)
+
     plot_results(result_tuples,axisVals)
