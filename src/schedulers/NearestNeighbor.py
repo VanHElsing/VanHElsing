@@ -18,20 +18,19 @@ class NearestNeighborScheduler(StrategyScheduler):
     '''
 
     def __init__(self, config=None):
-        StrategyScheduler.__init__(self, config)        
+        StrategyScheduler.__init__(self, config)
         self.nr_of_neighbors = 2000
         self._model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)
-        self.deleted_neigbors = set([])
+        self._data_set = None
+        self.data_set = None
         self.last_strategy = None
         self.last_time = None
         self.local_strat_times = None
-        self.features = None
         self.max_time = 0
         self.model = None
-        self._data_set = None
-        self.data_set = None
         self.problem = None
-        self.local_strat_times = None
+        self.min_neighbors = 5
+        self.mul_factor = 1.1
 
     def fit(self, data_set, max_time, good_problems=None):
         self.max_time = max_time
@@ -49,12 +48,17 @@ class NearestNeighborScheduler(StrategyScheduler):
         local_avg_times = [0.0] * s_nr
         local_max_times = [300.0] * s_nr
         local_solved = [0.0] * s_nr
-        
+
         # Find similar problems
         if self.local_strat_times is None:
             neighbors = self.model.kneighbors(self.features)
-            # TODO: Cut of at some distance.
-            n_indices = neighbors[1][0][:10]
+            # Find close neighbours
+            n_distances = neighbors[0][0]
+            max_dist = n_distances[self.min_neighbors] * self.mul_factor
+            for cut_off_index, dist in enumerate(n_distances):
+                if dist > max_dist:
+                    break
+            n_indices = neighbors[1][0][:cut_off_index]
             self.local_strat_times = self.data_set.strategy_matrix[np.ix_(n_indices, range(s_nr))]
         # Get runtimes for similar problems
         for i in range(self.local_strat_times.shape[0]):
@@ -62,11 +66,11 @@ class NearestNeighborScheduler(StrategyScheduler):
                 val = self.local_strat_times[i, j]
                 if val == -1:
                     continue
-                local_avg_times[j] += val 
+                local_avg_times[j] += val
                 local_solved[j] += 1
                 if val > local_max_times[j] or local_max_times[j] == 300:
                     local_max_times[j] = val
-        
+
         max_local_solved = max(local_solved)
         best_local_strategies = [i for i, i_solved in enumerate(local_solved) if i_solved == max_local_solved]
         best_local_strategies_max_times = [local_max_times[i] for i in best_local_strategies]
@@ -79,7 +83,7 @@ class NearestNeighborScheduler(StrategyScheduler):
         self.data_set = copy.deepcopy(self._data_set)
         self.model = copy.deepcopy(self._model)
         self.local_strat_times = None
-    
+
     def set_problem(self, problem_file):
         self.problem = problem_file
         # TODO: Compute Features
@@ -101,7 +105,7 @@ class NearestNeighborScheduler(StrategyScheduler):
             self.data_set = delete_problems(self.data_set, good_problems)
         # Local Update
         s_nr = self.data_set.strategy_matrix.shape[1]
-        lp_nr = self.local_strat_times.shape[0] 
+        lp_nr = self.local_strat_times.shape[0]
         local_good_problems = [i for i in range(lp_nr) if (self.local_strat_times[i, self.last_strategy] > self.last_time)]
         if len(local_good_problems) == 0:
             self.local_strat_times = None

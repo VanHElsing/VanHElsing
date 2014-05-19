@@ -6,6 +6,7 @@ Created on May 15, 2014
 
 import os
 import sys
+import numpy as np
 from sklearn.cross_validation import KFold
 from argparse import ArgumentParser
 
@@ -20,15 +21,18 @@ from src.eval.ml_evaluations import eval_against_dataset
 def set_up_parser():
     parser = ArgumentParser(description='Van HElsing ' +
         'strategy scheduler learner and tester 0.1 --- May 2014.')
-    parser.add_argument('-d', '--dataset', 
+    parser.add_argument('-d', '--dataset',
                         help='The dataset file to fit/train the model on.',
                         default='')
-    parser.add_argument('-o', '--outputfile', 
+    parser.add_argument('-o', '--outputfile',
                         help='The file to save the trained model to.',
-                        default='') 
+                        default='')
     parser.add_argument('-c', '--configuration',
                         help='Which configuration file to use.',
                         default=os.path.join(PATH, 'config.ini'))
+    parser.add_argument('-lp', '--limitprobs',
+                        help='Limit the amount of problems in the dataset for testing.',
+                        default=-1)
     return parser
 
 
@@ -41,7 +45,7 @@ def load_dataset(args, configuration):
         LOGGER.info("Generating dataset...")
         dataset.load(configuration.get('Learner', 'datatype'))
         save_object(dataset, datasetfile)
-        LOGGER.info("Dataset generated and saved to: %s.", datasetfile)        
+        LOGGER.info("Dataset generated and saved to: %s.", datasetfile)
     elif not os.path.isfile(datasetfile):
         LOGGER.warn("No dataset found for %s.", datasetfile)
         LOGGER.warn("Continuing without dataset!")
@@ -51,7 +55,8 @@ def load_dataset(args, configuration):
             msg = "file: %s is not of type DataSet" % datasetfile
             LOGGER.error(msg)
             raise IOError(99, msg)
-        LOGGER.info("Dataset: %s loaded.", datasetfile)        
+        LOGGER.info("Dataset: %s loaded  prob x strats: %i x %i",
+                    datasetfile, len(dataset.problems), len(dataset.strategies))
     return dataset
 
 
@@ -62,7 +67,7 @@ def is_option_enabled(configuration, option):
 def main(argv=sys.argv[1:]):
     """
     input: Config file, dataset
-    output: stores model in modelfile 
+    output: stores model in modelfile
     """
     # load config
     parser = set_up_parser()
@@ -76,24 +81,35 @@ def main(argv=sys.argv[1:]):
     max_time = float(configuration.get('Learner', 'maxruntime'))
 
 
-    # init strategy scheduler model using a preset (class & config) 
+    # init strategy scheduler model using a preset (class & config)
     scheduler_class = choose_scheduler(scheduler_id)
     scheduler = scheduler_class(configuration)
 
-    # load dataset 
+    # load dataset
     dataset = load_dataset(args, configuration)
-    # TODO dataset preprocessing options 
-    
+    # remove problems with no working strategy
+    problemFilter = np.max(dataset.strategy_matrix, axis=1) > -1
+    dataset = dataset.mask(problemFilter)
+    LOGGER.info("Dataset removing unsolvable problems - prob x strats: %i x %i",
+                len(dataset.problems), len(dataset.strategies))
+    # retain only a few problems if option set
+    if args.limitprobs > -1:
+        dataset = dataset.mask(range(int(args.limitprobs)))
+        LOGGER.info("Dataset limiting problems - prob x strats: %i x %i",
+                    len(dataset.problems), len(dataset.strategies))
+
+    # TODO dataset preprocessing options
+
     if eval_kfolds:
         kfolds = max(int(configuration.get('Learner', 'kfolds')), 2)
-        folds = KFold(len(dataset.problems), n_folds = kfolds, indices = False)
+        folds = KFold(len(dataset.problems), n_folds=kfolds, indices=False)
         LOGGER.info("TRAINING + PREDICTION (Cross-validation folds %i)", kfolds)
         sumscore = 0
         for i, (train_idx, test_idx) in enumerate(folds):
             train_dataset = dataset.mask(train_idx)
             test_dataset = dataset.mask(test_idx)
-            LOGGER.info("Fold: %i -- #train: %i/%i",
-                i + 1, len(train_dataset.problems), len(dataset.problems))
+            LOGGER.info("Fold: %i -- #train: %i/%i", 
+                        i + 1, len(train_dataset.problems), len(dataset.problems))
             LOGGER.info("Fitting model.")
             scheduler.fit(train_dataset, max_time)
             LOGGER.info("Evaluating model.")
@@ -125,7 +141,7 @@ def main(argv=sys.argv[1:]):
             LOGGER.info("EXPORTING to: %s", exportfile)
             save_scheduler(scheduler, exportfile)
             LOGGER.info('Scheduler with id %s exported to %s',
-                scheduler_id, exportfile)
+                        scheduler_id, exportfile)
     pass
 
 if __name__ == '__main__':

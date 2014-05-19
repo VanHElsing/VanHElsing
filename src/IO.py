@@ -33,7 +33,7 @@ def expand_filename(file_name):
         return file_path
     # Cannot find file
     raise IOError(12, 'Cannot find problem file %s or %s. ' %
-                      (file_name, file_path))
+                  (file_name, file_path))
 
 
 # TODO: Set up content of config.ini during installation
