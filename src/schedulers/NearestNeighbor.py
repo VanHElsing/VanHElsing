@@ -21,17 +21,16 @@ class NearestNeighborScheduler(StrategyScheduler):
         StrategyScheduler.__init__(self, config)        
         self.nr_of_neighbors = 2000
         self._model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)
-        self.deleted_neigbors = set([])
+        self._data_set = None
+        self.data_set = None
         self.last_strategy = None
         self.last_time = None
         self.local_strat_times = None
-        self.features = None
         self.max_time = 0
         self.model = None
-        self._data_set = None
-        self.data_set = None
         self.problem = None
-        self.local_strat_times = None
+        self.min_neighbors = 5
+        self.mul_factor = 1.1        
 
     def fit(self, data_set, max_time, good_problems=None):
         self.max_time = max_time
@@ -53,8 +52,13 @@ class NearestNeighborScheduler(StrategyScheduler):
         # Find similar problems
         if self.local_strat_times is None:
             neighbors = self.model.kneighbors(self.features)
-            # TODO: Cut of at some distance.
-            n_indices = neighbors[1][0][:10]
+            # Find close neighbours
+            n_distances = neighbors[0][0]
+            max_dist = n_distances[self.min_neighbors] * self.mul_factor
+            for cut_off_index, dist in enumerate(n_distances):
+                if dist > max_dist:
+                    break                        
+            n_indices = neighbors[1][0][:cut_off_index]
             self.local_strat_times = self.data_set.strategy_matrix[np.ix_(n_indices, range(s_nr))]
         # Get runtimes for similar problems
         for i in range(self.local_strat_times.shape[0]):

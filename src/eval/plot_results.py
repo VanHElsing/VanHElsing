@@ -49,11 +49,14 @@ if __name__ == '__main__':
     NN10 = (os.path.join(PATH,'runs','NN10'),'NN10')
     NN10Local = (os.path.join(PATH,'runs','NN10Local'),'NN10Local')
     NN20Local = (os.path.join(PATH,'runs','NN20Local'),'NN20Local')
+    NN5LocalDyn = (os.path.join(PATH,'runs','NN5LocalDyn'),'NN5LocalDyn')
+    NN10LocalDyn = (os.path.join(PATH,'runs','NN10LocalDyn'),'NN10LocalDyn')
     E =  (os.path.join(PATH,'runs','EAuto'),'E 1.8')    
     result_tuples = []
     result_tuples.append(E)
-    result_tuples.append(best_times)
+    #result_tuples.append(best_times)
     result_tuples.append(best_times_wo_X)
     result_tuples.append(NN10Local)
+    result_tuples.append(NN5LocalDyn)
 
     plot_results(result_tuples,axisVals)
