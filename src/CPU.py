@@ -36,6 +36,7 @@ def compare_cpu_with_data_set(runs = None):
 
     if runs is None:
         runs = 10
+    OS = open('runtimes','w')
     strategy = "--definitional-cnf=24 --tstp-in --condense --simul-paramod --forward-context-sr --strong-destructive-er --destructive-er-aggressive --destructive-er --prefer-initial-clauses -tKBO6 -winvfreqrank -c1 -Ginvfreq -F1 -s --delete-bad-limit=1024000000 -WSelectNewComplexAHPNS -H'(10*ConjectureRelativeSymbolWeight(ConstPrio,0.1, 100, 100, 100, 100, 1.5, 1.5, 1.5),1*FIFOWeight(ConstPrio))'"
     eprover_path = os.path.join(EPATH, 'eprover')
     atp = ATP(eprover_path, '--cpu-limit=', '--tstp-format -s --proof-object --memory-limit=2048')
@@ -43,7 +44,7 @@ def compare_cpu_with_data_set(runs = None):
     test_times = []
     test_times_diff = []
     LOGGER.info('Starting CPU measurements')
-    for p_name, p_time in test_data[:2]:
+    for p_name, p_time in test_data:
         LOGGER.info('Problem %s', p_name)        
         p_path = os.path.join(TPTPPath, 'Problems', p_name[:3], p_name)
         measured_times = []
@@ -54,11 +55,18 @@ def compare_cpu_with_data_set(runs = None):
             proof_found, _cs, _o, _used_time = atp.run(strategy, 200, p_path)
             assert proof_found    
             used_time = time() - start_time
+            diff_time = used_time - p_time
             measured_times.append(used_time)
-            measured_times_diff.append(abs(used_time - p_time))
+            measured_times_diff.append(diff_time)
+            OS.write('%s,%s,%s,%s\n' % (p_name,str(i),str(used_time),str(diff_time)))
+            OS.flush()
         test_times.append(measured_times)
         test_times_diff.append(measured_times_diff)
     LOGGER.info('Finished CPU measurements')
 
     print np.mat(test_times)
     print np.mat(test_times_diff)
+    OS.close()
+
+if __name__ == '__main__':
+    compare_cpu_with_data_set()
