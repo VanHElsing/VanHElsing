@@ -40,5 +40,5 @@ def not_solved_by_strat(data_set, s_index, s_time):
     """
     nr_of_problems = data_set.strategy_matrix.shape[0]
     s_m = data_set.strategy_matrix 
-    not_solved_by_strats = [i for i in range(nr_of_problems) if (s_m[i, s_index] >= s_time)]
+    not_solved_by_strats = [i for i in range(nr_of_problems) if (s_m[i, s_index] > s_time or s_m[i, s_index] == -1)]
     return not_solved_by_strats
