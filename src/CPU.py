@@ -50,7 +50,7 @@ def compare_cpu_with_data_set(runs = None):
         measured_times_diff = []
         for i in range(runs):
             LOGGER.info('Run %s / %s', i, runs)
-            start_time = time() 
+            start_time = time()
             proof_found, _cs, _o, _used_time = atp.run(strategy, 200, p_path)
             assert proof_found    
             used_time = time() - start_time
@@ -62,4 +62,3 @@ def compare_cpu_with_data_set(runs = None):
 
     print np.mat(test_times)
     print np.mat(test_times_diff)
-compare_cpu_with_data_set()
