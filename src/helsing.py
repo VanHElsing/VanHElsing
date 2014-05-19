@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 """
 VanHElsing v0.1
 
@@ -64,9 +65,11 @@ def main(argv=sys.argv[1:]):
     if proof_found:
         LOGGER.info("Problem %s solved in %f/%f", 
             args.problem, (time() - start_time), args.time)
+        return True
     else:
         LOGGER.info("No solution found for Problem %s within time limit (%f)",
             args.problem, args.time)
+        return False
 
 if __name__ == '__main__':
     sys.exit(main())
