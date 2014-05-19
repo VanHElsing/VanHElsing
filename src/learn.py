@@ -6,6 +6,7 @@ Created on May 15, 2014
 
 import os
 import sys
+import numpy as np
 from sklearn.cross_validation import KFold
 from argparse import ArgumentParser
 
@@ -29,6 +30,9 @@ def set_up_parser():
     parser.add_argument('-c', '--configuration',
                         help='Which configuration file to use.',
                         default=os.path.join(PATH, 'config.ini'))
+    parser.add_argument('-lp', '--limitprobs',
+                        help='Limit the amount of problems in the dataset for testing.',
+                        default=-1)
     return parser
 
 
@@ -51,7 +55,8 @@ def load_dataset(args, configuration):
             msg = "file: %s is not of type DataSet" % datasetfile
             LOGGER.error(msg)
             raise IOError(99, msg)
-        LOGGER.info("Dataset: %s loaded.", datasetfile)        
+        LOGGER.info("Dataset: %s loaded  prob x strats: %i x %i", 
+            datasetfile, len(dataset.problems), len(dataset.strategies))        
     return dataset
 
 
@@ -82,6 +87,17 @@ def main(argv=sys.argv[1:]):
 
     # load dataset 
     dataset = load_dataset(args, configuration)
+    # remove problems with no working strategy
+    problemFilter = np.max(dataset.strategy_matrix, axis=1) > -1
+    dataset = dataset.mask(problemFilter)
+    LOGGER.info("Dataset removing unsolvable problems - prob x strats: %i x %i", 
+        len(dataset.problems), len(dataset.strategies))
+    # retain only a few problems if option set
+    if args.limitprobs > -1:
+        dataset = dataset.mask(range(int(args.limitprobs)))
+        LOGGER.info("Dataset limiting problems - prob x strats: %i x %i", 
+            len(dataset.problems), len(dataset.strategies))
+
     # TODO dataset preprocessing options 
     
     if eval_kfolds:
