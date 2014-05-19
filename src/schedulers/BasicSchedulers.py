@@ -31,6 +31,9 @@ class EAutoScheduler(StrategyScheduler):
 
     def update(self):
         pass
+    
+    def reset(self):
+        pass
 
 
 class SingleStrategyScheduler(StrategyScheduler):
@@ -67,4 +70,7 @@ class SingleStrategyScheduler(StrategyScheduler):
         pass
 
     def update(self):
+        pass
+
+    def reset(self):
         pass
