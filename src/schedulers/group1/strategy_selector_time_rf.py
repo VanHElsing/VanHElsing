@@ -4,24 +4,24 @@ import numpy as np
 class StrategySelectorTimeRF(object):
     """A random forest model
 
-    A classifier that uses a combination of random forests. One random forest 
+    A classifier that uses a combination of random forests. One random forest
     for each classifier.
-    
+
     Attributes
     ----------
     `classifiers_` : list of random forests
         The collection of random forests for all strategies
-        
-    """    
-    
+
+    """
+
     def __init__(self, time):
         self.classifiers_ = []
         self._time = time
         pass
-    
+
     def _fitClassifiers(self, X, Y):
         """Build the model from the training set (X, y).
-        
+
         Iterate through all strategies and fit a classifier to them
 
         Parameters
@@ -47,7 +47,7 @@ class StrategySelectorTimeRF(object):
             classifiers.append(clf)
         return classifiers
 
-    def fit(self,X,Y):
+    def fit(self, X, Y):
         """Build the model from the training set (X, y).
 
         Parameters
@@ -67,7 +67,7 @@ class StrategySelectorTimeRF(object):
         self.classifiers_ = self._fitClassifiers(X, Y)
         pass
 
-    def predict(self,X):
+    def predict(self, X):
         """Predict class for X.
 
         Predicts all strategies based on the previously generated list of

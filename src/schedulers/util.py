@@ -45,6 +45,6 @@ def choose_scheduler(scheduler_id):
     elif scheduler_id == 'NN':
         return NearestNeighborScheduler
     elif scheduler_id == 'Group1':
-        return Group1Scheduler        
+        return Group1Scheduler
     else:
         raise IOError(99, 'Unknown scheduler ID %s ' % scheduler_id)
