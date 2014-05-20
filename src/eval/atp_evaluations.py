@@ -9,8 +9,6 @@ import os
 
 from src.GlobalVars import PATH, EPATH
 from src.RunATP import ATP
-
-
 """
 #TODO: Is this necessary?
 class NoDaemonProcess(mp.Process):
@@ -28,29 +26,37 @@ class MyPool(mp.pool.Pool):
 #End TODO
 """
 
+
 def run_e_auto(args):
     problem_file, time_limit = args
     eprover_path = os.path.join(EPATH, 'eprover')
     atp = ATP(eprover_path, '--cpu-limit=',
               '--tstp-format -s --proof-object --memory-limit=2048')
-    proof_found, _countersat, _stdout, used_time = atp.run('--auto-schedule', time_limit, problem_file)
+    proof_found, _countersat, _stdout, used_time = atp.run('--auto-schedule',
+                                                           time_limit,
+                                                           problem_file)
     return problem_file, proof_found, used_time
+
 
 def run_helsing(args):
     problem_file, time_limit = args
     eprover_path = os.path.join(PATH, 'src', 'helsing.py')
     atp = ATP(eprover_path, '-t ', '')
-    #TODO: Get rid of this -p hack
-    proof_found, _countersat, _stdout, used_time = atp.run('', time_limit, '-p '+problem_file)
+    # TODO: Get rid of this -p hack
+    proof_found, _countersat, _stdout, used_time = atp.run('',
+                                                           time_limit,
+                                                           '-p '+problem_file)
     return problem_file, proof_found, used_time
+
 
 def load_problems(problem_file):
     problems = []
-    TPTP = os.getenv('TPTP')
+    tptp_dir = os.getenv('TPTP')
     with open(problem_file, 'r') as p_stream:
         for p in p_stream:
-            problems.append(os.path.join(TPTP,p.strip()))
-    return problems 
+            problems.append(os.path.join(tptp_dir, p.strip()))
+    return problems
+
 
 def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
     if outfile is None:
@@ -63,7 +69,7 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
         prover_call = run_helsing
     problems = load_problems(problem_file)
     with open(outfile, 'w') as OS:
-        #pool = MyPool(processes = cores)
+        # pool = MyPool(processes = cores)
         pool = mp.Pool(processes=cores)
         args = [[p, run_time] for p in problems]
         results = pool.map_async(prover_call, args)
@@ -74,6 +80,7 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
         for problem, proofFound, usedTime in results:
             if proofFound:
                 OS.write('%s,%s\n' % (problem, usedTime))
+
 
 if __name__ == '__main__':
     cores = 1

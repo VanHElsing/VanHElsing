@@ -8,14 +8,14 @@ import numpy as np
 
 
 def eval_against_dataset(dataset, scheduler,
-                         max_time=300, safe_schedule_file='None'):
+                         max_time=300, safe_schedule_file=None):
     schedule_solved = 0.0
     problems_solvable = 0.0
     schedule_score = 0.0
     best_score = 0.0
 
-    if not safe_schedule_file is None:
-        OS = open(safe_schedule_file, 'w')
+    if safe_schedule_file is not None:
+        os = open(safe_schedule_file, 'w')
 
     for p_index, problem in enumerate(dataset.problems):
         time_left = max_time
@@ -37,13 +37,14 @@ def eval_against_dataset(dataset, scheduler,
             if strat_time > -1 and run_time >= strat_time:
                 schedule_solved += 1
                 schedule_score += (time_left - strat_time)
-                if not safe_schedule_file is None:
-                    OS.write('%s,%s\n' % (problem,
-                                          str(max_time - time_left + strat_time)))
+                if safe_schedule_file is not None:
+                    used_time = max_time - time_left + strat_time
+                    os.write('%s,%s\n' % (problem,
+                                          str(used_time)))
                 break
             time_left -= run_time
             scheduler.update()
 
-    if not safe_schedule_file is None:
-        OS.close()
+    if safe_schedule_file is not None:
+        os.close()
     return schedule_solved / problems_solvable, schedule_score / best_score
