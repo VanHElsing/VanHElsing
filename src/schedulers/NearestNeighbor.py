@@ -9,7 +9,7 @@ import numpy as np
 import operator
 from sklearn.neighbors import NearestNeighbors
 from src.schedulers.SchedulerTemplate import StrategyScheduler
-from src.data_util import delete_problems, not_solved_by_strat, can_be_solved
+from src.data_util import delete_problems, not_solved_by_strat, remove_unsolveable_problems
 
 
 class NearestNeighborScheduler(StrategyScheduler):
@@ -35,8 +35,7 @@ class NearestNeighborScheduler(StrategyScheduler):
 
     def fit(self, data_set, max_time, good_problems=None):
         self.max_time = max_time
-        good_problems = can_be_solved(data_set)
-        self._data_set = delete_problems(data_set, good_problems)
+        self._data_set = remove_unsolveable_problems(data_set)
         self._model.fit(self._data_set.feature_matrix)
         self.data_set = copy.deepcopy(self._data_set)
         self.model = copy.deepcopy(self._model)

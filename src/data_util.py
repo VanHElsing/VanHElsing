@@ -5,7 +5,17 @@ Created on May 18, 2014
 '''
 
 import numpy as np
+from src.GlobalVars import LOGGER
 
+def remove_unsolveable_problems(data_set):
+    """
+    Deletes all problems that cannot be solved.
+    """
+    problem_filter = np.max(data_set.strategy_matrix, axis=1) > -1
+    ret = data_set.mask(problem_filter)
+    LOGGER.info("Dataset removing unsolvable problems - prob x strats: %i x %i",
+                len(ret.problems), len(ret.strategies))
+    return ret
 
 def can_be_solved(data_set):
     """
