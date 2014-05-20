@@ -9,7 +9,7 @@ import random
 
 class FirstNScheduler(StrategyScheduler):
     '''
-    Basic scheduler that just divides the total time in slices 
+    Basic scheduler that just divides the total time in slices
     and returns the first N strategies (optionally at random)
     '''
 
@@ -31,7 +31,7 @@ class FirstNScheduler(StrategyScheduler):
         self._timeslice = max_time / float(self._nstrats)
 
     def predict(self, time_left):
-        if (self._random):
+        if self._random:
             strategy = self.strategies[random.randint(0, len(self.strategies))]
         else:
             strategy = self.strategies[self._count]
@@ -45,6 +45,6 @@ class FirstNScheduler(StrategyScheduler):
 
     def update(self):
         self._count = (self._count + 1) % len(self.strategies)
-    
+
     def reset(self):
         self._count = 0

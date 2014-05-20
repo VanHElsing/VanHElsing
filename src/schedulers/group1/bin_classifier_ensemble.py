@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class BinClassifierEnsemble:
     '''
         Simple class to aggregate multiple weak classfiers into ensemble
@@ -15,8 +16,7 @@ class BinClassifierEnsemble:
             self.alpha = np.ones((self.cn, 1), dtype=float) / self.cn
         else:
             self.alpha = np.asarray(alpha).ravel()
-                
-            
+
     def predict(self, X):
         '''
             Returns predicted class (value of y) for given X,
@@ -28,7 +28,7 @@ class BinClassifierEnsemble:
             y_est[y_est > 1] = 1 # restrict to binomial (or first-vs-rest)
             votes = votes + y_est*self.alpha[c_id]
         return (votes.astype(float) > .5).astype(int)
-        
+
     def predict_proba(self, X):
         '''
             Returns proportion of ensemble votes for class being y=1,
