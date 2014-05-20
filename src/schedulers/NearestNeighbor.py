@@ -27,11 +27,11 @@ class NearestNeighborScheduler(StrategyScheduler):
         self.last_strategy = None
         self.last_time = None
         self.local_strat_times = None
-        self.max_time = 0
+        self.max_time = None
         self.model = None
         self.problem = None
         self.min_neighbors = 5
-        self.mul_factor = 1.1
+        self.mul_factor = 1.1        
 
     def fit(self, data_set, max_time, good_problems=None):
         self.max_time = max_time
@@ -46,7 +46,7 @@ class NearestNeighborScheduler(StrategyScheduler):
             return 'xx', time_left
         s_nr = self.data_set.strategy_matrix.shape[1]
         local_avg_times = [0.0] * s_nr
-        local_max_times = [300.0] * s_nr
+        local_max_times = [self.max_time] * s_nr
         local_solved = [0.0] * s_nr
 
         # Find similar problems
@@ -68,7 +68,7 @@ class NearestNeighborScheduler(StrategyScheduler):
                     continue
                 local_avg_times[j] += val
                 local_solved[j] += 1
-                if val > local_max_times[j] or local_max_times[j] == 300:
+                if val > local_max_times[j] or local_max_times[j] == self.max_time:
                     local_max_times[j] = val
 
         max_local_solved = max(local_solved)
@@ -86,10 +86,10 @@ class NearestNeighborScheduler(StrategyScheduler):
 
     def set_problem(self, problem_file):
         self.problem = problem_file
-        # TODO: Compute Features
+        self.features = self.feature_parser.get(problem_file)
 
     def set_problem_and_features(self, problem_file, problem_features):
-        self.set_problem(problem_file)
+        self.problem = problem_file
         self.features = problem_features
 
     def update(self):
