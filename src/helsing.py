@@ -53,23 +53,21 @@ def main(argv=sys.argv[1:]):
     while not proof_found and time_left > 0:
         strat, strat_time = scheduler.predict(time_left)
         # TODO: Check this here or in the scheduler?
+        # TODO: Adapt strat_time with CPU_times
         run_time = min(time_left, strat_time)
-        proof_found, _cs, _stdout, _used_time = atp.run(args.problem,
-                                                        run_time, strat)
-        print _stdout
+        LOGGER.info("Running %s for %s seconds" % (strat, strat_time))
+        proof_found, _cs, output, _used_time = atp.run(strat, run_time, 
+                                                        args.problem)
         if not proof_found:
             scheduler.update()
             time_left = args.time - (time() - start_time)
 
     # TODO output results
     if proof_found:
-        LOGGER.info("Problem %s solved in %f/%f",
-                    args.problem, (time() - start_time), args.time)
+        LOGGER.info("\n" + output)
         return True
-    else:
-        LOGGER.info("No solution found for Problem %s within time limit (%f)",
-                    args.problem, args.time)
-        return False
+    LOGGER.info("SZS status Timeout")    
+    return False
 
 if __name__ == '__main__':
     sys.exit(main())
