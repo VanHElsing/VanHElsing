@@ -33,6 +33,16 @@ def set_up_parser():
                         default=os.path.join(PATH, 'config.ini'))
     return parser
 
+def adapt_run_time(pred_time, time_left, config):
+    # TODO: Load from config
+    run_time = None
+    if pred_time < 1.0:
+        run_time = pred_time + 0.5
+    elif pred_time < 30:
+        run_time = pred_time * 0.65
+    else:
+        run_time = pred_time * 0.5 
+    return min(time_left, run_time)
 
 def main(argv=sys.argv[1:]):
     parser = set_up_parser()
@@ -52,9 +62,8 @@ def main(argv=sys.argv[1:]):
     time_left = args.time - (time() - start_time)
     while not proof_found and time_left > 0:
         strat, strat_time = scheduler.predict(time_left)
-        # TODO: Check this here or in the scheduler?
-        # TODO: Adapt strat_time with CPU_times
-        run_time = min(time_left, strat_time)
+        run_time = adapt_run_time(strat_time, time_left, configuration)
+        print strat_time, run_time
         LOGGER.info("Running %s for %s seconds" % (strat, strat_time))
         proof_found, _cs, output, _used_time = atp.run(strat, run_time, 
                                                         args.problem)

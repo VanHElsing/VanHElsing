@@ -29,8 +29,8 @@ class MyPool(mp.pool.Pool):
 
 def run_e_auto(args):
     problem_file, time_limit = args
-    eprover_path = os.path.join(EPATH, 'eprover')
-    atp = ATP(eprover_path, '--cpu-limit=',
+    path = os.path.join(EPATH, 'eprover')
+    atp = ATP(path, '--cpu-limit=',
               '--tstp-format -s --proof-object --memory-limit=2048')
     proof_found, _cs, _out, used_time = atp.run('--auto-schedule', time_limit,
                                                 problem_file)
@@ -39,8 +39,19 @@ def run_e_auto(args):
 
 def run_helsing(args):
     problem_file, time_limit = args
-    eprover_path = os.path.join(PATH, 'src', 'helsing.py')
-    atp = ATP(eprover_path, '-t ', '')
+    path = os.path.join(PATH, 'src', 'helsing.py')
+    atp = ATP(path, '-t ', '')
+    # TODO: Get rid of this -p hack
+    proof_found, _cs, _out, used_time = atp.run('', time_limit,
+                                                '-p '+problem_file)
+    return problem_file, proof_found, used_time
+
+
+def run_emales(args):
+    problem_file, time_limit = args
+    # TODO: HACK!
+    path = os.path.join('/scratch/kuehlwein/males/MaLeS', 'males.py')
+    atp = ATP(path, '-t ', '')
     # TODO: Get rid of this -p hack
     proof_found, _cs, _out, used_time = atp.run('', time_limit,
                                                 '-p '+problem_file)
@@ -66,6 +77,8 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
         prover_call = run_e_auto
     elif prover == 'helsing':
         prover_call = run_helsing
+    elif prover == 'emales':
+        prover_call = run_emales
     problems = load_problems(problem_file)
     with open(outfile, 'w') as OS:
         # pool = MyPool(processes = cores)
@@ -83,7 +96,7 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
 
 if __name__ == '__main__':
     cores = 1
-    prover = 'E'
+    prover = 'emales'
     run_time = 300
     outfile = 'atp_eval_CASC_Training_E1.8'
     problem_file = os.path.join(PATH, 'data', 'E_eval', 'CASC24Training')
