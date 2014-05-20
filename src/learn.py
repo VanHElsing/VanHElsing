@@ -33,7 +33,7 @@ def set_up_parser():
                         default=os.path.join(PATH, 'config.ini'))
     parser.add_argument('-lp', '--limitprobs',
                         help='Limit the amount of problems in the dataset for testing.',
-                        default=-1)
+                        type=int, default=-1)
     return parser
 
 
@@ -86,7 +86,7 @@ def main(argv=sys.argv[1:]):
     dataset = remove_unsolveable_problems(dataset) 
     # retain only a few problems if option set
     if args.limitprobs > -1:
-        dataset = dataset.mask(range(int(args.limitprobs)))
+        dataset = dataset.mask(range(args.limitprobs))
         LOGGER.info("Dataset limiting problems - prob x strats: %i x %i",
                     len(dataset.problems), len(dataset.strategies))
 

@@ -9,7 +9,7 @@ import numpy as np
 import operator
 from sklearn.neighbors import NearestNeighbors
 from src.schedulers.SchedulerTemplate import StrategyScheduler
-from src.data_util import delete_problems, not_solved_by_strat, remove_unsolveable_problems
+from src.data_util import not_solved_by_strat, remove_unsolveable_problems
 
 
 class NearestNeighborScheduler(StrategyScheduler):
@@ -102,7 +102,7 @@ class NearestNeighborScheduler(StrategyScheduler):
             self.local_strat_times = None
             return
         else:
-            self.data_set = delete_problems(self.data_set, good_problems)
+            self.data_set = self.data_set.mask(good_problems)
         # Local Update
         s_nr = self.data_set.strategy_matrix.shape[1]
         lp_nr = self.local_strat_times.shape[0]
