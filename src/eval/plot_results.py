@@ -78,7 +78,7 @@ def plot_real_test():
     axis_vals = [1, 300, 0, 700]
     path = os.path.join(PATH, 'runs', 'real')
     E18 = (os.path.join(path, 'atp_eval_CASC_Test_E1.8'), 'E 1.8')
-    E17 = (os.path.join(path, 'atp_eval_CASC_Training_E1.7'), 'E 1.7')
+    E17 = (os.path.join(path, 'atp_eval_CASC_Test_E1.7'), 'E 1.7')
     result_tuples = []
     result_tuples.append(E18)
     result_tuples.append(E17)
@@ -87,6 +87,6 @@ def plot_real_test():
 
 if __name__ == '__main__':
     #result_tuples, axis_vals = plot_theory()
-    result_tuples, axis_vals = plot_real_training()
-    #result_tuples, axis_vals = plot_real_test()
+    #result_tuples, axis_vals = plot_real_training()
+    result_tuples, axis_vals = plot_real_test()
     plot_results(result_tuples, axis_vals)
