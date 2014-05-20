@@ -44,8 +44,8 @@ def plot_results(result_tuples, axis_vals=None):
     pl.legend(loc='lower right')
     pl.show()
 
-if __name__ == '__main__':
-    axisVals = [0.1, 300, 0, 11000]
+def plot_theory():
+    axis_vals = [0.1, 300, 0, 11000]
     theory_path = os.path.join(PATH, 'runs', 'theory')
     best_times = (os.path.join(theory_path, 'bestTimes'), 'Best')
     best_times_wo_X = (os.path.join(theory_path,
@@ -62,5 +62,31 @@ if __name__ == '__main__':
     result_tuples.append(best_times_wo_X)
     result_tuples.append(NN10Local)
     result_tuples.append(NN5LocalDyn)
+    return result_tuples, axis_vals
 
-    plot_results(result_tuples, axisVals)
+def plot_real_training():
+    axis_vals = [1, 300, 0, 1121]
+    path = os.path.join(PATH, 'runs', 'real')
+    E18 = (os.path.join(path, 'atp_eval_CASC_Training_E1.8'), 'E 1.8')
+    E17 = (os.path.join(path, 'atp_eval_CASC_Training_E1.7'), 'E 1.7')
+    result_tuples = []
+    result_tuples.append(E18)
+    result_tuples.append(E17)
+    return result_tuples, axis_vals
+
+def plot_real_test():
+    axis_vals = [1, 300, 0, 700]
+    path = os.path.join(PATH, 'runs', 'real')
+    E18 = (os.path.join(path, 'atp_eval_CASC_Test_E1.8'), 'E 1.8')
+    # E17 = (os.path.join(path, 'atp_eval_CASC_Training_E1.7'), 'E 1.7')
+    result_tuples = []
+    result_tuples.append(E18)
+    # result_tuples.append(E17)
+    return result_tuples, axis_vals
+
+
+if __name__ == '__main__':
+    #result_tuples, axis_vals = plot_theory()
+    result_tuples, axis_vals = plot_real_training()
+    #result_tuples, axis_vals = plot_real_test()
+    plot_results(result_tuples, axis_vals)
