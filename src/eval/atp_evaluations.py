@@ -36,18 +36,21 @@ def run_e_auto(args):
     proof_found, _countersat, _stdout, used_time = atp.run('--auto-schedule', time_limit, problem_file)
     return problem_file, proof_found, used_time
 
+
 def run_helsing(args):
     problem_file, time_limit = args
     eprover_path = os.path.join(PATH, 'src', 'helsing.py')
     atp = ATP(eprover_path, '-t ', '')
-    #TODO: Get rid of this -p hack
+    # TODO: Get rid of this -p hack
     proof_found, _countersat, _stdout, used_time = atp.run('', time_limit, '-p '+problem_file)
     return problem_file, proof_found, used_time
+
 
 def load_problems(problem_file):
     problem_file = 'PUZ001+1.p'
     p_file_extended = os.path.join(PATH, 'data', problem_file)
     return [p_file_extended]
+
 
 def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
     if outfile is None:
@@ -60,7 +63,7 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
         prover_call = run_helsing
     problems = load_problems(problem_file)
     with open(outfile, 'w') as OS:
-        #pool = MyPool(processes = cores)
+        # pool = MyPool(processes = cores)
         pool = mp.Pool(processes=cores)
         args = [[p, run_time] for p in problems]
         results = pool.map_async(prover_call, args)

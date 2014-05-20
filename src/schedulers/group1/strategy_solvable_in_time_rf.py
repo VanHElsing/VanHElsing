@@ -8,10 +8,10 @@ within a given period of time
 
 import numpy as np
 
-
 from src.schedulers.group1.bin_classifier_ensemble import BinClassifierEnsemble
 from sklearn.linear_model import LogisticRegression
 import sklearn.ensemble as ens
+
 
 class StrategySolvableInTimeRF(object):
     """Optimization classifier, that predicts if a problem is solvable
@@ -45,8 +45,8 @@ class StrategySolvableInTimeRF(object):
         unsolvemask = (Y == -1)
         Y = Y * np.invert(unsolvemask) + unsolvemask * 2 * self._t
         y = np.min(Y, axis=1) > self._t
-        #hardFilter = np.array([np.min(y[y!=-1]) > self._t for y in Y])
-        #y = np.array(hardFilter)
+        # hardFilter = np.array([np.min(y[y!=-1]) > self._t for y in Y])
+        # y = np.array(hardFilter)
 
         N, M = X.shape
 
@@ -90,13 +90,12 @@ class StrategySolvableInTimeRF(object):
         y : array of shape = [n_samples, n_strategies]
             The predicted classes.
         """
-        N = 1 #X.shape[0]
+        N = 1  # X.shape[0]
         votes = np.zeros((N, 1))
         for l in range(self._L):
             y = np.array(self._logits[l].predict(X)).T
             votes = votes + y
         return np.array((votes > (self._L / 2)).T)[0]
-
 
     def bootstrap(self, X, y, N, weights='auto'):
         '''
@@ -126,6 +125,7 @@ class StrategySolvableInTimeRF(object):
         bc = np.random.multinomial(N, weights, 1).ravel()
         selected_indices = []
         while bc.sum() > 0:
-            selected_indices += np.where(bc > 0)[0].tolist(); bc[bc > 0] -= 1
+            selected_indices += np.where(bc > 0)[0].tolist()
+            bc[bc > 0] -= 1
         np.random.shuffle(selected_indices)
         return X[selected_indices, :], y[selected_indices, :]

@@ -11,7 +11,7 @@ from src.schedulers.SchedulerTemplate import StrategyScheduler
 import src.Preprocessing as pp
 
 
-#TODO import right classifiers
+# TODO import right classifiers
 from src.schedulers.group1.strategy_selector_time_rf import StrategySelectorTimeRF
 from src.schedulers.group1.timeregression_boost import TimeRegression as TimeRegressionBoost
 from src.schedulers.group1.timeregression import TimeRegression
@@ -102,9 +102,6 @@ class Group1Scheduler(StrategyScheduler):
         self._mins = np.min(Ytemp, axis=0)
         self._maxs = np.max(self._Y, axis=0)
 
-
-
-
     def set_problem(self, problem_file):
         # TODO calculate problem_file features
         features = None
@@ -139,7 +136,6 @@ class Group1Scheduler(StrategyScheduler):
         # administration vars for looping
         self._stratsleft = np.ones((yt.shape[0]))
 
-
     def __processRegressionVector(self, Yt, yo):
         Ytsmaller = Yt < self._opt_t
         # if it is a hard problem (yo) and regression value is below
@@ -162,7 +158,6 @@ class Group1Scheduler(StrategyScheduler):
             Targets = (np.invert(Ytsmaller).T & np.invert(yo)).T
             Yt = Yt * np.invert(Targets) + self._opt_t * Targets
         return Yt
-
 
     def predict(self, time_left):
         # while time_left > 0 and np.sum(self._stratsleft) > 0:
@@ -189,7 +184,6 @@ class Group1Scheduler(StrategyScheduler):
         strategy = self._stratnames[self._sel]
         return strategy, time
 
-
     def update(self):
         sel = self._sel
         # Prune solved/covered problems
@@ -198,7 +192,6 @@ class Group1Scheduler(StrategyScheduler):
         self._probs = self._probs[mask, :]
         # Prune used strat
         self._stratsleft[sel] = 0
-
 
     def reset(self):
         pass

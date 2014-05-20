@@ -1,6 +1,7 @@
 from sklearn.ensemble import RandomForestClassifier as rf
 import numpy as np
 
+
 class StrategySelectorTimeRF(object):
     """A random forest model
 
