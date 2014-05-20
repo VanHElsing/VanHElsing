@@ -20,7 +20,7 @@ from src.eval.ml_evaluations import eval_against_dataset
 
 def set_up_parser():
     parser = ArgumentParser(description='Van HElsing ' +
-        'strategy scheduler learner and tester 0.1 --- May 2014.')
+                            'strategy scheduler learner and tester 0.1 --- May 2014.')
     parser.add_argument('-d', '--dataset',
                         help='The dataset file to fit/train the model on.',
                         default='')
@@ -80,7 +80,6 @@ def main(argv=sys.argv[1:]):
     scheduler_id = configuration.get('Learner', 'scheduler')
     max_time = float(configuration.get('Learner', 'maxruntime'))
 
-
     # init strategy scheduler model using a preset (class & config)
     scheduler_class = choose_scheduler(scheduler_id)
     scheduler = scheduler_class(configuration)
@@ -108,8 +107,9 @@ def main(argv=sys.argv[1:]):
         for i, (train_idx, test_idx) in enumerate(folds):
             train_dataset = dataset.mask(train_idx)
             test_dataset = dataset.mask(test_idx)
-            LOGGER.info("Fold: %i -- #train: %i/%i", 
-                        i + 1, len(train_dataset.problems), len(dataset.problems))
+            LOGGER.info("Fold: %i -- #train: %i/%i",
+                        i + 1, len(train_dataset.problems),
+                        len(dataset.problems))
             LOGGER.info("Fitting model.")
             scheduler.fit(train_dataset, max_time)
             LOGGER.info("Evaluating model.")

@@ -25,7 +25,7 @@ class BinClassifierEnsemble:
         votes = np.zeros((X.shape[0], 1))
         for c_id, c in enumerate(self.classifiers):
             y_est = np.mat(c.predict(X)).T
-            y_est[y_est > 1] = 1 # restrict to binomial (or first-vs-rest)
+            y_est[y_est > 1] = 1  # restrict to binomial (or first-vs-rest)
             votes = votes + y_est*self.alpha[c_id]
         return (votes.astype(float) > .5).astype(int)
 
@@ -37,6 +37,6 @@ class BinClassifierEnsemble:
         votes = np.ones((X.shape[0], 1))
         for c_id, c in enumerate(self.classifiers):
             y_est = np.mat(c.predict(X)).T
-            y_est[y_est > 1] = 1 # restrict to binomial (or first-vs-rest)
+            y_est[y_est > 1] = 1  # restrict to binomial (or first-vs-rest)
             votes = votes - y_est * self.alpha[c_id]
         return votes.astype(float)

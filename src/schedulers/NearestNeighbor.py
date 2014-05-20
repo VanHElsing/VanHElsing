@@ -11,6 +11,7 @@ from sklearn.neighbors import NearestNeighbors
 from src.schedulers.SchedulerTemplate import StrategyScheduler
 from src.data_util import delete_problems, not_solved_by_strat, can_be_solved
 
+
 class NearestNeighborScheduler(StrategyScheduler):
     '''
     Basic scheduler that runs the first strategy in the dataset
@@ -42,7 +43,7 @@ class NearestNeighborScheduler(StrategyScheduler):
 
     def predict(self, time_left):
         if self.data_set is None:
-            #TODO: need Default mode
+            # TODO: need Default mode
             return 'xx', time_left
         s_nr = self.data_set.strategy_matrix.shape[1]
         local_avg_times = [0.0] * s_nr

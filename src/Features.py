@@ -38,7 +38,7 @@ class Features(object):
         resultcode, stdout, _stderr = IO.run_command(command, time_out)
         if resultcode < 0:
             raise IOError(10, 'Could not compute features. ' +
-                              'Try running %s' % command)
+                          'Try running %s' % command)
         return self.parse_output(stdout)
 
     def parse_output(self, output):

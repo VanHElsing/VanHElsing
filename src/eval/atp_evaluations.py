@@ -32,9 +32,8 @@ def run_e_auto(args):
     eprover_path = os.path.join(EPATH, 'eprover')
     atp = ATP(eprover_path, '--cpu-limit=',
               '--tstp-format -s --proof-object --memory-limit=2048')
-    proof_found, _countersat, _stdout, used_time = atp.run('--auto-schedule',
-                                                           time_limit,
-                                                           problem_file)
+    proof_found, _cs, _out, used_time = atp.run('--auto-schedule', time_limit,
+                                                problem_file)
     return problem_file, proof_found, used_time
 
 
@@ -43,9 +42,8 @@ def run_helsing(args):
     eprover_path = os.path.join(PATH, 'src', 'helsing.py')
     atp = ATP(eprover_path, '-t ', '')
     # TODO: Get rid of this -p hack
-    proof_found, _countersat, _stdout, used_time = atp.run('',
-                                                           time_limit,
-                                                           '-p '+problem_file)
+    proof_found, _cs, _out, used_time = atp.run('', time_limit,
+                                                '-p '+problem_file)
     return problem_file, proof_found, used_time
 
 
@@ -56,6 +54,7 @@ def load_problems(problem_file):
         for p in p_stream:
             problems.append(os.path.join(tptp_dir, p.strip()))
     return problems
+
 
 
 def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
