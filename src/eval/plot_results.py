@@ -46,16 +46,16 @@ def plot_results(result_tuples, axis_vals=None):
 
 def plot_theory():
     axis_vals = [0.1, 300, 0, 11000]
-    theory_path = os.path.join(PATH, 'runs', 'theory')
-    best_times = (os.path.join(theory_path, 'bestTimes'), 'Best')
-    best_times_wo_X = (os.path.join(theory_path,
+    path = os.path.join(PATH, 'runs', 'theory')
+    best_times = (os.path.join(path, 'bestTimes'), 'Best')
+    best_times_wo_X = (os.path.join(path,
                        'bestTimesWithoutX'), 'Best without X')
-    NN10 = (os.path.join(theory_path, 'NN10'), 'NN10')
-    NN10Local = (os.path.join(theory_path, 'NN10Local'), 'NN10Local')
-    NN20Local = (os.path.join(theory_path, 'NN20Local'), 'NN20Local')
-    NN5LocalDyn = (os.path.join(theory_path, 'NN5LocalDyn'), 'NN5LocalDyn')
-    NN10LocalDyn = (os.path.join(theory_path, 'NN10LocalDyn'), 'NN10LocalDyn')
-    E = (os.path.join(theory_path, 'EAuto'), 'E 1.8')
+    NN10 = (os.path.join(path, 'NN10'), 'NN10')
+    NN10Local = (os.path.join(path, 'NN10Local'), 'NN10Local')
+    NN20Local = (os.path.join(path, 'NN20Local'), 'NN20Local')
+    NN5LocalDyn = (os.path.join(path, 'NN5LocalDyn'), 'NN5LocalDyn')
+    NN10LocalDyn = (os.path.join(path, 'NN10LocalDyn'), 'NN10LocalDyn')
+    E = (os.path.join(path, 'EAuto'), 'E 1.8')
     result_tuples = []
     result_tuples.append(E)
     # result_tuples.append(best_times)
@@ -78,10 +78,10 @@ def plot_real_test():
     axis_vals = [1, 300, 0, 700]
     path = os.path.join(PATH, 'runs', 'real')
     E18 = (os.path.join(path, 'atp_eval_CASC_Test_E1.8'), 'E 1.8')
-    # E17 = (os.path.join(path, 'atp_eval_CASC_Training_E1.7'), 'E 1.7')
+    E17 = (os.path.join(path, 'atp_eval_CASC_Training_E1.7'), 'E 1.7')
     result_tuples = []
     result_tuples.append(E18)
-    # result_tuples.append(E17)
+    result_tuples.append(E17)
     return result_tuples, axis_vals
 
 
