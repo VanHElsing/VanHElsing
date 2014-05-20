@@ -1,7 +1,7 @@
 '''
 Created on May 17, 2014
 
-@author: daniel
+@author: Daniel Kuehlwein
 '''
 
 import multiprocessing as mp
@@ -47,9 +47,12 @@ def run_helsing(args):
 
 
 def load_problems(problem_file):
-    problem_file = 'PUZ001+1.p'
-    p_file_extended = os.path.join(PATH, 'data', problem_file)
-    return [p_file_extended]
+    problems = []
+    TPTP = os.getenv('TPTP')
+    with open(problem_file, 'r') as p_stream:
+        for p in p_stream:
+            problems.append(os.path.join(TPTP,p.strip()))
+    return problems 
 
 
 def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
@@ -77,10 +80,12 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
 
 if __name__ == '__main__':
     cores = 1
-    outfile = 'atp_eval'
-    problem_file = os.path.join(PATH, 'data', 'E_eval', 'CASC24Training')
     prover = 'E'
     run_time = 300
+    outfile = 'atp_eval_CASC_Training_E1.8'
+    problem_file = os.path.join(PATH, 'data', 'E_eval', 'CASC24Training')
     atp_eval(problem_file, prover, run_time, outfile, cores)
 
-# TODO: Take E-MaLeS 1.2 test problems. Run ATP over them. Store and compare.
+    outfile = 'atp_eval_CASC_Test_E1.8'
+    problem_file = os.path.join(PATH, 'data', 'E_eval', 'CASC24Test')
+    atp_eval(problem_file, prover, run_time, outfile, cores)
