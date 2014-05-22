@@ -18,6 +18,7 @@ def get_feature_parser(config):
     else:
         raise IOError('Unknown feature type %s', feature_type)
 
+
 class Features(object):
     '''
     Meta class for feature computations.

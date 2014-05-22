@@ -43,7 +43,7 @@ def run_helsing(args):
     atp = ATP(path, '-t ', '')
     # TODO: Get rid of this -p hack
     proof_found, _cs, _out, used_time = atp.run('', time_limit,
-                                                '-p '+problem_file)
+                                                '-p ' + problem_file)
     return problem_file, proof_found, used_time
 
 
@@ -54,7 +54,7 @@ def run_emales(args):
     atp = ATP(path, '-t ', '')
     # TODO: Get rid of this -p hack
     proof_found, _cs, _out, used_time = atp.run('', time_limit,
-                                                '-p '+problem_file)
+                                                '-p ' + problem_file)
     return problem_file, proof_found, used_time
 
 
@@ -65,7 +65,6 @@ def load_problems(problem_file):
         for p in p_stream:
             problems.append(os.path.join(tptp_dir, p.strip()))
     return problems
-
 
 
 def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):

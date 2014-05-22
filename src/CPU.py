@@ -23,8 +23,8 @@ def compare_cpu_with_data_set(runs=None):
     Problem 5: SWC089-1.p 99.398000
     """
 
-    TPTPPath = os.getenv('TPTP')
-    if TPTPPath is None:
+    tptp_path = os.getenv('TPTP')
+    if tptp_path is None:
         raise IOError('$TPTP is not defined.')
 
     test_data = []
@@ -46,7 +46,7 @@ def compare_cpu_with_data_set(runs=None):
     LOGGER.info('Starting CPU measurements')
     for p_name, p_time in test_data[:2]:
         LOGGER.info('Problem %s', p_name)
-        p_path = os.path.join(TPTPPath, 'Problems', p_name[:3], p_name)
+        p_path = os.path.join(tptp_path, 'Problems', p_name[:3], p_name)
         measured_times = []
         measured_times_diff = []
         for i in range(runs):

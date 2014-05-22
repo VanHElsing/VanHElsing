@@ -9,6 +9,7 @@ from os.path import isfile, join
 import numpy as np
 from src.GlobalVars import PATH
 
+
 class DataSet(object):
     '''
     classdocs
@@ -58,7 +59,7 @@ class DataSet(object):
 
     def initialize_dict_with_problems(self, sfile, path):
         sdict = {}
-        with open(path+sfile, 'r') as inputstream:
+        with open(path + sfile, 'r') as inputstream:
             firstline = True
             for line in inputstream:
                 if firstline:
@@ -72,7 +73,7 @@ class DataSet(object):
         sdict = self.initialize_dict_with_problems(sfiles[0], path)
         for sfile in sfiles:
             firstline = True
-            with open(path+sfile, 'r') as inputstream:
+            with open(path + sfile, 'r') as inputstream:
                 for line in inputstream:
                     if firstline:
                         firstline = False
@@ -87,7 +88,7 @@ class DataSet(object):
 
     def load_features(self, fdict, path=join(PATH, 'data/')):
         ffile = 'pegasusFeatures'
-        with open(path+ffile, 'r') as inputstream:
+        with open(path + ffile, 'r') as inputstream:
             firstline = True
             for line in inputstream:
                 if firstline:

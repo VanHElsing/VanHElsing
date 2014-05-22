@@ -31,7 +31,7 @@ class NearestNeighborScheduler(StrategyScheduler):
         self.model = None
         self.problem = None
         self.min_neighbors = 5
-        self.mul_factor = 1.1        
+        self.mul_factor = 1.1
 
     def fit(self, data_set, max_time, good_problems=None):
         self.max_time = max_time
