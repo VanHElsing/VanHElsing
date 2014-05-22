@@ -30,6 +30,7 @@ class NearestNeighborScheduler(StrategyScheduler):
         self.max_time = None
         self.model = None
         self.problem = None
+        self.features = None
         self.min_neighbors = 5
         self.mul_factor = 1.1
 

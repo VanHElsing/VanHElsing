@@ -23,12 +23,12 @@ class GreedyScheduler(StrategyScheduler):
         self.features = None
         self.last_strategy = None
         self.last_time = None
-        
+
     def fit(self, data_set, max_time):
         self._data_set = remove_unsolveable_problems(data_set)
         self.data_set = copy.deepcopy(self._data_set)
 
-    def predict(self, time_left, run_time = None):
+    def predict(self, time_left, run_time=None):
         if run_time is None:
             run_time = 1.0
         solved_in_run_time = np.array([0] * self.data_set.strategy_matrix.shape[1])
@@ -37,7 +37,7 @@ class GreedyScheduler(StrategyScheduler):
         strategies = self.data_set.strategy_matrix.shape[1]
         for i in range(problems):
             for j in range(strategies):
-                if -1 < self.data_set.strategy_matrix[i,j] < run_time:
+                if -1 < self.data_set.strategy_matrix[i, j] < run_time:
                     solved_in_run_time[j] += 1
         self.last_strategy = solved_in_run_time.argmax()
         self.last_time = run_time
@@ -48,7 +48,7 @@ class GreedyScheduler(StrategyScheduler):
         self.data_set = copy.deepcopy(self._data_set)
 
     def set_problem(self, problem_file):
-        self.problem = problem_file        
+        self.problem = problem_file 
 
     def set_problem_and_features(self, problem_file, problem_features):
         self.problem = problem_file

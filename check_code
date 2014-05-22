@@ -33,11 +33,13 @@ echo -e "Checking code with pylint\c"
 # R0914 Too many local variables (16/15)
 # C0301 Line too long
 # E0602 Undefined variable
+# E1101 No-Member
 
 pylint_result=$(PYTHONPATH=$PYTHONPATH:.:./src pylint \
     --good-names=x,y,X,Y,e,i,j \
     -rn \
-    -dC0111,R0904,R0922,W0511,W0403,R0801,I0011,W0105,W0107,W0613,R0201,R0914,C0301 \
+    '--msg-template={path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
+    '-dC0111,R0904,R0922,W0511,W0403,R0801,I0011,W0105,W0107,W0613,R0201,R0914,C0301,E1101,E0602' \
     --module-rgx="(([a-z_][a-z0-9_]*)|((_)?[A-Z][a-zA-Z0-9]+)|(test_[a-zA-Z0-9]+)|(setUp)|(setUpClass)|(tearDown))$" \
     src tests)
 pylint_status=$?

@@ -6,7 +6,6 @@ Created on May 17, 2014
 
 import multiprocessing as mp
 import os
-
 from src.GlobalVars import PATH, EPATH
 from src.RunATP import ATP
 """
@@ -91,16 +90,3 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
         for problem, proofFound, usedTime in results:
             if proofFound:
                 OS.write('%s,%s\n' % (problem, usedTime))
-
-
-if __name__ == '__main__':
-    cores = 1
-    prover = 'emales'
-    run_time = 300
-    outfile = 'atp_eval_CASC_Training_E1.8'
-    problem_file = os.path.join(PATH, 'data', 'E_eval', 'CASC24Training')
-    atp_eval(problem_file, prover, run_time, outfile, cores)
-
-    outfile = 'atp_eval_CASC_Test_E1.8'
-    problem_file = os.path.join(PATH, 'data', 'E_eval', 'CASC24Test')
-    atp_eval(problem_file, prover, run_time, outfile, cores)
