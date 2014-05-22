@@ -86,7 +86,6 @@ if __name__ == '__main__':
     nFolds = 4
     folds = create_fold(X, nFolds)
 
-
     currentFold = 1
 
     # Prune strategies
@@ -94,7 +93,7 @@ if __name__ == '__main__':
     if stratprune:
         stratfilter = [10, 21, 24, 35, 46, 48, 56, 63, 69, 72, 73, 75, 91, 101, 102, 107, 110, 111, 113, 120, 121, 125, 138, 152, 154, 155, 160, 170, 174, 176, 178, 185, 192, 197, 203, 208, 218, 221, 222, 229, 237, 238, 239, 242, 246, 251, 252, 258, 260, 264, 266, 267, 271, 272, 273, 275, 279, 280, 281, 282, 284, 285, 287, 293, 294, 297, 298, 302, 309, 311, 312, 316, 325, 328, 334, 338, 341, 342, 344, 347, 350, 351, 352, 353, 357, 359, 362, 369, 370, 372, 379, 381, 382, 384, 386, 387, 389, 390, 392, 393, 394, 395, 399, 404, 408, 411, 413, 414, 416, 419, 420, 430, 434, 440, 444, 448, 449, 451, 454, 478, 479, 480, 481, 483, 484, 485]
         Y = Y[:, stratfilter]
-        #strategyNames = strategyNames[stratfilter]
+        # strategyNames = strategyNames[stratfilter]
 
     solvers = ['auto', 'svd', 'dense_cholesky', 'lsqr', 'sparse_cg']
     alphas = np.arange(10, 1000, 100)
@@ -129,7 +128,7 @@ if __name__ == '__main__':
 
             print "Fold #{}".format(currentFold)
             print "\tMean diff {0}, total diff {1}".format(mean(abs(prediction - y_test)), sum(abs(prediction - y_test)))
-            #print "\t(p) Mean diff {0}, total diff {1}".format(mean(abs(cappedPrediction - y_test)), sum(abs(cappedPrediction - y_test)))
+            # print "\t(p) Mean diff {0}, total diff {1}".format(mean(abs(cappedPrediction - y_test)), sum(abs(cappedPrediction - y_test)))
             print "\tScore {1}, r^2 score {2}".format(mean(abs(prediction) - abs(y_test)), mean_score, r2score)
 
             currentFold += 1

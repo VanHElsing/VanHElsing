@@ -4,11 +4,10 @@ Created on May 15, 2014
 @author: Frank Dorssers
 '''
 
-from src.GlobalVars import PATH
 from os import listdir
 from os.path import isfile, join
 import numpy as np
-
+from src.GlobalVars import PATH
 
 class DataSet(object):
     '''

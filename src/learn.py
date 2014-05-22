@@ -15,12 +15,13 @@ from src.IO import load_config, load_object, save_object
 from src.schedulers.util import choose_scheduler
 from src.schedulers.util import save_scheduler
 from src.DataSet import DataSet
+from src.data_util import remove_unsolveable_problems
 from src.eval.ml_evaluations import eval_against_dataset
 
 
 def set_up_parser():
     parser = ArgumentParser(description='Van HElsing ' +
-        'strategy scheduler learner and tester 0.1 --- May 2014.')
+                            'strategy scheduler learner and tester 0.1 --- May 2014.')
     parser.add_argument('-d', '--dataset',
                         help='The dataset file to fit/train the model on.',
                         default='')
@@ -32,7 +33,7 @@ def set_up_parser():
                         default=os.path.join(PATH, 'config.ini'))
     parser.add_argument('-lp', '--limitprobs',
                         help='Limit the amount of problems in the dataset for testing.',
-                        default=-1)
+                        type=int, default=-1)
     return parser
 
 
@@ -41,7 +42,7 @@ def load_dataset(args, configuration):
     datasetfile = args.dataset
     if datasetfile == '':
         datasetfile = configuration.get('Learner', 'datasetfile')
-    if is_option_enabled(configuration, 'generatedataset'):
+    if configuration.getboolean('Learner', 'generatedataset'): 
         LOGGER.info("Generating dataset...")
         dataset.load(configuration.get('Learner', 'datatype'))
         save_object(dataset, datasetfile)
@@ -60,10 +61,6 @@ def load_dataset(args, configuration):
     return dataset
 
 
-def is_option_enabled(configuration, option):
-    return configuration.get('Learner', option).lower() == 'true'
-
-
 def main(argv=sys.argv[1:]):
     """
     input: Config file, dataset
@@ -74,12 +71,11 @@ def main(argv=sys.argv[1:]):
     args = parser.parse_args(argv)
     configuration = load_config(args.configuration)
 
-    eval_kfolds = is_option_enabled(configuration, 'evalkfolds')
-    eval_whole = is_option_enabled(configuration, 'evalwhole')
-    export_model = is_option_enabled(configuration, 'exportmodel')
+    eval_kfolds = configuration.getboolean('Learner', 'evalkfolds')
+    eval_whole = configuration.getboolean('Learner', 'evalwhole')
+    export_model = configuration.getboolean('Learner', 'exportmodel')
     scheduler_id = configuration.get('Learner', 'scheduler')
     max_time = float(configuration.get('Learner', 'maxruntime'))
-
 
     # init strategy scheduler model using a preset (class & config)
     scheduler_class = choose_scheduler(scheduler_id)
@@ -87,14 +83,10 @@ def main(argv=sys.argv[1:]):
 
     # load dataset
     dataset = load_dataset(args, configuration)
-    # remove problems with no working strategy
-    problemFilter = np.max(dataset.strategy_matrix, axis=1) > -1
-    dataset = dataset.mask(problemFilter)
-    LOGGER.info("Dataset removing unsolvable problems - prob x strats: %i x %i",
-                len(dataset.problems), len(dataset.strategies))
+    dataset = remove_unsolveable_problems(dataset) 
     # retain only a few problems if option set
     if args.limitprobs > -1:
-        dataset = dataset.mask(range(int(args.limitprobs)))
+        dataset = dataset.mask(range(args.limitprobs))
         LOGGER.info("Dataset limiting problems - prob x strats: %i x %i",
                     len(dataset.problems), len(dataset.strategies))
 
@@ -108,8 +100,9 @@ def main(argv=sys.argv[1:]):
         for i, (train_idx, test_idx) in enumerate(folds):
             train_dataset = dataset.mask(train_idx)
             test_dataset = dataset.mask(test_idx)
-            LOGGER.info("Fold: %i -- #train: %i/%i", 
-                        i + 1, len(train_dataset.problems), len(dataset.problems))
+            LOGGER.info("Fold: %i -- #train: %i/%i",
+                        i + 1, len(train_dataset.problems),
+                        len(dataset.problems))
             LOGGER.info("Fitting model.")
             scheduler.fit(train_dataset, max_time)
             LOGGER.info("Evaluating model.")

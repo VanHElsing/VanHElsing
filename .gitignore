@@ -63,3 +63,4 @@ docs/_build/
 /src/train.data
 /tmp/export.ss
 /tmp/train.data
+/src/eval/atp_eval

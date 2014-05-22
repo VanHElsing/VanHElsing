@@ -7,7 +7,7 @@ Created on May 14, 2014
 """
 
 from abc import ABCMeta, abstractmethod
-
+from src.Features import get_feature_parser
 
 class StrategyScheduler(object):
     __metaclass__ = ABCMeta
@@ -17,7 +17,7 @@ class StrategyScheduler(object):
         """
         config: Load settings from a SafeConfigParser instance
         """
-        pass
+        self.feature_parser = get_feature_parser(config)
 
     @abstractmethod
     def fit(self, data_set, max_time):

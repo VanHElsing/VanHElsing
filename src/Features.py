@@ -10,15 +10,13 @@ import os
 from src import IO
 from src import GlobalVars
 
-''' Old imports
-import logging
-import sys
-from numpy import mat
-from multiprocessing import Pool, cpu_count
-from cPickle import dump, load
-from TimeoutThread import processTimeout
-'''
 
+def get_feature_parser(config):
+    feature_type = config.get('ATP Settings', 'features')
+    if feature_type == 'E':
+        return EFeatures()
+    else:
+        raise IOError('Unknown feature type %s', feature_type)
 
 class Features(object):
     '''
@@ -38,7 +36,7 @@ class Features(object):
         resultcode, stdout, _stderr = IO.run_command(command, time_out)
         if resultcode < 0:
             raise IOError(10, 'Could not compute features. ' +
-                              'Try running %s' % command)
+                          'Try running %s' % command)
         return self.parse_output(stdout)
 
     def parse_output(self, output):
@@ -66,6 +64,13 @@ class EFeatures(Features):
 
 # TODO: Cleanup
 '''
+import logging
+import sys
+from numpy import mat
+from multiprocessing import Pool, cpu_count
+from cPickle import dump, load
+from TimeoutThread import processTimeout
+
 EF = EFeatures()
 TPTP = '/home/daniel/TPTP/TPTP-v6.0.0/Problems/ALG/'
 

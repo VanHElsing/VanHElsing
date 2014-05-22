@@ -5,7 +5,7 @@ from src import DataSet
 class RunDataSetTestCase(unittest.TestCase):
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls):  # NOQA
         cls.ds = DataSet.DataSet()
         cls.ds.load('E')
         cls.amount_strategies = 187
@@ -27,8 +27,8 @@ class RunDataSetTestCase(unittest.TestCase):
                          "Amount of rows in the feature matrix doesn't match"
                          + "the known amount of problems")
         self.assertEqual(self.ds.feature_matrix.shape[1], self.amount_features,
-                         "Amount of columns in the feature matrix doesn't match"
-                         + "the known amount of features")
+                         "Amount of columns in the feature matrix doesn't"
+                         + " match the known amount of features")
 
     def test_strategy_matrix_array_shape(self):
         self.assertEqual(self.ds.strategy_matrix.shape[0],
@@ -37,8 +37,8 @@ class RunDataSetTestCase(unittest.TestCase):
                          + "match the known amount of problems")
         self.assertEqual(self.ds.strategy_matrix.shape[1],
                          self.amount_strategies,
-                         "Amount of columns in the feature matrix doesn't match"
-                         + "the known amount of features")
+                         "Amount of columns in the feature matrix doesn't"
+                         + " match the known amount of features")
 
     def test_is_relevant_strategy(self):
         valid_protocol = 'protokoll_G-E--_008_C18_F1_PI_AE_CS_SP_CO_S4S'

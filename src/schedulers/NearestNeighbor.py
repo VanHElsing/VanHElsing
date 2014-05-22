@@ -9,7 +9,8 @@ import numpy as np
 import operator
 from sklearn.neighbors import NearestNeighbors
 from src.schedulers.SchedulerTemplate import StrategyScheduler
-from src.data_util import delete_problems, not_solved_by_strat, can_be_solved
+from src.data_util import not_solved_by_strat, remove_unsolveable_problems
+
 
 class NearestNeighborScheduler(StrategyScheduler):
     '''
@@ -26,27 +27,26 @@ class NearestNeighborScheduler(StrategyScheduler):
         self.last_strategy = None
         self.last_time = None
         self.local_strat_times = None
-        self.max_time = 0
+        self.max_time = None
         self.model = None
         self.problem = None
         self.min_neighbors = 5
-        self.mul_factor = 1.1
+        self.mul_factor = 1.1        
 
     def fit(self, data_set, max_time, good_problems=None):
         self.max_time = max_time
-        good_problems = can_be_solved(data_set)
-        self._data_set = delete_problems(data_set, good_problems)
+        self._data_set = remove_unsolveable_problems(data_set)
         self._model.fit(self._data_set.feature_matrix)
         self.data_set = copy.deepcopy(self._data_set)
         self.model = copy.deepcopy(self._model)
 
     def predict(self, time_left):
         if self.data_set is None:
-            #TODO: need Default mode
+            # TODO: need Default mode
             return 'xx', time_left
         s_nr = self.data_set.strategy_matrix.shape[1]
         local_avg_times = [0.0] * s_nr
-        local_max_times = [300.0] * s_nr
+        local_max_times = [self.max_time] * s_nr
         local_solved = [0.0] * s_nr
 
         # Find similar problems
@@ -68,7 +68,7 @@ class NearestNeighborScheduler(StrategyScheduler):
                     continue
                 local_avg_times[j] += val
                 local_solved[j] += 1
-                if val > local_max_times[j] or local_max_times[j] == 300:
+                if val > local_max_times[j] or local_max_times[j] == self.max_time:
                     local_max_times[j] = val
 
         max_local_solved = max(local_solved)
@@ -86,10 +86,10 @@ class NearestNeighborScheduler(StrategyScheduler):
 
     def set_problem(self, problem_file):
         self.problem = problem_file
-        # TODO: Compute Features
+        self.features = self.feature_parser.get(problem_file)
 
     def set_problem_and_features(self, problem_file, problem_features):
-        self.set_problem(problem_file)
+        self.problem = problem_file
         self.features = problem_features
 
     def update(self):
@@ -102,7 +102,7 @@ class NearestNeighborScheduler(StrategyScheduler):
             self.local_strat_times = None
             return
         else:
-            self.data_set = delete_problems(self.data_set, good_problems)
+            self.data_set = self.data_set.mask(good_problems)
         # Local Update
         s_nr = self.data_set.strategy_matrix.shape[1]
         lp_nr = self.local_strat_times.shape[0]
