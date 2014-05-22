@@ -1,7 +1,10 @@
 #!/bin/bash
 
 echo -e "Checking code with flake8\c"
-flake_result=$(flake8 src tests)
+# E501 Line too long
+flake_result=$(flake8 \
+    --ignore=E501 \
+    src tests)
 flake_status=$?
 
 if [ $flake_status -eq 0 ]
@@ -28,12 +31,15 @@ echo -e "Checking code with pylint\c"
 # W0613 Unused argument 'X'
 # R0201 Method could be a function (i.e. does not use self)
 # R0914 Too many local variables (16/15)
+# C0301 Line too long
+# E0602 Undefined variable
 
 pylint_result=$(PYTHONPATH=$PYTHONPATH:.:./src pylint \
     --good-names=x,y,X,Y,e,i,j \
     -rn \
-    -dC0111,R0904,R0922,W0511,W0403,R0801,I0011,W0105,W0107,W0613,R0201,R0914 \
-    --module-rgx="(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+)|(test_[a-zA-Z0-9]+))$" \
+    --include-ids=y \
+    -dC0111,R0904,R0922,W0511,W0403,R0801,I0011,W0105,W0107,W0613,R0201,R0914,C0301 \
+    --module-rgx="(([a-z_][a-z0-9_]*)|((_)?[A-Z][a-zA-Z0-9]+)|(test_[a-zA-Z0-9]+)|(setUp)|(setUpClass)|(tearDown))$" \
     src tests)
 pylint_status=$?
 
@@ -47,8 +53,10 @@ fi
 if [ $flake_status -eq 0 ] && [ $pylint_status -eq 0 ]
 then
     echo -e "\033[32mCode was good, you can commit this.\033[0m"
+    exit 0
 else
     echo "$flake_result"
     echo "$pylint_result"
     echo -e "\033[31mCode was not conformant. If you really want to commit, you can use --no-verify.\033[0m"
+    exit 1
 fi
