@@ -13,9 +13,6 @@ from src.data_util import remove_unsolveable_problems, not_solved_by_strat
 class GreedyScheduler(StrategyScheduler):
 
     def __init__(self, config):
-        """
-        config: Load settings from a SafeConfigParser instance
-        """
         StrategyScheduler.__init__(self, config)
         self.data_set = None
         self._data_set = None
@@ -32,7 +29,7 @@ class GreedyScheduler(StrategyScheduler):
         if run_time is None:
             run_time = 1.0
         solveable_problems = (-1 < self.data_set.strategy_matrix) & (self.data_set.strategy_matrix < run_time)
-        solved_in_run_time = np.sum(solveable_problems,axis = 0) 
+        solved_in_run_time = np.sum(solveable_problems, axis=0) 
         self.last_strategy = solved_in_run_time.argmax()
         self.last_time = run_time
         strategy = self.data_set.strategies[self.last_strategy]
@@ -42,7 +39,7 @@ class GreedyScheduler(StrategyScheduler):
         self.data_set = copy.deepcopy(self._data_set)
 
     def set_problem(self, problem_file):
-        self.problem = problem_file 
+        self.problem = problem_file
 
     def set_problem_and_features(self, problem_file, problem_features):
         self.problem = problem_file

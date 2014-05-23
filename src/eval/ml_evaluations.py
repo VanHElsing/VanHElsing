@@ -8,7 +8,7 @@ import numpy as np
 
 
 def eval_against_dataset(dataset, scheduler, max_time=300,
-                         safe_schedule_file=None):
+                         safe_schedule_file='ml_eval'):
     schedule_solved = 0.0
     problems_solvable = 0.0
     schedule_score = 0.0
