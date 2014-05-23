@@ -31,14 +31,8 @@ class GreedyScheduler(StrategyScheduler):
     def predict(self, time_left, run_time=None):
         if run_time is None:
             run_time = 1.0
-        solved_in_run_time = np.array([0] * self.data_set.strategy_matrix.shape[1])
-        # TODO: there has to be a better way to do this
-        problems = self.data_set.strategy_matrix.shape[0]
-        strategies = self.data_set.strategy_matrix.shape[1]
-        for i in range(problems):
-            for j in range(strategies):
-                if -1 < self.data_set.strategy_matrix[i, j] < run_time:
-                    solved_in_run_time[j] += 1
+        solveable_problems = (-1 < self.data_set.strategy_matrix) & (self.data_set.strategy_matrix <= run_time)
+        solved_in_run_time = np.sum(solveable_problems,axis = 0) 
         self.last_strategy = solved_in_run_time.argmax()
         self.last_time = run_time
         strategy = self.data_set.strategies[self.last_strategy]
@@ -58,4 +52,5 @@ class GreedyScheduler(StrategyScheduler):
         good_problems = not_solved_by_strat(self.data_set, self.last_strategy, self.last_time)
         # TODO: Have to check that we do not run out of options
         self.data_set = self.data_set.mask(good_problems)
+
 
