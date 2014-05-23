@@ -9,6 +9,7 @@ Created on May 15, 2014
 import src.schedulers.BasicSchedulers as bs
 from src.schedulers.FirstNScheduler import FirstNScheduler
 from src.schedulers.NearestNeighbor import NearestNeighborScheduler
+from src.schedulers.GreedyPlusScheduler import GreedyPlusScheduler
 from src.schedulers.GreedyScheduler import GreedyScheduler
 from src.schedulers.Group1Scheduler import Group1Scheduler
 from src.schedulers.SchedulerTemplate import StrategyScheduler
@@ -49,5 +50,7 @@ def choose_scheduler(scheduler_id):
         return Group1Scheduler
     elif scheduler_id == 'Greedy':
         return GreedyScheduler
+    elif scheduler_id == 'GreedyPlus':
+        return GreedyPlusScheduler
     else:
         raise IOError(99, 'Unknown scheduler ID %s ' % scheduler_id)

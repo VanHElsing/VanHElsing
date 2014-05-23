@@ -31,7 +31,7 @@ class GreedyScheduler(StrategyScheduler):
     def predict(self, time_left, run_time=None):
         if run_time is None:
             run_time = 1.0
-        solveable_problems = (-1 < self.data_set.strategy_matrix) & (self.data_set.strategy_matrix <= run_time)
+        solveable_problems = (-1 < self.data_set.strategy_matrix) & (self.data_set.strategy_matrix < run_time)
         solved_in_run_time = np.sum(solveable_problems,axis = 0) 
         self.last_strategy = solved_in_run_time.argmax()
         self.last_time = run_time
