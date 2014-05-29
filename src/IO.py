@@ -53,7 +53,7 @@ def run_command(command, time_out):
     '''
     args = shlex.split(command)
     proc = subprocess.Popen(args, stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT, preexec_fn=os.setsid)
+                            stderr=subprocess.PIPE, preexec_fn=os.setsid)
     # pylint: disable=E1101
     with TimeoutThread.processTimeout(time_out, proc.pid):
         stdout, stderr = proc.communicate()

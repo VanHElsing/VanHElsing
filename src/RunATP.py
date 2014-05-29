@@ -7,9 +7,12 @@ Created on May 8, 2014
 import os
 from time import time
 import IO
+import re
 
 from src.GlobalVars import LOGGER
 
+# For matching /usr/bin/time
+RX_TIME_USER = re.compile(r"user ([0-9]+\.[0-9]+)")
 
 def get_ATP_from_config(configuration):  # NOQA, pylint: disable=C0103
     binary = configuration.get('ATP Settings', 'binary')
@@ -30,7 +33,7 @@ class ATP(object):
         self.time_string = time_string
         self.default = default
 
-    def run(self, strategy, time_out, problem_file):
+    def run(self, strategy, time_out, problem_file, measure_cpu_time=False):
         '''
         Run a command with a time_out after which it will be forcibly killed.
         '''
@@ -41,12 +44,22 @@ class ATP(object):
         time_string = self.time_string + str(rounded_time)
         command = ' '.join([self.binary, self.default, strategy, time_string,
                             problem_file])
+                            
+        if measure_cpu_time:
+            assert(os.name is "posix")
+            command = '/usr/bin/time -p ' + command
+        
         LOGGER.debug('Running %s', command)
         start_time = time()
-        resultcode, stdout, _stderr = IO.run_command(command, time_out)
+        resultcode, stdout, stderr = IO.run_command(command, time_out)
         if resultcode < 0:
             return False, False, None, time() - start_time
+            
         used_time = time() - start_time
+
+        if measure_cpu_time:
+            used_time = float(RX_TIME_USER.match(stderr.split("\n")[1]).groups()[0])
+        
         proof_found, countersat = self.parse_output(stdout)
         return proof_found, countersat, stdout, used_time
 
