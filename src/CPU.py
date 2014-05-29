@@ -79,7 +79,7 @@ class CPU(object):
 
         return series
 
-    def loadOrGenData(self):
+    def load_or_gen_data(self):
         if self.ratios is not None:
             pass
     
@@ -90,7 +90,7 @@ class CPU(object):
             with open(path, 'rb') as in_s:
                 self.times = pickle.load(in_s)
         else:
-            self.times = self.compare_cpu_with_data_set(3)
+            self.times = self.compare_cpu_with_data_set(10)
             with open(path, 'wb') as out_s:
                 pickle.dump(self.times, out_s)
     
@@ -100,7 +100,10 @@ class CPU(object):
         
         print self.ratios
 
-    def getRatio(self, time):
+    def get_ratio(self, time):
+        if self.ratios is None:
+            self.load_or_gen_data()
+    
         leastDiff = 1000000
         bestRatio = None
         
@@ -114,6 +117,6 @@ class CPU(object):
     
 if __name__ == '__main__':
     cpu = CPU()
-    cpu.loadOrGenData()
+    cpu.load_or_gen_data()
     
     sys.exit(0)

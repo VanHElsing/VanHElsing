@@ -20,6 +20,7 @@ from src.GlobalVars import PATH, LOGGER
 from src.IO import load_config
 from src.RunATP import get_ATP_from_config
 from src.schedulers.util import init_scheduler
+from src.CPU import CPU
 
 
 def set_up_parser():
@@ -35,14 +36,14 @@ def set_up_parser():
 
 
 def adapt_run_time(pred_time, time_left, config):
-    # TODO: Load from config
+    cpu = CPU()
+    
     run_time = None
     if pred_time < 1.0:
         run_time = pred_time + 0.5
-    elif pred_time < 30:
-        run_time = pred_time * 0.65
     else:
-        run_time = pred_time * 0.5
+        ratio = cpu.get_ratio(pred_time)
+        run_time = pred_time * ratio * 1.1
     return min(time_left, run_time)
 
 
