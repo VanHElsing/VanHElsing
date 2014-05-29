@@ -33,6 +33,7 @@ def set_up_parser():
                         default=os.path.join(PATH, 'config.ini'))
     return parser
 
+
 def adapt_run_time(pred_time, time_left, config):
     # TODO: Load from config
     run_time = None
@@ -41,8 +42,9 @@ def adapt_run_time(pred_time, time_left, config):
     elif pred_time < 30:
         run_time = pred_time * 0.65
     else:
-        run_time = pred_time * 0.5 
+        run_time = pred_time * 0.5
     return min(time_left, run_time)
+
 
 def main(argv=sys.argv[1:]):
     parser = set_up_parser()
@@ -65,8 +67,8 @@ def main(argv=sys.argv[1:]):
         run_time = adapt_run_time(strat_time, time_left, configuration)
         print strat_time, run_time
         LOGGER.info("Running %s for %s seconds" % (strat, strat_time))
-        proof_found, _cs, output, _used_time = atp.run(strat, run_time, 
-                                                        args.problem)
+        proof_found, _cs, output, _used_time = atp.run(strat, run_time,
+                                                       args.problem)
         if not proof_found:
             scheduler.update()
             time_left = args.time - (time() - start_time)
@@ -75,7 +77,7 @@ def main(argv=sys.argv[1:]):
     if proof_found:
         LOGGER.info("\n" + output)
         return True
-    LOGGER.info("SZS status Timeout")    
+    LOGGER.info("SZS status Timeout")
     return False
 
 if __name__ == '__main__':

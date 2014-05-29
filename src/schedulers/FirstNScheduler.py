@@ -7,6 +7,7 @@ Created on May 17, 2014
 from src.schedulers.SchedulerTemplate import StrategyScheduler
 import random
 
+
 class FirstNScheduler(StrategyScheduler):
     '''
     Basic scheduler that just divides the total time in slices
@@ -15,7 +16,7 @@ class FirstNScheduler(StrategyScheduler):
 
     def __init__(self, config=None):
         StrategyScheduler.__init__(self, config)
-        if config == None:
+        if config is None:
             self._nstrats = 10
             self._random = False
         else:

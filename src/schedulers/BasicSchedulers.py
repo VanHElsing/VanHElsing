@@ -47,7 +47,7 @@ class SingleStrategyScheduler(StrategyScheduler):
         if config is None:
             self.strategy_index = 0
         else:
-            idx = int(config.get("SingleStrategyScheduler", "strategy_index"))
+            idx = config.getint("SingleStrategyScheduler", "strategy_index")
             self.strategy_index = idx
         self._avg_time = self._strategy = 0
         pass

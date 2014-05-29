@@ -7,15 +7,15 @@ Created on May 17, 2014
 import numpy as np
 
 
-def eval_against_dataset(dataset, scheduler,
-                         max_time=300, safe_schedule_file=None):
+def eval_against_dataset(dataset, scheduler, max_time=300,
+                         safe_schedule_file='ml_eval'):
     schedule_solved = 0.0
     problems_solvable = 0.0
     schedule_score = 0.0
     best_score = 0.0
 
     if safe_schedule_file is not None:
-        os = open(safe_schedule_file, 'w')
+        out_stream = open(safe_schedule_file, 'w')
 
     for p_index, problem in enumerate(dataset.problems):
         time_left = max_time
@@ -39,12 +39,11 @@ def eval_against_dataset(dataset, scheduler,
                 schedule_score += (time_left - strat_time)
                 if safe_schedule_file is not None:
                     used_time = max_time - time_left + strat_time
-                    os.write('%s,%s\n' % (problem,
-                                          str(used_time)))
+                    out_stream.write('%s,%s\n' % (problem, str(used_time)))
                 break
             time_left -= run_time
             scheduler.update()
 
     if safe_schedule_file is not None:
-        os.close()
+        out_stream.close()
     return schedule_solved / problems_solvable, schedule_score / best_score

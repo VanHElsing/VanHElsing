@@ -9,6 +9,7 @@ Created on May 14, 2014
 from abc import ABCMeta, abstractmethod
 from src.Features import get_feature_parser
 
+
 class StrategyScheduler(object):
     __metaclass__ = ABCMeta
 

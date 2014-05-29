@@ -1,12 +1,12 @@
+#! /usr/bin/env python
 '''
 Created on May 15, 2014
 
-@author: daniel
+@author: Daniel Kuehlwein, Sil van de Leemput
 '''
 
 import os
 import sys
-import numpy as np
 from sklearn.cross_validation import KFold
 from argparse import ArgumentParser
 
@@ -42,7 +42,7 @@ def load_dataset(args, configuration):
     datasetfile = args.dataset
     if datasetfile == '':
         datasetfile = configuration.get('Learner', 'datasetfile')
-    if configuration.getboolean('Learner', 'generatedataset'): 
+    if configuration.getboolean('Learner', 'generatedataset'):
         LOGGER.info("Generating dataset...")
         dataset.load(configuration.get('Learner', 'datatype'))
         save_object(dataset, datasetfile)
@@ -83,7 +83,7 @@ def main(argv=sys.argv[1:]):
 
     # load dataset
     dataset = load_dataset(args, configuration)
-    dataset = remove_unsolveable_problems(dataset) 
+    dataset = remove_unsolveable_problems(dataset)
     # retain only a few problems if option set
     if args.limitprobs > -1:
         dataset = dataset.mask(range(args.limitprobs))

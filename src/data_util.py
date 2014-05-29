@@ -7,6 +7,7 @@ Created on May 18, 2014
 import numpy as np
 from src.GlobalVars import LOGGER
 
+
 def remove_unsolveable_problems(data_set):
     """
     Deletes all problems that cannot be solved.
