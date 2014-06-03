@@ -2,6 +2,7 @@ from os import listdir
 from os.path import isfile, join
 from src.GlobalVars import PATH
 import numpy as np
+import matplotlib.pylab as pl
 
 
 def get_strategy_file_names(path=join(PATH, 'contrib/males/E/resultsTmp')):
@@ -72,4 +73,15 @@ def generate_ratio_matrix():
                 rat[j, i] = strat[prob][0] / strat[prob][1]
     return rat, strat_names, all_probs
 
+def plot_distribution(ratio_mat):
+    averages = []
+    for line in ratio_mat:
+        averages.append(np.average((line[line>0])))
+    pl.hist(averages,bins=15)
+    pl.show()
+
 ratios, x, y = generate_ratio_matrix()
+plot_distribution(ratios)
+
+# print dist
+
