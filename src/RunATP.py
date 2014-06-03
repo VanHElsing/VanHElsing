@@ -58,7 +58,13 @@ class ATP(object):
         used_time = time() - start_time
 
         if measure_cpu_time:
-            used_time = float(RX_TIME_USER.match(stderr.split("\n")[1]).groups()[0])
+            result = RX_TIME_USER.match(stderr.split("\n")[1])
+            if result is None:
+                print "Failed to execute, dumping stderr:"
+                print stderr
+                return False, False, None, time() - start_time
+
+            used_time = float(result.groups()[0])
         
         proof_found, countersat = self.parse_output(stdout)
         return proof_found, countersat, stdout, used_time
