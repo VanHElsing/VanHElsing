@@ -5,8 +5,7 @@ Created on May 15, 2014
 @author: Daniel Kuehlwein, Sil van de Leemput
 '''
 
-import os
-import sys
+import os, sys
 from sklearn.cross_validation import KFold
 from argparse import ArgumentParser
 
@@ -15,7 +14,6 @@ from src.IO import load_config, load_object, save_object
 from src.schedulers.util import choose_scheduler
 from src.schedulers.util import save_scheduler
 from src.DataSet import DataSet
-from src.data_util import remove_unsolveable_problems
 from src.eval.ml_evaluations import eval_against_dataset
 
 
@@ -31,9 +29,6 @@ def set_up_parser():
     parser.add_argument('-c', '--configuration',
                         help='Which configuration file to use.',
                         default=os.path.join(PATH, 'config.ini'))
-    parser.add_argument('-lp', '--limitprobs',
-                        help='Limit the amount of problems in the dataset for testing.',
-                        type=int, default=-1)
     return parser
 
 
@@ -42,14 +37,10 @@ def load_dataset(args, configuration):
     datasetfile = args.dataset
     if datasetfile == '':
         datasetfile = configuration.get('Learner', 'datasetfile')
-    if configuration.getboolean('Learner', 'generatedataset'):
-        LOGGER.info("Generating dataset...")
-        dataset.load(configuration.get('Learner', 'datatype'))
-        save_object(dataset, datasetfile)
-        LOGGER.info("Dataset generated and saved to: %s.", datasetfile)
-    elif not os.path.isfile(datasetfile):
-        LOGGER.warn("No dataset found for %s.", datasetfile)
-        LOGGER.warn("Continuing without dataset!")
+    if not os.path.isfile(datasetfile):
+        msg = "No dataset found for %s." % datasetfile
+        LOGGER.error(msg)
+        raise IOError(99, msg) 
     else:
         dataset = load_object(datasetfile)
         if not isinstance(dataset, DataSet):
@@ -83,14 +74,6 @@ def main(argv=sys.argv[1:]):
 
     # load dataset
     dataset = load_dataset(args, configuration)
-    dataset = remove_unsolveable_problems(dataset)
-    # retain only a few problems if option set
-    if args.limitprobs > -1:
-        dataset = dataset.mask(range(args.limitprobs))
-        LOGGER.info("Dataset limiting problems - prob x strats: %i x %i",
-                    len(dataset.problems), len(dataset.strategies))
-
-    # TODO dataset preprocessing options
 
     if eval_kfolds:
         kfolds = max(int(configuration.get('Learner', 'kfolds')), 2)

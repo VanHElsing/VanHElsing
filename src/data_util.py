@@ -14,8 +14,6 @@ def remove_unsolveable_problems(data_set):
     """
     problem_filter = np.max(data_set.strategy_matrix, axis=1) > -1
     ret = data_set.mask(problem_filter)
-    LOGGER.info("Dataset removing unsolvable problems - prob x strats: %i x %i",
-                len(ret.problems), len(ret.strategies))
     return ret
 
 
