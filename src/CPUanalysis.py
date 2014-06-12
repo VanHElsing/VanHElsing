@@ -155,6 +155,10 @@ def execute_benchmark(cpu):
     p4 = show_dataset(dataset_oversat, "Concurrent, oversaturation", "y")
     
     pl.legend([p1, p2, p3, p4], ["Single core, first", "Single core, second", "Concurrent, fitting", "Concurrent, oversaturation"])
+    
+    pl.figure("Tuning")
+    pl.plot(map(lambda x : x[0], cpu.ratios), map(lambda x : x[2], cpu.ratios))
+    
     pl.show()
     
     pass
