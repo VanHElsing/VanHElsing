@@ -76,7 +76,7 @@ class CPU(object):
             for i in range(runs):
                 LOGGER.info('Run %s / %s', i, runs)
                 used_time = self.measure(strategy, p_path)
-                measurements.append((used_time, abs(used_time - p_time), used_time / p_time))
+                measurements.append((p_time, abs(used_time - p_time), used_time / p_time))
                 
             series.append(measurements)
 	
@@ -112,8 +112,8 @@ class CPU(object):
         leastDiff = 1000000
         bestRatio = None
         
-        for used_time, diff_time, ratio in self.ratios:
-            diff = abs(used_time - time)
+        for p_time, diff_time, ratio in self.ratios:
+            diff = abs(p_time - time)
             if diff < leastDiff:
                 leastDiff = diff
                 bestRatio = ratio
