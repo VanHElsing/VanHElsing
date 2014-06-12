@@ -4,17 +4,12 @@ Created on May 18, 2014
 @author: daniel
 '''
 
-import numpy as np
 import os
 import sys
 from time import time
-import matplotlib.pylab as pl
 
 from src.GlobalVars import PATH, EPATH, LOGGER
 from src.RunATP import ATP
-
-from src.DataSet import DataSet
-from src.data_util import remove_unsolveable_problems
 
 try:
    import cPickle as pickle
@@ -37,7 +32,7 @@ class CPU(object):
         use_cpu_time = (os.name is "posix")
         start_time = time()
         
-        proof_found, _cs, _o, cpu_time = self.atp.run(strategy, 200, p_path, use_cpu_time)
+        proof_found, _cs, _o, cpu_time = self.atp.run(strategy, 400, p_path, use_cpu_time)
         assert proof_found
         
         if use_cpu_time:
@@ -124,94 +119,10 @@ class CPU(object):
                 bestRatio = ratio
     
         return bestRatio
-
-
-def genBenchmark(benchmark_size):
-    TPTPPath = os.getenv('TPTP')
-    if TPTPPath is None:
-        raise IOError('$TPTP is not defined.')
-    
-    dataset = DataSet()
-    dataset.load('E')
-    dataset = remove_unsolveable_problems(dataset)
-    
-    strategy_i = list(dataset.strategies).index("--definitional-cnf=24 --tstp-in --condense --simul-paramod --forward-context-sr --strong-destructive-er --destructive-er-aggressive --destructive-er --prefer-initial-clauses -tKBO6 -winvfreqrank -c1 -Ginvfreq -F1 -s --delete-bad-limit=1024000000 -WSelectNewComplexAHPNS -H'(10*ConjectureRelativeSymbolWeight(ConstPrio,0.1, 100, 100, 100, 100, 1.5, 1.5, 1.5),1*FIFOWeight(ConstPrio))'")
-    
-    problem_is = range(dataset.problems.size)
-    np.random.shuffle(problem_is)
-    
-    i = 0
-    result = []
-    for problem_i in problem_is:
-        if i is benchmark_size:
-            break
-        
-        pred_time = dataset.strategy_matrix[problem_i][strategy_i]
-        if pred_time == -1.0:
-            continue
-        
-        if pred_time < 1.0:
-            continue
-        
-        print i
-        i += 1
-        p_name = dataset.problems[problem_i]
-        strategy = dataset.strategies[strategy_i]
-        
-        p_path = p_path = os.path.join(TPTPPath, 'Problems', p_name[:3], p_name)
-        
-        scaled_time = pred_time * cpu.get_ratio(pred_time)
-        real_time = cpu.measure(strategy, p_path)
-
-        result.append((p_name, strategy, pred_time, scaled_time, real_time))
-    return result
-
-def getBenchmark():
-    path = os.path.join(PATH, 'tuning_benchmark')
-    
-    print path
-    if os.path.isfile(path):
-        with open(path, 'rb') as in_s:
-            dataset = pickle.load(in_s)
-    else:
-        dataset = genBenchmark(100)
-        with open(path, 'wb') as out_s:
-            pickle.dump(dataset, out_s)
-    
-    X = []
-    y = []
-    for row in dataset:
-        p_name, strategy, pred_time, scaled_time, real_time = row
-    
-        print "----"
-        print p_name
-        print strategy
-        print pred_time
-        print scaled_time
-        print real_time
-        
-        if abs((scaled_time - real_time) / scaled_time) > 5.0:
-            continue;
-       
-        X.append(pred_time)
-        y.append(scaled_time / real_time)
-    
-    X = np.array(X)
-    y = np.array(y)
-    
-    pl.scatter(X, y)
-    pl.show()
-    
-    pass
     
 
 if __name__ == '__main__':
     cpu = CPU()
-    
-    LOGGER.info("Tuning CPU on dataset... (or getting from cache)")
     cpu.load_or_gen_data()
     
-    LOGGER.info("Tuning completed, executing benchmark")
-    getBenchmark()
-
     sys.exit(0)
