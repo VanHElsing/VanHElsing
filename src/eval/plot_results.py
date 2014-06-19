@@ -44,11 +44,18 @@ def plot_results(result_tuples, axis_vals=None):
     pl.legend(loc='lower right')
     pl.show()
 
+def plot_theory_satallax():
+    axis_vals = [0.1, 300, 0, 573]
+    path = os.path.join(PATH, 'runs', 'theory','Satallax')
+    best_times = (os.path.join(path, 'bestTimes'), 'Best')
+    result_tuples = []
+    result_tuples.append(best_times)
+    return result_tuples, axis_vals
 
-def plot_theory():
+
+def plot_theory_e():
     axis_vals = [1, 300, 0, 11000]
-    results = {}
-    path = os.path.join(PATH, 'runs', 'theory')
+    path = os.path.join(PATH, 'runs', 'theory','E')
     best_times = (os.path.join(path, 'bestTimes'), 'Best')
     best_times_wo_x = (os.path.join(path,
                        'bestTimesWithoutX'), 'Best without X')
@@ -106,7 +113,7 @@ def plot_real_test():
 
 
 if __name__ == '__main__':
-    result_tuples, axis_vals = plot_theory()
+    result_tuples, axis_vals = plot_theory_satallax()
     #result_tuples, axis_vals = plot_real_training()
     #result_tuples, axis_vals = plot_real_test()
     plot_results(result_tuples, axis_vals)

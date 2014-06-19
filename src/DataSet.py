@@ -58,7 +58,7 @@ class DataSet(object):
         return any(map(filename.startswith, whitelist))
 
     def get_strategy_file_names(self, path=join(PATH,
-                                                'data/TESTRUNS_PEGASUS/')):
+                                                'data/E/TESTRUNS_PEGASUS/')):
         return [f for f in listdir(path) if
                 isfile(join(path, f)) and self.is_relevant_strategy(f)]
 
@@ -73,7 +73,7 @@ class DataSet(object):
                     sdict[line.split()[0]] = [[], []]
         return sdict
 
-    def load_strategies(self, path=join(PATH, 'data/TESTRUNS_PEGASUS/')):
+    def load_strategies(self, path=join(PATH, 'data/E/TESTRUNS_PEGASUS/')):
         sfiles = self.get_strategy_file_names()
         sdict = self.initialize_dict_with_problems(sfiles[0], path)
         for sfile in sfiles:
@@ -91,7 +91,7 @@ class DataSet(object):
                             sdict[sline[0]][0].append(float(sline[2]))
         return sdict
 
-    def load_features(self, fdict, path=join(PATH, 'data/')):
+    def load_features(self, fdict, path=join(PATH, 'data/E/')):
         ffile = 'pegasusFeatures'
         with open(path + ffile, 'r') as inputstream:
             firstline = True

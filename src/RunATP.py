@@ -41,7 +41,10 @@ class ATP(object):
             raise IOError(10, 'Cannot find ATP binary %s' % self.binary)
         # TODO: time_string and round_time is E specific!
         rounded_time = int(time_out + 1)
-        time_string = self.time_string + str(rounded_time)
+        if self.time_string.endswith('='):
+            time_string = self.time_string + str(rounded_time)
+        else:
+            time_string = self.time_string + ' ' + str(rounded_time)
         command = ' '.join([self.binary, self.default, strategy, time_string,
                             problem_file])
                             
@@ -53,7 +56,7 @@ class ATP(object):
         start_time = time()
         resultcode, stdout, stderr = IO.run_command(command, time_out)
         if resultcode < 0:
-            return False, False, None, time() - start_time
+            return False, False, stdout, time() - start_time
             
         used_time = time() - start_time
 
@@ -62,7 +65,7 @@ class ATP(object):
             if result is None:
                 print "Failed to execute, dumping stderr:"
                 print stderr
-                return False, False, None, time() - start_time
+                return False, False, stdout, time() - start_time
 
             used_time = float(result.groups()[0])
         

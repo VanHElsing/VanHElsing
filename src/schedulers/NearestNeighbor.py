@@ -20,6 +20,14 @@ class NearestNeighborScheduler(StrategyScheduler):
 
     def __init__(self, config=None):
         StrategyScheduler.__init__(self, config)
+        try:
+            min_neighbors = config.getint('Learner', 'min_neighbors')
+        except:
+            min_neighbors = 5
+        try:
+            mul_factor = config.getfloat('Learner', 'mul_factor')
+        except:
+            mul_factor = 1,1
         self.nr_of_neighbors = 2000
         self._model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)
         self._data_set = None
@@ -31,8 +39,8 @@ class NearestNeighborScheduler(StrategyScheduler):
         self.model = None
         self.problem = None
         self.features = None
-        self.min_neighbors = 2
-        self.mul_factor = 1.1
+        self.min_neighbors = min_neighbors
+        self.mul_factor = mul_factor
 
     def fit(self, data_set, max_time, good_problems=None):
         self.max_time = max_time

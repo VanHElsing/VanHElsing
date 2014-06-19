@@ -64,3 +64,6 @@ docs/_build/
 /tmp/export.ss
 /tmp/train.data
 /src/eval/atp_eval
+/.settings/org.eclipse.core.resources.prefs
+/.settings/org.eclipse.ltk.core.refactoring.prefs
+/src/ml_eval
