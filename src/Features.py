@@ -15,6 +15,8 @@ def get_feature_parser(config):
     feature_type = config.get('ATP Settings', 'features')
     if feature_type == 'E':
         return EFeatures()
+    if feature_type == 'TPTP':
+        return TPTPFeatures()
     else:
         raise IOError('Unknown feature type %s', feature_type)
 
@@ -61,6 +63,25 @@ class EFeatures(Features):
             features_str = line.split(',')
             for i in features_str:
                 features.append(float(i))
+        return features
+
+
+class TPTPFeatures(Features):
+    def __init__(self):
+        Features.__init__(self)
+
+        self.binary = os.path.join(GlobalVars.PATH, 'bin','TPTP_features')
+        self.args = '-i'
+
+    def parse_output(self, output):
+        features = []
+        for line in output.split('\n'):
+            line = line.split()
+            for word in line:
+                try:
+                    features.append(float(word))
+                except:
+                    continue
         return features
 
 # TODO: Cleanup
