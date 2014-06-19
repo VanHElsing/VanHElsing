@@ -1,4 +1,0 @@
-Arguments: --definitional-cnf=24 --tstp-in --split-clauses=4 --split-reuse-defs --simul-paramod --forward-context-sr --destructive-er-aggressive --destructive-er --prefer-initial-clauses -tKBO6 -winvfreqrank -c1 -Ginvfreqconjmax -F1 -s --delete-bad-limit=1024000000 -WSelectMaxLComplexAvoidPosPred -H'(4*ConjectureGeneralSymbolWeight(SimulateSOS,100,100,100,50,50,10,50,1.5,1.5,1),5*RelevanceLevelWeight2(ConstPrio,1,2,1,2,100,100,100,300,1.5,1.5,1),1*Clauseweight(PreferProcessed,1,1,1),1*FIFOWeight(PreferProcessed))'
-Time limit: 300
-Include: ~/EPROVER/TPTP_5.4.0_FLAT/all_problem_list
-

@@ -1,3 +1,0 @@
-Arguments: -s --delete-bad-limit=1024000000 --subsumption-indexing=None --fp-index=NoIndex -tKBO
-Time limit: 300
-Include: ~/EPROVER/TPTP_5.4.0_FLAT/all_problem_list

@@ -1,5 +1,0 @@
-# Based on tptp_G-E--_107_C45_F1_PI_AE_Q4_CS_SP_S0Y
-Arguments: --tstp-in --delete-bad-limit=1024000000 -xAuto -tAuto --detsort-new --fvindex-featuretypes=AC --fvindex-maxfeatures=75 --subsumption-indexing=Direct
-Time limit: 300
-Include: ~/EPROVER/TPTP_5.4.0_FLAT/all_problem_list
-

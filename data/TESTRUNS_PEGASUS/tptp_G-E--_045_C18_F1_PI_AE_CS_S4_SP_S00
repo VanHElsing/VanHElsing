@@ -1,3 +1,0 @@
-Arguments: --definitional-cnf=24 --tstp-in --split-aggressive --split-clauses=4 --simul-paramod --forward-context-sr --destructive-er-aggressive --destructive-er --prefer-initial-clauses -tKBO6 -winvfreqrank -c1 -Ginvfreq -F1 -s --delete-bad-limit=1024000000 -WNoSelection -H'(4*Refinedweight(SimulateSOS,1,1,2,1.5,2),3*Refinedweight(PreferNonGoals,1,1,2,1.5,1.5),1*Clauseweight(PreferProcessed,1,1,1),1*FIFOWeight(PreferProcessed))'
-Time limit: 300
-Include: ~/EPROVER/TPTP_5.4.0_FLAT/all_problem_list
