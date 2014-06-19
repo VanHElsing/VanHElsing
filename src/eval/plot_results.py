@@ -75,7 +75,7 @@ def plot_theory_e():
     # result_tuples.append(nn_10_local)
     result_tuples.append(nn_5_local_dyn)
     result_tuples.append(nn_2_local_dyn)
-    # result_tuples.append(greedy_plus_nn_5_local_dyn)
+    result_tuples.append(greedy_plus_nn_5_local_dyn)
     # result_tuples.append(ml_eval)
     return result_tuples, axis_vals
 
@@ -86,14 +86,16 @@ def plot_real_training():
     e18 = (os.path.join(path, 'atp_eval_CASC_Train_E1.8'), 'E 1.8')
     e17 = (os.path.join(path, 'atp_eval_CASC_Train_E1.7'), 'E 1.7')
     emales = (os.path.join(path, 'atp_eval_CASC_Train_emales1.2'), 'E-MaLeS 1.2')
-    helsing_nn_wts = (os.path.join(path, 'atp_eval_CASC_Train_helsing_NN_with_basic_time_scaling'), 'Hesling NN wts')
-    helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Train_helsing_NN_without_time_scaling'), 'Hesling NN wots')
+    helsing_nn_wts = (os.path.join(path, 'atp_eval_CASC_Train_helsing_NN_with_basic_time_scaling'), 'Helsing NN wts')
+    helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Train_helsing_NN_without_time_scaling'), 'Helsing NN wots')
+    helsing_group1 = (os.path.join(path, 'atp_eval_CASC_Training_helsing_group1'), 'Helsing Group1')
     result_tuples = []
     result_tuples.append(e18)
     result_tuples.append(e17)
     result_tuples.append(emales)
-    result_tuples.append(helsing_nn_wts)
+    #result_tuples.append(helsing_nn_wts)
     result_tuples.append(helsing_nn_wots)
+    result_tuples.append(helsing_group1)
     return result_tuples, axis_vals
 
 
@@ -103,17 +105,20 @@ def plot_real_test():
     e18 = (os.path.join(path, 'atp_eval_CASC_Test_E1.8'), 'E 1.8')
     e17 = (os.path.join(path, 'atp_eval_CASC_Test_E1.7'), 'E 1.7')
     emales = (os.path.join(path, 'atp_eval_CASC_Test_emales1.2'), 'E-MaLeS 1.2')
-    helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Test_helsing_NN_without_time_scaling'), 'Hesling NN wots')
+    helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Test_helsing_NN_without_time_scaling'), 'Helsing NN wots')
+    helsing_group1 = (os.path.join(path, 'atp_eval_CASC_Test_helsing_group1'), 'Helsing Group1')
     result_tuples = []
     result_tuples.append(e18)
     result_tuples.append(e17)
     result_tuples.append(emales)
     result_tuples.append(helsing_nn_wots)
+    result_tuples.append(helsing_group1)    
     return result_tuples, axis_vals
 
 
 if __name__ == '__main__':
-    result_tuples, axis_vals = plot_theory_satallax()
+    result_tuples, axis_vals = plot_theory_e()
+    #result_tuples, axis_vals = plot_theory_satallax()
     #result_tuples, axis_vals = plot_real_training()
     #result_tuples, axis_vals = plot_real_test()
     plot_results(result_tuples, axis_vals)
