@@ -29,7 +29,7 @@ def set_up_parser():
                         type=int, default=-1)
     return parser
 
-def main(argv=sys.argv[1:]):
+def load_data(argv=sys.argv[1:]):
     """
     input: Config file, (optional dataset)
     output: stores model in modelfile
@@ -68,4 +68,4 @@ def main(argv=sys.argv[1:]):
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(load_data())

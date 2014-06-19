@@ -53,6 +53,8 @@ def learn(argv=sys.argv[1:]):
     scheduler = scheduler_class(configuration)
 
     # load dataset
+    if args.dataset == '':
+        args.dataset = configuration.get('Learner', 'datasetfile')
     dataset = load_dataset_from_file(args.dataset, configuration)
 
     if eval_kfolds:
@@ -98,7 +100,6 @@ def learn(argv=sys.argv[1:]):
             save_scheduler(scheduler, exportfile)
             LOGGER.info('Scheduler with id %s exported to %s',
                         scheduler_id, exportfile)
-    pass
 
 if __name__ == '__main__':
     sys.exit(learn())
