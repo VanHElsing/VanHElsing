@@ -1,0 +1,3 @@
+Arguments: -s --delete-bad-limit=1024000000 --simul-paramod -F1 --split-aggressive --split-clauses=4 --forward-context-sr --destructive-er-aggressive --destructive-er -WSelectMaxLComplexAvoidPosPred -tKBO6 -wconstant -Ginvfreq --tstp-in -H'(8*Refinedweight(PreferGoals,1,2,2,1,0.8),8*Refinedweight(PreferNonGoals,2,1,2,3,0.8),1*Clauseweight(ConstPrio,1,1,0.7),1*FIFOWeight(ByNegLitDist))'
+Time limit: 300
+Include: ~/EPROVER/TPTP_3.0.1_FLAT/all_problem_list
