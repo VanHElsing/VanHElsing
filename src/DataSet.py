@@ -35,9 +35,14 @@ class DataSet(object):
     def load(self, data_type):
         if data_type == 'E':
             self.parse_E_data()
+        elif data_type == 'Satallax':
+            self.parse_Satallax_data()
         else:
             raise IOError('Cannot parse unknown data type %s.'
                           % data_type)
+
+    def parse_Satallax_data(self):
+        pass
 
     def parse_E_data(self):  # NOQA
         self.strategies = []

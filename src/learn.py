@@ -9,11 +9,11 @@ import os, sys
 from sklearn.cross_validation import KFold
 from argparse import ArgumentParser
 
+from src.data_util import load_dataset_from_file
 from src.GlobalVars import PATH, LOGGER
-from src.IO import load_config, load_object, save_object
+from src.IO import load_config
 from src.schedulers.util import choose_scheduler
 from src.schedulers.util import save_scheduler
-from src.DataSet import DataSet
 from src.eval.ml_evaluations import eval_against_dataset
 
 
@@ -32,27 +32,7 @@ def set_up_parser():
     return parser
 
 
-def load_dataset(args, configuration):
-    dataset = DataSet()
-    datasetfile = args.dataset
-    if datasetfile == '':
-        datasetfile = configuration.get('Learner', 'datasetfile')
-    if not os.path.isfile(datasetfile):
-        msg = "No dataset found for %s." % datasetfile
-        LOGGER.error(msg)
-        raise IOError(99, msg) 
-    else:
-        dataset = load_object(datasetfile)
-        if not isinstance(dataset, DataSet):
-            msg = "file: %s is not of type DataSet" % datasetfile
-            LOGGER.error(msg)
-            raise IOError(99, msg)
-        LOGGER.info("Dataset: %s loaded  prob x strats: %i x %i",
-                    datasetfile, len(dataset.problems), len(dataset.strategies))
-    return dataset
-
-
-def main(argv=sys.argv[1:]):
+def learn(argv=sys.argv[1:]):
     """
     input: Config file, dataset
     output: stores model in modelfile
@@ -73,7 +53,7 @@ def main(argv=sys.argv[1:]):
     scheduler = scheduler_class(configuration)
 
     # load dataset
-    dataset = load_dataset(args, configuration)
+    dataset = load_dataset_from_file(args.dataset, configuration)
 
     if eval_kfolds:
         kfolds = max(int(configuration.get('Learner', 'kfolds')), 2)
@@ -121,4 +101,4 @@ def main(argv=sys.argv[1:]):
     pass
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(learn())

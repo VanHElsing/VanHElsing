@@ -80,7 +80,7 @@ def plot_real_training():
     e17 = (os.path.join(path, 'atp_eval_CASC_Train_E1.7'), 'E 1.7')
     emales = (os.path.join(path, 'atp_eval_CASC_Train_emales1.2'), 'E-MaLeS 1.2')
     helsing_nn_wts = (os.path.join(path, 'atp_eval_CASC_Train_helsing_NN_with_basic_time_scaling'), 'Hesling NN wts')
-    helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Train_helsing_NN_without_time_scaling'), 'Hesling NN wots')    
+    helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Train_helsing_NN_without_time_scaling'), 'Hesling NN wots')
     result_tuples = []
     result_tuples.append(e18)
     result_tuples.append(e17)

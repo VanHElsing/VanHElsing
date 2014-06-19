@@ -8,9 +8,8 @@ import os, sys
 from argparse import ArgumentParser
 
 from src.GlobalVars import PATH, LOGGER
-from src.IO import load_config, load_object, save_object
-from src.DataSet import DataSet
-from src.data_util import remove_unsolveable_problems
+from src.IO import load_config, save_object
+from src.data_util import remove_unsolveable_problems, load_or_generate_dataset
 
 
 def set_up_parser():
@@ -29,32 +28,6 @@ def set_up_parser():
                         help='Limit the amount of problems in the dataset for testing.',
                         type=int, default=-1)
     return parser
-
-
-def load_dataset(args, configuration):
-    dataset = DataSet()
-    datasetfile = args.inputfile
-    if datasetfile == '':
-        datasetfile = configuration.get('DataUtil', 'infile')
-    if configuration.getboolean('DataUtil', 'generatedataset'):
-        datatype = configuration.get('DataUtil', 'datatype')        
-        LOGGER.info("Generating dataset from type: %s.", datatype)
-        dataset.load(datatype)
-        LOGGER.info("Dataset generated.")
-    elif not os.path.isfile(datasetfile):
-        msg = "No dataset found for %s." % datasetfile
-        LOGGER.error(msg)
-        raise IOError(99, msg)        
-    else:
-        dataset = load_object(datasetfile)
-        if not isinstance(dataset, DataSet):
-            msg = "file: %s is not of type DataSet" % datasetfile
-            LOGGER.error(msg)
-            raise IOError(99, msg)
-        LOGGER.info("Dataset: %s loaded  prob x strats: %i x %i",
-                    datasetfile, len(dataset.problems), len(dataset.strategies))
-    return dataset
-
 
 def main(argv=sys.argv[1:]):
     """
@@ -75,7 +48,7 @@ def main(argv=sys.argv[1:]):
         raise IOError(99, msg)
        
     # load dataset
-    dataset = load_dataset(args, configuration)
+    dataset = load_or_generate_dataset(args.inputfile, configuration)
 
     # remove unsolvable problems
     if configuration.getboolean('DataUtil', 'removeunsolvables'):
