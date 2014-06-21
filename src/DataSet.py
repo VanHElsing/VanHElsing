@@ -42,6 +42,17 @@ class DataSet(object):
                           % data_type)
 
     def parse_Satallax_data(self):
+        self.problems, self.feature_matrix = self.sat_load_features()
+        satallax_files = [f for f in self.sat_get_strat_file_names(join(PATH, 'data/Satallax/results')) if f.endswith('.results')]
+        satallax_strats = [self.sat_load_strat(sat) for sat in satallax_files]
+        self.strategies = map(lambda x: x.replace('.results',''), satallax_files)
+        self.strategy_matrix = self.sat_generate_strat_matrix(self.problems,satallax_strats)
+        print self.problems
+        print self.feature_matrix[:6,:6]
+        print satallax_strats[:1]
+        print self.strategies
+        print self.problems[:10]
+        print self.strategy_matrix[:10,:2]
         pass
 
     def parse_E_data(self):  # NOQA
@@ -115,3 +126,37 @@ class DataSet(object):
         for key in fdict.keys():
             total_strategies.append(fdict[key][0])
         return np.array(total_strategies)
+
+    def sat_load_strat(self,filename, path=join(PATH, 'data/Satallax/results')):
+        new_strat = {}
+        with open(join(path,filename), 'r') as inputstream:
+            for line in inputstream:
+                sline = line.split()
+                new_strat[sline[0].split('/')[6]] = float(sline[1])
+        return new_strat
+
+    def sat_load_features(self):
+        features_path = '../data/Satallax/Satallax_features'
+        problems = []
+        features = []
+        with open(features_path,'r') as f:
+            for line in f:
+                hashtag_split = line.split('#')
+                problems.append(hashtag_split[0].split('/')[7])
+                features.append(map(float,hashtag_split[1].replace('\n','').split(',')))
+        return problems, np.array(features)
+    
+    def sat_generate_strat_matrix(self,probs,strat_dicts):
+        strategy_matrix = np.empty((len(probs),len(strat_dicts)))
+        strategy_matrix[:] = -1
+        index_dict = dict([index_item for index_item in zip(probs,range(len(probs)))])
+        for col,strat in enumerate(strat_dicts):
+            for prob in strat.keys():
+                strategy_matrix[index_dict[prob],col] = strat[prob]
+        return strategy_matrix
+    
+    def sat_get_strat_file_names(self,path=join(PATH, 'contrib/males/E/resultsTmp')):
+        return [f for f in listdir(path) if isfile(join(path, f))]
+
+ds = DataSet()
+ds.load('Satallax')
