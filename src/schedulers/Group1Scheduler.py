@@ -104,7 +104,7 @@ class Group1Scheduler(StrategyScheduler):
 
     def set_problem(self, problem_file):
         # TODO calculate problem_file features
-        features = None
+        features = self.feature_parser.get(problem_file)
         self.set_problem_and_features(problem_file, features)
 
     def set_problem_and_features(self, problem_file, features):
