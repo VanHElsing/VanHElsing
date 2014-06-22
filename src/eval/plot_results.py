@@ -74,8 +74,8 @@ def plot_theory_e():
     result_tuples.append(best_times_wo_x)
     # result_tuples.append(nn_10_local)
     result_tuples.append(nn_5_local_dyn)
-    result_tuples.append(nn_2_local_dyn)
-    result_tuples.append(greedy_plus_nn_5_local_dyn)
+    # result_tuples.append(nn_2_local_dyn)
+    # result_tuples.append(greedy_plus_nn_5_local_dyn)
     # result_tuples.append(ml_eval)
     return result_tuples, axis_vals
 

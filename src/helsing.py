@@ -65,7 +65,8 @@ def main(argv=sys.argv[1:]):
     time_left = args.time - (time() - start_time)
     while not proof_found and time_left > 0:
         strat, strat_time = scheduler.predict(time_left)
-        run_time = adapt_run_time(strat_time, time_left, configuration)
+        #run_time = adapt_run_time(strat_time, time_left, configuration)
+        run_time = strat_time
         print strat_time, run_time
         LOGGER.info("Running %s for %s seconds" % (strat, strat_time))
         proof_found, _cs, output, _used_time = atp.run(strat, run_time,

@@ -45,7 +45,8 @@ class DataSet(object):
         self.problems, self.feature_matrix = self.sat_load_features()
         satallax_files = [f for f in self.sat_get_strat_file_names() if f.endswith('.results')]
         satallax_strats = [self.sat_load_strat(sat) for sat in satallax_files]
-        self.strategies = map(lambda x: x.replace('.results', ''), satallax_files)
+        tmp_strategies = map(lambda x: x.replace('.results', ''), satallax_files)
+        self.strategies = map(lambda x: '-m '+ x, tmp_strategies)
         self.strategy_matrix = self.sat_generate_strat_matrix(self.problems, satallax_strats)
 
     def parse_E_data(self):  # NOQA
@@ -129,7 +130,7 @@ class DataSet(object):
         return new_strat
 
     def sat_load_features(self):
-        features_path = '../data/Satallax/Satallax_features'
+        features_path = join(PATH, 'data','Satallax','Satallax_features')
         problems = []
         features = []
         with open(features_path, 'r') as f:
@@ -137,7 +138,7 @@ class DataSet(object):
                 hashtag_split = line.split('#')
                 problems.append(hashtag_split[0].split('/')[7])
                 features.append(map(float, hashtag_split[1].replace('\n', '').split(',')))
-        return problems, np.array(features)
+        return np.array(problems), np.array(features)
 
     def sat_generate_strat_matrix(self, probs, strat_dicts):
         strategy_matrix = np.empty((len(probs), len(strat_dicts)))

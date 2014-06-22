@@ -9,7 +9,7 @@ import os, sys
 from sklearn.cross_validation import KFold
 from argparse import ArgumentParser
 
-from src.data_util import load_dataset_from_file
+from src.data_util import load_dataset_from_config
 from src.GlobalVars import PATH, LOGGER
 from src.IO import load_config
 from src.schedulers.util import choose_scheduler
@@ -53,9 +53,7 @@ def learn(argv=sys.argv[1:]):
     scheduler = scheduler_class(configuration)
 
     # load dataset
-    if args.dataset == '':
-        args.dataset = configuration.get('Learner', 'datasetfile')
-    dataset = load_dataset_from_file(args.dataset, configuration)
+    dataset = load_dataset_from_config(configuration)
 
     if eval_kfolds:
         kfolds = max(int(configuration.get('Learner', 'kfolds')), 2)

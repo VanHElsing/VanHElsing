@@ -31,7 +31,12 @@ def not_solved_by_strat(data_set, s_index, s_time):
     return not_solved_by_strats
 
 
-def load_dataset_from_file(datasetfile, configuration):
+def load_dataset_from_config(configuration):
+    dataset = configuration.get('Learner', 'datasetfile')
+    return load_dataset_from_file(dataset)
+
+
+def load_dataset_from_file(datasetfile):
     dataset = DataSet()
     if not os.path.isfile(datasetfile):
         msg = "No dataset found for %s." % datasetfile

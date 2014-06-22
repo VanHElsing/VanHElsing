@@ -8,8 +8,8 @@ import copy
 import numpy as np
 import operator
 from sklearn.neighbors import NearestNeighbors
+from src.data_util import not_solved_by_strat, remove_unsolveable_problems, load_dataset_from_config
 from src.schedulers.SchedulerTemplate import StrategyScheduler
-from src.data_util import not_solved_by_strat, remove_unsolveable_problems
 
 
 class NearestNeighborScheduler(StrategyScheduler):
@@ -21,33 +21,31 @@ class NearestNeighborScheduler(StrategyScheduler):
     def __init__(self, config=None):
         StrategyScheduler.__init__(self, config)
         try:
-            min_neighbors = config.getint('Learner', 'min_neighbors')
+            self.min_neighbors = config.getint('Learner', 'min_neighbors')
         except:
-            min_neighbors = 5
+            self.min_neighbors = 5
         try:
-            mul_factor = config.getfloat('Learner', 'mul_factor')
+            self.mul_factor = config.getfloat('Learner', 'mul_factor')
         except:
-            mul_factor = 1,1
+            self.mul_factor = 1.1
         self.nr_of_neighbors = 2000
-        self._model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)
+        self.model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)
         self._data_set = None
         self.data_set = None
         self.last_strategy = None
         self.last_time = None
         self.local_strat_times = None
         self.max_time = None
-        self.model = None
         self.problem = None
         self.features = None
-        self.min_neighbors = min_neighbors
-        self.mul_factor = mul_factor
+        self.config = config
 
     def fit(self, data_set, max_time, good_problems=None):
         self.max_time = max_time
-        self._data_set = remove_unsolveable_problems(data_set)
-        self._model.fit(self._data_set.feature_matrix)
+        #self._data_set = remove_unsolveable_problems(data_set)
+        self._data_set = data_set
         self.data_set = copy.deepcopy(self._data_set)
-        self.model = copy.deepcopy(self._model)
+        self.model.fit(self.data_set.feature_matrix)
 
     def predict(self, time_left):
         if self.data_set is None:
@@ -90,7 +88,8 @@ class NearestNeighborScheduler(StrategyScheduler):
 
     def reset(self):
         self.data_set = copy.deepcopy(self._data_set)
-        self.model = copy.deepcopy(self._model)
+        #self.data_set = load_dataset_from_config(self.config)
+        self.model.fit(self.data_set.feature_matrix)
         self.local_strat_times = None
 
     def set_problem(self, problem_file):

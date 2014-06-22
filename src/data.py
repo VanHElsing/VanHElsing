@@ -34,6 +34,7 @@ def load_data(argv=sys.argv[1:]):
     input: Config file, (optional dataset)
     output: stores model in modelfile
     """
+    LOGGER.info('Loading Data')
     # load config
     parser = set_up_parser()
     args = parser.parse_args(argv)
@@ -68,4 +69,7 @@ def load_data(argv=sys.argv[1:]):
 
 
 if __name__ == '__main__':
+    # args = ['-c','satallax.ini']
+    # args = ['-c','e.ini']
+    # load_data(args)    
     sys.exit(load_data())
