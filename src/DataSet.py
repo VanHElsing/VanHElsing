@@ -8,7 +8,7 @@ from os import listdir
 from os.path import isfile, join
 import numpy as np
 from src.GlobalVars import PATH
-
+from scipy.sparse import coo_matrix as smat
 
 class DataSet(object):
     '''
@@ -31,6 +31,10 @@ class DataSet(object):
         copy.strategies = self.strategies
         copy.problems = self.problems[mask]
         return copy
+
+    def sparsify(self):
+        self.strategy_matrix = (self.strategy_matrix > -1) * self.strategy_matrix
+        self.strategy_matrix = smat(self.strategy_matrix)
 
     def load(self, data_type):
         if data_type == 'E':
