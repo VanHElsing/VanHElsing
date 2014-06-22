@@ -39,7 +39,7 @@ def run_e_auto(args):
 def run_helsing(args):
     problem_file, time_limit = args
     path = os.path.join(PATH, 'src', 'helsing.py')
-    atp = ATP(path, '-t ', '')
+    atp = ATP(path, '-t ', '-c /home/daniel/workspace/VanHElsing/src/satallax.ini')
     # TODO: Get rid of this -p hack
     proof_found, _cs, _out, used_time = atp.run('', time_limit,
                                                 '-p ' + problem_file)
@@ -54,6 +54,17 @@ def run_emales(args):
     # TODO: Get rid of this -p hack
     proof_found, _cs, _out, used_time = atp.run('', time_limit,
                                                 '-p ' + problem_file)
+    return problem_file, proof_found, used_time
+
+
+def run_satallax(args):
+    # satallax.opt -t %d %s
+    problem_file, time_limit = args
+    # Hack
+    path = os.path.join('/home/daniel/workspace/starexec/install/satallax-2.7/bin', 'satallax.opt')
+    atp = ATP(path, '-t','')
+    proof_found, _cs, _out, used_time = atp.run('', time_limit,
+                                                problem_file)
     return problem_file, proof_found, used_time
 
 
@@ -73,11 +84,14 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
         cores = mp.cpu_count()
     if prover == 'E':
         prover_call = run_e_auto
+    elif prover == 'satallax':
+        prover_call = run_satallax     
     elif prover == 'helsing':
         prover_call = run_helsing
     elif prover == 'emales':
         prover_call = run_emales
-    problems = load_problems(problem_file)
+    problems = load_problems(problem_file)[:10]
+    print len(problems)
     with open(outfile, 'w') as OS:
         # pool = MyPool(processes = cores)
         pool = mp.Pool(processes=cores)

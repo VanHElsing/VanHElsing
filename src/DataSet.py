@@ -46,7 +46,7 @@ class DataSet(object):
         satallax_files = [f for f in self.sat_get_strat_file_names() if f.endswith('.results')]
         satallax_strats = [self.sat_load_strat(sat) for sat in satallax_files]
         tmp_strategies = map(lambda x: x.replace('.results', ''), satallax_files)
-        self.strategies = map(lambda x: '-m '+ x, tmp_strategies)
+        self.strategies = np.array(map(lambda x: '-m '+ x, tmp_strategies))
         self.strategy_matrix = self.sat_generate_strat_matrix(self.problems, satallax_strats)
 
     def parse_E_data(self):  # NOQA

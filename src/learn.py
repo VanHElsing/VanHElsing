@@ -100,4 +100,7 @@ def learn(argv=sys.argv[1:]):
                         scheduler_id, exportfile)
 
 if __name__ == '__main__':
-    sys.exit(learn())
+    #args = ['-c','satallax.ini']
+    args = ['-c','e.ini']
+    learn(args)        
+    #sys.exit(learn())

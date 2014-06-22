@@ -43,8 +43,7 @@ class NearestNeighborScheduler(StrategyScheduler):
     def fit(self, data_set, max_time, good_problems=None):
         self.max_time = max_time
         #self._data_set = remove_unsolveable_problems(data_set)
-        self._data_set = data_set
-        self.data_set = copy.deepcopy(self._data_set)
+        self.data_set = data_set
         self.model.fit(self.data_set.feature_matrix)
 
     def predict(self, time_left):
@@ -61,7 +60,8 @@ class NearestNeighborScheduler(StrategyScheduler):
             neighbors = self.model.kneighbors(self.features)
             # Find close neighbours
             n_distances = neighbors[0][0]
-            max_dist = n_distances[self.min_neighbors] * self.mul_factor
+            nr_index = min(len(n_distances)-1,self.min_neighbors)
+            max_dist = n_distances[nr_index] * self.mul_factor
             for cut_off_index, dist in enumerate(n_distances):
                 if dist > max_dist:
                     break
@@ -87,8 +87,9 @@ class NearestNeighborScheduler(StrategyScheduler):
         return strategy, self.last_time
 
     def reset(self):
+        if self._data_set is None:
+            self._data_set = load_dataset_from_config(self.config)
         self.data_set = copy.deepcopy(self._data_set)
-        #self.data_set = load_dataset_from_config(self.config)
         self.model.fit(self.data_set.feature_matrix)
         self.local_strat_times = None
 

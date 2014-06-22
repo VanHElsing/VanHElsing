@@ -48,8 +48,14 @@ def plot_theory_satallax():
     axis_vals = [0.1, 300, 0, 573]
     path = os.path.join(PATH, 'runs', 'theory','Satallax')
     best_times = (os.path.join(path, 'bestTimes'), 'Best')
+    nn_5_local_dyn = (os.path.join(path, 'NN5LocalDyn_1.1'), 'NN5LocalDyn1.1')
+    nn_2_local_dyn = (os.path.join(path, 'NN2LocalDyn_1.1'), 'NN2LocalDyn1.1')
+    ml_eval = (os.path.join(PATH, 'src', 'ml_eval'), 'ML Eval')
     result_tuples = []
     result_tuples.append(best_times)
+    result_tuples.append(ml_eval)
+    result_tuples.append(nn_5_local_dyn)
+    result_tuples.append(nn_2_local_dyn)
     return result_tuples, axis_vals
 
 
@@ -117,8 +123,8 @@ def plot_real_test():
 
 
 if __name__ == '__main__':
-    result_tuples, axis_vals = plot_theory_e()
-    #result_tuples, axis_vals = plot_theory_satallax()
+    #result_tuples, axis_vals = plot_theory_e()
+    result_tuples, axis_vals = plot_theory_satallax()
     #result_tuples, axis_vals = plot_real_training()
     #result_tuples, axis_vals = plot_real_test()
     plot_results(result_tuples, axis_vals)
