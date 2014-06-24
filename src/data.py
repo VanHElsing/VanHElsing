@@ -51,6 +51,7 @@ def load_data(argv=sys.argv[1:]):
     # load dataset
     dataset = load_or_generate_dataset(args.inputfile, configuration)
 
+
     # remove unsolvable problems
     if configuration.getboolean('DataUtil', 'removeunsolvables'):
         dataset = remove_unsolveable_problems(dataset)
@@ -62,6 +63,13 @@ def load_data(argv=sys.argv[1:]):
         dataset = dataset.mask(range(args.limitprobs))
         LOGGER.info("Limiting problems - prob x strats: %i x %i",
                     len(dataset.problems), len(dataset.strategies))
+
+    # store strategy matrix as sparse matrix
+    if configuration.getboolean('DataUtil', 'sparse'):
+        dataset.sparsify()
+        LOGGER.info("Sparsify strategy matrix - nonzero elements / total elements: %i / %i",
+                len(dataset.strategy_matrix.nonzero()[0]), (dataset.strategy_matrix.shape[0] * dataset.strategy_matrix.shape[1]))  
+  
 
     # save dataset
     save_object(dataset, outfile)
