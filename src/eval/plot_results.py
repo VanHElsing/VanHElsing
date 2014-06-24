@@ -85,6 +85,27 @@ def plot_theory_e():
     # result_tuples.append(ml_eval)
     return result_tuples, axis_vals
 
+def plot_real_training_satallax():
+    axis_vals = [0.1, 300, 0, 573]
+    path = os.path.join(PATH, 'runs', 'real','Satallax')
+    s27 = (os.path.join(path, 'atp_eval_CASC_Training_Satallax2.7'), 'Satallax 2.7')
+    helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Training_Satallax-MaLeS1.3'), 'Satallax-MaLeS 1.3')
+    result_tuples = []
+    result_tuples.append(s27)
+    result_tuples.append(helsing_nn_wots)
+    return result_tuples, axis_vals
+
+
+def plot_real_test_satallax():
+    axis_vals = [0.1, 300, 0, 600]
+    path = os.path.join(PATH, 'runs', 'real', 'Satallax')
+    s27 = (os.path.join(path, 'atp_eval_CASC_Test_Satallax2.7'), 'Satallax 2.7')
+    helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Test_Satallax-MaLeS1.3'), 'Satallax-MaLeS 1.3')
+    result_tuples = []
+    result_tuples.append(s27)
+    result_tuples.append(helsing_nn_wots)
+    return result_tuples, axis_vals
+
 
 def plot_real_training():
     axis_vals = [1, 300, 0, 1121]
@@ -124,7 +145,9 @@ def plot_real_test():
 
 if __name__ == '__main__':
     #result_tuples, axis_vals = plot_theory_e()
-    result_tuples, axis_vals = plot_theory_satallax()
+    #result_tuples, axis_vals = plot_theory_satallax()
+    #result_tuples, axis_vals = plot_real_training_satallax()
+    result_tuples, axis_vals = plot_real_test_satallax()
     #result_tuples, axis_vals = plot_real_training()
     #result_tuples, axis_vals = plot_real_test()
     plot_results(result_tuples, axis_vals)

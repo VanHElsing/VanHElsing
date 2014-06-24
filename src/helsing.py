@@ -15,6 +15,12 @@ import os
 import sys
 from time import time
 
+path = os.path.realpath(os.path.dirname(os.path.abspath(__file__)))
+if not path in sys.path:
+        sys.path.insert(1, path)
+        sys.path.insert(1, os.path.dirname(path))
+
+
 from argparse import ArgumentParser
 from src.GlobalVars import PATH, LOGGER
 from src.IO import load_config
