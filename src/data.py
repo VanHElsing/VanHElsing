@@ -65,7 +65,11 @@ def load_data(argv=sys.argv[1:]):
                     len(dataset.problems), len(dataset.strategies))
 
     # store strategy matrix as sparse matrix
-    if configuration.getboolean('DataUtil', 'sparse'):
+    try: 
+        sparse = configuration.getboolean('DataUtil', 'sparse')
+    except:
+        sparse = False
+    if sparse:
         dataset.sparsify()
         LOGGER.info("Sparsify strategy matrix - nonzero elements / total elements: %i / %i",
                 len(dataset.strategy_matrix.nonzero()[0]), (dataset.strategy_matrix.shape[0] * dataset.strategy_matrix.shape[1]))  

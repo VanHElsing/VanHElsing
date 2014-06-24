@@ -67,7 +67,7 @@ def main(argv=sys.argv[1:]):
         strat, strat_time = scheduler.predict(time_left)
         #run_time = adapt_run_time(strat_time, time_left, configuration)
         run_time = min(time_left, strat_time)
-        print strat_time, run_time
+        #print strat_time, run_time
         LOGGER.info("Running %s for %s seconds" % (strat, strat_time))
         proof_found, _cs, output, _used_time = atp.run(strat, run_time,
                                                        args.problem)

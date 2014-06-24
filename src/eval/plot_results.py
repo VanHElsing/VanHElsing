@@ -145,9 +145,9 @@ def plot_real_test():
 
 if __name__ == '__main__':
     #result_tuples, axis_vals = plot_theory_e()
-    #result_tuples, axis_vals = plot_theory_satallax()
+    result_tuples, axis_vals = plot_theory_satallax()
     #result_tuples, axis_vals = plot_real_training_satallax()
-    result_tuples, axis_vals = plot_real_test_satallax()
+    #result_tuples, axis_vals = plot_real_test_satallax()
     #result_tuples, axis_vals = plot_real_training()
     #result_tuples, axis_vals = plot_real_test()
     plot_results(result_tuples, axis_vals)

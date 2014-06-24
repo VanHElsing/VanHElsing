@@ -101,6 +101,6 @@ def learn(argv=sys.argv[1:]):
 
 if __name__ == '__main__':
     #args = ['-c','satallax.ini']
-    args = ['-c','e.ini']
-    learn(args)        
-    #sys.exit(learn())
+    #args = ['-c','e.ini']
+    #learn(args)        
+    sys.exit(learn())

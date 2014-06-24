@@ -21,7 +21,7 @@ class GreedyPlusScheduler(StrategyScheduler):
         self.inititial_predictions = []
         self.plus_scheduler = NearestNeighborScheduler(config) # TODO: Cannot use util.choose_scheduler because of self - reference :/
         self.newly_solved_threshold = .05 # 5 % need to be solved
-        self.greedy_run_time = 1.0
+        self.greedy_run_time = 0.5
         self.data_set = None
         self.problem = None
         self.features = None
@@ -33,7 +33,9 @@ class GreedyPlusScheduler(StrategyScheduler):
         greedy_scheduler = GreedyScheduler(self.config)
         greedy_scheduler.fit(data_set, max_time)
         solved_enough = True
-        while solved_enough:
+        i = 0
+        #while solved_enough:
+        while i < 10:
             unsolved_problems = greedy_scheduler.data_set.strategy_matrix.shape[0]
             prediction = greedy_scheduler.predict(max_time, self.greedy_run_time)
             greedy_scheduler.update()
@@ -42,9 +44,10 @@ class GreedyPlusScheduler(StrategyScheduler):
                 solved_enough = False
             self.inititial_predictions.append(prediction)
             self.data_set = greedy_scheduler.data_set
+            i += 1
         LOGGER.info('Picked %s strategies for initial greedy run', len(self.inititial_predictions))
         LOGGER.info('Reduced the data set to %s', self.data_set.strategy_matrix.shape)
-        self.plus_scheduler.fit(data_set, max_time)
+        self.plus_scheduler.fit(self.data_set, max_time)
 
     def predict(self, time_left):
         if self.prediction_counter < len(self.inititial_predictions):
