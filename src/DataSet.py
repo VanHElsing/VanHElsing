@@ -21,14 +21,18 @@ class DataSet(object):
         '''
         self.feature_matrix = None
         self.strategy_matrix = None
+        self.strategy_files = None
         self.strategies = None
         self.problems = None
+        
+        self.whitelist = ['protokoll_G', 'protokoll_H', 'protokoll_U']
 
     def mask(self, mask):
         copy = DataSet()
         copy.feature_matrix = self.feature_matrix[mask]
         copy.strategy_matrix = self.strategy_matrix[mask]
         copy.strategies = self.strategies
+        copy.strategy_files = self.strategy_files
         copy.problems = self.problems[mask]
         return copy
 
@@ -51,6 +55,7 @@ class DataSet(object):
 
     def parse_E_data(self):  # NOQA
         self.strategies = []
+        self.strategy_files = []
         sdict = self.load_strategies()
         fdict = self.load_features(sdict)
         self.feature_matrix = self.generate_feature_matrix(fdict)
@@ -59,41 +64,31 @@ class DataSet(object):
         self.strategies = np.array(self.strategies)
 
     def is_relevant_strategy(self, filename):
-        whitelist = ['protokoll_G', 'protokoll_H', 'protokoll_U']
-        return any(map(filename.startswith, whitelist))
+        return any(map(filename.startswith, self.whitelist))
 
-    def get_strategy_file_names(self, path=join(PATH,
-                                                'data/E/TESTRUNS_PEGASUS/')):
+    def get_strategy_file_names(self, path=join(PATH, 'data/E/TESTRUNS_PEGASUS/')):
         return [f for f in listdir(path) if
                 isfile(join(path, f)) and self.is_relevant_strategy(f)]
 
-    def initialize_dict_with_problems(self, sfile, path):
-        sdict = {}
-        with open(path + sfile, 'r') as inputstream:
-            firstline = True
-            for line in inputstream:
-                if firstline:
-                    firstline = False
-                else:
-                    sdict[line.split()[0]] = [[], []]
-        return sdict
-
     def load_strategies(self, path=join(PATH, 'data/E/TESTRUNS_PEGASUS/')):
         sfiles = self.get_strategy_file_names()
-        sdict = self.initialize_dict_with_problems(sfiles[0], path)
-        for sfile in sfiles:
+        sdict = dict()
+        for sfile_i in range(len(sfiles)):
+            sfile = sfiles[sfile_i]
             firstline = True
             with open(path + sfile, 'r') as inputstream:
                 for line in inputstream:
                     if firstline:
                         firstline = False
                         self.strategies.append(line[2:].strip())
+                        self.strategy_files.append(sfile)
                     else:
                         sline = line.split()
-                        if sline[1] != 'T':
-                            sdict[sline[0]][0].append(-1)
-                        else:
-                            sdict[sline[0]][0].append(float(sline[2]))
+                        if not sline[0] in sdict:
+                            sdict[sline[0]] = [-1 * np.ones(len(sfiles)), []]
+                        
+                        if sline[1] == 'T':
+                            sdict[sline[0]][0][sfile_i] = float(sline[2])
         return sdict
 
     def load_features(self, fdict, path=join(PATH, 'data/E/')):
