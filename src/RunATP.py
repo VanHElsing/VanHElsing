@@ -40,7 +40,7 @@ class ATP(object):
         if not os.path.exists(self.binary):
             raise IOError(10, 'Cannot find ATP binary %s' % self.binary)
         # TODO: time_string and round_time is E specific!
-        rounded_time = int(time_out + 1)
+        rounded_time = int(time_out + 1.5)
         if self.time_string.endswith('='):
             time_string = self.time_string + str(rounded_time)
         else:

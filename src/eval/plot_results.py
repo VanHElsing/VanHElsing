@@ -90,7 +90,11 @@ def plot_real_training_satallax():
     path = os.path.join(PATH, 'runs', 'real','Satallax')
     s27 = (os.path.join(path, 'atp_eval_CASC_Training_Satallax2.7'), 'Satallax 2.7')
     helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Training_Satallax-MaLeS1.3'), 'Satallax-MaLeS 1.3')
+    s27gp = (os.path.join(path, 'atp_eval_CASC_Training_Satallax2.7_GreedyPlus'), 'Satallax 2.7 GP')
+    helsing_nn_wotsgp = (os.path.join(path, 'atp_eval_CASC_Training_Satallax-MaLeS1.3_GreedyPlus'), 'Satallax-MaLeS 1.3 GreedyPlus')    
     result_tuples = []
+    result_tuples.append(s27gp)
+    result_tuples.append(helsing_nn_wotsgp)
     result_tuples.append(s27)
     result_tuples.append(helsing_nn_wots)
     return result_tuples, axis_vals
@@ -101,28 +105,34 @@ def plot_real_test_satallax():
     path = os.path.join(PATH, 'runs', 'real', 'Satallax')
     s27 = (os.path.join(path, 'atp_eval_CASC_Test_Satallax2.7'), 'Satallax 2.7')
     helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Test_Satallax-MaLeS1.3'), 'Satallax-MaLeS 1.3')
+    s27gp = (os.path.join(path, 'atp_eval_CASC_Test_Satallax2.7_GreedyPlus'), 'Satallax 2.7 GP')
+    helsing_nn_wotsgp = (os.path.join(path, 'atp_eval_CASC_Test_Satallax-MaLeS1.3_GreedyPlus'), 'Satallax-MaLeS 1.3 GreedyPlus')    
     result_tuples = []
     result_tuples.append(s27)
     result_tuples.append(helsing_nn_wots)
+    result_tuples.append(s27gp)
+    result_tuples.append(helsing_nn_wotsgp)
+
     return result_tuples, axis_vals
 
 
 def plot_real_training():
     axis_vals = [1, 300, 0, 1121]
     path = os.path.join(PATH, 'runs', 'real')
-    e18 = (os.path.join(path, 'atp_eval_CASC_Train_E1.8'), 'E 1.8')
-    e17 = (os.path.join(path, 'atp_eval_CASC_Train_E1.7'), 'E 1.7')
-    emales = (os.path.join(path, 'atp_eval_CASC_Train_emales1.2'), 'E-MaLeS 1.2')
-    helsing_nn_wts = (os.path.join(path, 'atp_eval_CASC_Train_helsing_NN_with_basic_time_scaling'), 'Helsing NN wts')
-    helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Train_helsing_NN_without_time_scaling'), 'Helsing NN wots')
-    helsing_group1 = (os.path.join(path, 'atp_eval_CASC_Training_helsing_group1'), 'Helsing Group1')
+    e18 = (os.path.join(path, 'E', 'atp_eval_CASC_Train_E1.8'), 'E 1.8')
+    e17 = (os.path.join(path, 'E', 'atp_eval_CASC_Train_E1.7'), 'E 1.7')
+    emales = (os.path.join(path, 'E', 'atp_eval_CASC_Train_emales1.2'), 'E-MaLeS 1.2')
+    helsing_nn_wts = (os.path.join(path, 'E', 'atp_eval_CASC_Train_helsing_NN_with_basic_time_scaling'), 'Helsing NN wts')
+    helsing_nn_wots = (os.path.join(path, 'E', 'atp_eval_CASC_Train_helsing_NN_without_time_scaling'), 'Helsing NN wots')
+    helsing_group1 = (os.path.join(path, 'E', 'atp_eval_CASC_Training_helsing_group1'), 'Helsing Group1')
+    helsing_group1rf = (os.path.join(path, 'E', 'atp_eval_CASC_Training_helsing_group1_RF'), 'Helsing Group1RF')
     result_tuples = []
     result_tuples.append(e18)
     result_tuples.append(e17)
     result_tuples.append(emales)
     #result_tuples.append(helsing_nn_wts)
     result_tuples.append(helsing_nn_wots)
-    result_tuples.append(helsing_group1)
+    result_tuples.append(helsing_group1rf)
     return result_tuples, axis_vals
 
 
@@ -145,9 +155,9 @@ def plot_real_test():
 
 if __name__ == '__main__':
     #result_tuples, axis_vals = plot_theory_e()
-    result_tuples, axis_vals = plot_theory_satallax()
+    #result_tuples, axis_vals = plot_theory_satallax()
     #result_tuples, axis_vals = plot_real_training_satallax()
-    #result_tuples, axis_vals = plot_real_test_satallax()
+    result_tuples, axis_vals = plot_real_test_satallax()
     #result_tuples, axis_vals = plot_real_training()
     #result_tuples, axis_vals = plot_real_test()
     plot_results(result_tuples, axis_vals)

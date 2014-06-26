@@ -39,7 +39,8 @@ def run_e_auto(args):
 def run_helsing(args):
     problem_file, time_limit = args
     path = os.path.join(PATH, 'src', 'helsing.py')
-    atp = ATP(path, '-t ', '-c /home/daniel/workspace/VanHElsing/src/satallax.ini')
+    #atp = ATP(path, '-t ', '-c /home/daniel/workspace/VanHElsing/src/satallax.ini')
+    atp = ATP(path, '-t ', '-c config.ini')
     # TODO: Get rid of this -p hack
     proof_found, _cs, _out, used_time = atp.run('', time_limit,
                                                 '-p ' + problem_file)
