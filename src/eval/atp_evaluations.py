@@ -91,11 +91,12 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
         prover_call = run_helsing
     elif prover == 'emales':
         prover_call = run_emales
-    problems = load_problems(problem_file)[:10]
+    problems = load_problems(problem_file) #[:5]
     print len(problems)
     with open(outfile, 'w') as OS:
         # pool = MyPool(processes = cores)
         pool = mp.Pool(processes=cores)
+        
         args = [[p, run_time] for p in problems]
         results = pool.map_async(prover_call, args)
         pool.close()
@@ -105,3 +106,6 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
         for problem, proofFound, usedTime in results:
             if proofFound:
                 OS.write('%s,%s\n' % (problem, usedTime))
+            #else:
+            #    OS.write('NOTFOUND: %s\n' % (usedTime))
+

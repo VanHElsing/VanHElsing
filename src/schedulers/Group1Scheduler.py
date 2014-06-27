@@ -12,7 +12,8 @@ import src.Preprocessing as pp
 
 
 # TODO import right classifiers
-from src.schedulers.group1.strategy_selector_time_rf import StrategySelectorTimeRF
+#from src.schedulers.group1.strategy_selector_time_rf import StrategySelectorTimeRF as StrategySelector
+from src.schedulers.group1.strategy_selector_time_knn import StrategySelectorTimeKNN as StrategySelector
 from src.schedulers.group1.timeregression_boost import TimeRegression as TimeRegressionBoost
 from src.schedulers.group1.timeregression import TimeRegression
 from src.schedulers.group1.strategy_solvable_in_time_rf import StrategySolvableInTimeRF
@@ -76,7 +77,7 @@ class Group1Scheduler(StrategyScheduler):
         # fit models
         if self._log:
             LOGGER.info("Fit selection")
-        self._stratselector = StrategySelectorTimeRF(self._max_time)
+        self._stratselector = StrategySelector(self._max_time)
         self._stratselector.fit(X, Y)
         if self._log:
             LOGGER.info("Fit regression")

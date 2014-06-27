@@ -37,15 +37,17 @@ def plot_results(result_tuples, axis_vals=None):
         for key in times:
             total_solved += results[key]
             solved_at_time.append(total_solved)
-        times.append(300)
+        times.append(350)
         solved_at_time.append(solved_at_time[-1])
         pl.plot(times, solved_at_time, plot_styles[plot_style_counter],
                 label=res_label)
+    if axis_vals is not None:
+        pl.axis(axis_vals)        
     pl.legend(loc='lower right')
     pl.show()
 
 def plot_theory_satallax():
-    axis_vals = [0.1, 300, 0, 573]
+    axis_vals = [0.1, 350, 0, 573]
     path = os.path.join(PATH, 'runs', 'theory','Satallax')
     best_times = (os.path.join(path, 'bestTimes'), 'Best')
     nn_5_local_dyn = (os.path.join(path, 'NN5LocalDyn_1.1'), 'NN5LocalDyn1.1')
@@ -60,7 +62,7 @@ def plot_theory_satallax():
 
 
 def plot_theory_e():
-    axis_vals = [1, 300, 0, 11000]
+    axis_vals = [1, 350, 0, 11000]
     path = os.path.join(PATH, 'runs', 'theory','E')
     best_times = (os.path.join(path, 'bestTimes'), 'Best')
     best_times_wo_x = (os.path.join(path,
@@ -86,7 +88,7 @@ def plot_theory_e():
     return result_tuples, axis_vals
 
 def plot_real_training_satallax():
-    axis_vals = [0.1, 300, 0, 573]
+    axis_vals = [0.1, 350, 0, 573]
     path = os.path.join(PATH, 'runs', 'real','Satallax')
     s27 = (os.path.join(path, 'atp_eval_CASC_Training_Satallax2.7'), 'Satallax 2.7')
     helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Training_Satallax-MaLeS1.3'), 'Satallax-MaLeS 1.3')
@@ -101,7 +103,7 @@ def plot_real_training_satallax():
 
 
 def plot_real_test_satallax():
-    axis_vals = [0.1, 300, 0, 600]
+    axis_vals = [0.1, 350, 0, 600]
     path = os.path.join(PATH, 'runs', 'real', 'Satallax')
     s27 = (os.path.join(path, 'atp_eval_CASC_Test_Satallax2.7'), 'Satallax 2.7')
     helsing_nn_wots = (os.path.join(path, 'atp_eval_CASC_Test_Satallax-MaLeS1.3'), 'Satallax-MaLeS 1.3')
@@ -117,7 +119,7 @@ def plot_real_test_satallax():
 
 
 def plot_real_training():
-    axis_vals = [1, 300, 0, 1121]
+    axis_vals = [1, 350, 0, 1121]
     path = os.path.join(PATH, 'runs', 'real')
     e18 = (os.path.join(path, 'E', 'atp_eval_CASC_Train_E1.8'), 'E 1.8')
     e17 = (os.path.join(path, 'E', 'atp_eval_CASC_Train_E1.7'), 'E 1.7')
@@ -137,7 +139,7 @@ def plot_real_training():
 
 
 def plot_real_test():
-    axis_vals = [1, 300, 0, 700]
+    axis_vals = [1, 350, 0, 700]
     path = os.path.join(PATH, 'runs', 'real')
     e18 = (os.path.join(path, 'atp_eval_CASC_Test_E1.8'), 'E 1.8')
     e17 = (os.path.join(path, 'atp_eval_CASC_Test_E1.7'), 'E 1.7')
@@ -157,7 +159,7 @@ if __name__ == '__main__':
     #result_tuples, axis_vals = plot_theory_e()
     #result_tuples, axis_vals = plot_theory_satallax()
     #result_tuples, axis_vals = plot_real_training_satallax()
-    result_tuples, axis_vals = plot_real_test_satallax()
-    #result_tuples, axis_vals = plot_real_training()
+    #result_tuples, axis_vals = plot_real_test_satallax()
+    result_tuples, axis_vals = plot_real_training()
     #result_tuples, axis_vals = plot_real_test()
     plot_results(result_tuples, axis_vals)
