@@ -14,7 +14,7 @@ def plot_results(result_tuples, axis_vals=None):
     plot_style_counter = 0
     pl.figure('Results')
     pl.ylabel('Problems solved')
-    pl.xscale('log')
+    #pl.xscale('log')
     pl.xlabel('Seconds')
     ax = pl.gca()
     ax.set_autoscale_on(False)
@@ -80,7 +80,7 @@ def plot_theory_e():
     result_tuples.append(best_times_wo_x)
     # result_tuples.append(nn_10_local)
     result_tuples.append(nn_5_local_dyn)
-    # result_tuples.append(nn_2_local_dyn)
+    result_tuples.append(nn_2_local_dyn)
     # result_tuples.append(greedy_plus_nn_5_local_dyn)
     # result_tuples.append(ml_eval)
     return result_tuples, axis_vals
@@ -154,10 +154,10 @@ def plot_real_test():
 
 
 if __name__ == '__main__':
-    #result_tuples, axis_vals = plot_theory_e()
+    result_tuples, axis_vals = plot_theory_e()
     #result_tuples, axis_vals = plot_theory_satallax()
     #result_tuples, axis_vals = plot_real_training_satallax()
-    result_tuples, axis_vals = plot_real_test_satallax()
+    #result_tuples, axis_vals = plot_real_test_satallax()
     #result_tuples, axis_vals = plot_real_training()
     #result_tuples, axis_vals = plot_real_test()
     plot_results(result_tuples, axis_vals)
