@@ -76,6 +76,9 @@ def plot_theory_e():
     greedy_plus_nn_5_local_dyn = (os.path.join(path, 'GreedyPlusNN5LocalDyn'), 'GreedyPlusNN5LocalDyn')
     ml_eval = (os.path.join(PATH, 'src', 'ml_eval'), 'ML Eval')
     e18 = (os.path.join(path, 'EAuto'), 'E 1.8')
+    knn_t200 = (os.path.join(path, 'NN5_t200test'), 'NN5_t200')
+    knn_t300 = (os.path.join(path, 'NN5_t300test'), 'NN5_t300')
+
     result_tuples = []
     result_tuples.append(e18)
     # result_tuples.append(best_times)
@@ -85,6 +88,8 @@ def plot_theory_e():
     # result_tuples.append(nn_2_local_dyn)
     # result_tuples.append(greedy_plus_nn_5_local_dyn)
     # result_tuples.append(ml_eval)
+    result_tuples.append(knn_t200)
+    result_tuples.append(knn_t300)    
     return result_tuples, axis_vals
 
 def plot_real_training_satallax():
@@ -127,14 +132,25 @@ def plot_real_training():
     helsing_nn_wts = (os.path.join(path, 'E', 'atp_eval_CASC_Train_helsing_NN_with_basic_time_scaling'), 'Helsing NN wts')
     helsing_nn_wots = (os.path.join(path, 'E', 'atp_eval_CASC_Train_helsing_NN_without_time_scaling'), 'Helsing NN wots')
     helsing_group1 = (os.path.join(path, 'E', 'atp_eval_CASC_Training_helsing_group1'), 'Helsing Group1')
-    helsing_group1rf = (os.path.join(path, 'E', 'atp_eval_CASC_Training_helsing_group1_RF'), 'Helsing Group1RF')
+    helsing_group1rf = (os.path.join(path, 'E', 'atp_eval_CASC_Training_helsing_group1_RF'), 'Helsing Group1 RF')
+    helsing_group1rf2 = (os.path.join(path, 'E', 'atp_eval_CASC_Training_Group1RF_002'), 'Helsing Group1 RF2')
+    helsing_group1dt = (os.path.join(path, 'E', 'atp_eval_CASC_Training_helsing_group1_DT'), 'Helsing Group1 DT')
+    helsing_group1knn = (os.path.join(path, 'E', 'atp_eval_CASC_Training_helsing_group1_KNN'), 'Helsing Group1 KNN')
+    greedyplus = (os.path.join(path, 'E', 'atp_eval_CASC_Training_GreedyPlus_002'), 'GreedyPlus')
+
+
     result_tuples = []
     result_tuples.append(e18)
     result_tuples.append(e17)
     result_tuples.append(emales)
     #result_tuples.append(helsing_nn_wts)
     result_tuples.append(helsing_nn_wots)
-    result_tuples.append(helsing_group1rf)
+    #result_tuples.append(helsing_group1rf)
+    #result_tuples.append(helsing_group1rf2)
+    #result_tuples.append(helsing_group1dt)
+    #result_tuples.append(helsing_group1knn)    
+    result_tuples.append(greedyplus)    
+
     return result_tuples, axis_vals
 
 
@@ -156,10 +172,10 @@ def plot_real_test():
 
 
 if __name__ == '__main__':
-    #result_tuples, axis_vals = plot_theory_e()
+    result_tuples, axis_vals = plot_theory_e()
     #result_tuples, axis_vals = plot_theory_satallax()
     #result_tuples, axis_vals = plot_real_training_satallax()
     #result_tuples, axis_vals = plot_real_test_satallax()
-    result_tuples, axis_vals = plot_real_training()
+    #result_tuples, axis_vals = plot_real_training()
     #result_tuples, axis_vals = plot_real_test()
     plot_results(result_tuples, axis_vals)
