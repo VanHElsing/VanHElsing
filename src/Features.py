@@ -35,7 +35,8 @@ class Features(object):
         Return the features of the problem at filename
         '''
         self.filename = IO.expand_filename(filename)
-        command = ' '.join([self.binary, self.args, self.filename])
+        binary = os.path.join(GlobalVars.PATH,self.binary)
+        command = ' '.join([binary, self.args, self.filename])
         resultcode, stdout, _stderr = IO.run_command(command, time_out)
         if resultcode < 0:
             raise IOError(10, 'Could not compute features. ' +
@@ -50,7 +51,7 @@ class EFeatures(Features):
     def __init__(self):
         Features.__init__(self)
 
-        self.binary = os.path.join(GlobalVars.EPATH, 'classify_problem')
+        self.binary = os.path.join('contrib', 'E','PROVER', 'classify_problem')
         self.args = '-caaaaaaaaaaaaa --tstp-in'
 
     def parse_output(self, output):
@@ -70,7 +71,7 @@ class TPTPFeatures(Features):
     def __init__(self):
         Features.__init__(self)
 
-        self.binary = os.path.join(GlobalVars.PATH, 'bin','TPTP_features')
+        self.binary = os.path.join('bin','TPTP_features')
         self.args = '-i'
 
     def parse_output(self, output):
