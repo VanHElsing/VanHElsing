@@ -69,7 +69,7 @@ def learn(argv=sys.argv[1:]):
             LOGGER.info("Fitting model.")
             scheduler.fit(train_dataset, max_time)
             LOGGER.info("Evaluating model.")
-            solved, _score = eval_against_dataset(test_dataset, scheduler)
+            solved, _score = eval_against_dataset(test_dataset, scheduler, max_time)
             try:
                 sumscore += solved
             except TypeError:
@@ -82,7 +82,7 @@ def learn(argv=sys.argv[1:]):
         scheduler.fit(dataset, max_time)
         if eval_whole:
             LOGGER.info("EVALUATING (Whole dataset):.")
-            solved, score = eval_against_dataset(dataset, scheduler)
+            solved, score = eval_against_dataset(dataset, scheduler, max_time)
             try:
                 solved += 0
             except TypeError:
