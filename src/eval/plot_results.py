@@ -20,7 +20,7 @@ def plot_results(result_tuples, axis_vals=None):
     ax.set_autoscale_on(False)
     if axis_vals is not None:
         pl.axis(axis_vals)
-    for res_file, res_label in result_tuples:
+    for res_file, res_label in result_tuples:        
         results = {}
         with open(res_file, 'r') as res_stream:
             for line in res_stream:
@@ -170,12 +170,20 @@ def plot_real_test():
     result_tuples.append(helsing_group1)    
     return result_tuples, axis_vals
 
+def plot_theory_cv_nn():
+    axis_vals = [1, 300, 0, 10100]
+    path = os.path.join(PATH, 'runs', 'theory', 'E')
+    
+    sets = [(10, 1, 300), (10, 2, 300), (10, 5, 300), (40, 1, 200), (40, 1, 300), (40, 2, 200), (40, 2, 300), (40, 5, 200), (40, 5, 300)]
+    sets = filter(lambda (folds, neighbors, max_time) : max_time == 300, sets)
+    files = map(lambda (folds, neighbors, max_time) : ("CV%i_NN%i_%i" % (folds, neighbors, max_time)), sets)
+    result_tuples = map(lambda f : (os.path.join(path, f), f), files)
+    return result_tuples, axis_vals
 
 if __name__ == '__main__':
-    result_tuples, axis_vals = plot_theory_e()
+    #result_tuples, axis_vals = plot_theory_e()
     #result_tuples, axis_vals = plot_theory_satallax()
-    #result_tuples, axis_vals = plot_real_training_satallax()
-    #result_tuples, axis_vals = plot_real_test_satallax()
     #result_tuples, axis_vals = plot_real_training()
     #result_tuples, axis_vals = plot_real_test()
+    result_tuples, axis_vals = plot_theory_cv_nn()
     plot_results(result_tuples, axis_vals)
