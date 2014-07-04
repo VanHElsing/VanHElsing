@@ -97,8 +97,7 @@ def ml_cv_eval_async(args):
     schedule_path = os.path.join(PATH, 'runs', 'theory', 'E', 'CV'+str(kfolds)+'_NN'+negscore_func+str(neighbors)+"_"+str(max_time))
     
     if os.path.isfile(schedule_path):
-        LOGGER.info(schedule_path + " already exists, not running ML CV")
-        pass
+        os.remove(schedule_path)
         
     ml_cv_eval(configuration, folds=folds, max_time=max_time, save_schedule_file=schedule_path)
 
@@ -107,7 +106,7 @@ if __name__ == '__main__':
     configs = [
         #(1, 300, 'max'), (2, 300, 'max'), (5, 300, 'max'),
         #(1, 300, 'median'), (2, 300, 'median'), (5, 300, 'median'),
-        #(1, 300, 'mean'), (2, 300, 'mean'), (5, 300, 'mean')
+        (1, 300, 'mean'), (2, 300, 'mean'), (5, 300, 'mean'),
         (1, 300, 'meanmedian'), (2, 300, 'meanmedian'), (5, 300, 'meanmedian'), (10, 300, 'meanmedian')
     ]
     
