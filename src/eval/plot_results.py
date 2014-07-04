@@ -38,6 +38,7 @@ def plot_results(result_tuples, axis_vals=None):
             total_solved += results[key]
             solved_at_time.append(total_solved)
         times.append(350)
+        print len(solved_at_time)
         solved_at_time.append(solved_at_time[-1])
         pl.plot(times, solved_at_time, plot_styles[plot_style_counter],
                 label=res_label)
@@ -174,9 +175,14 @@ def plot_theory_cv_nn():
     axis_vals = [1, 300, 0, 10100]
     path = os.path.join(PATH, 'runs', 'theory', 'E')
     
-    sets = [(10, 1, 300), (10, 2, 300), (10, 5, 300), (40, 1, 200), (40, 1, 300), (40, 2, 200), (40, 2, 300), (40, 5, 200), (40, 5, 300)]
-    sets = filter(lambda (folds, neighbors, max_time) : max_time == 300, sets)
-    files = map(lambda (folds, neighbors, max_time) : ("CV%i_NN%i_%i" % (folds, neighbors, max_time)), sets)
+    #sets = [(10, 1, 300), (10, 2, 300), (10, 5, 300), (40, 1, 200), (40, 1, 300), (40, 2, 200), (40, 2, 300), (40, 5, 200), (40, 5, 300)]
+    sets = [
+        (4, 1, 300, 'max'), (4, 2, 300, 'max'), (4, 5, 300, 'max'),
+        (4, 1, 300, 'median'), (4, 2, 300, 'median'), (4, 5, 300, 'median'),
+        (4, 1, 300, 'mean'), (4, 2, 300, 'mean'), (4, 5, 300, 'mean')
+    ]
+    
+    files = map(lambda (folds, neighbors, max_time, f) : ("CV%i_NN%s%i_%i" % (folds, f, neighbors, max_time)), sets)
     result_tuples = map(lambda f : (os.path.join(path, f), f), files)
     return result_tuples, axis_vals
 

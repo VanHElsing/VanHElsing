@@ -30,12 +30,17 @@ class NearestNeighborScheduler(StrategyScheduler):
             self.mul_factor = config.getfloat('Learner', 'mul_factor')
         except:
             self.mul_factor = 1.1
+        try:
+            self.negscore_func = config.getstring('Learner', 'negscore_func')
+        except:
+            self.negscore_func = 'max'
         self.nr_of_neighbors = 2000
         self.model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)
         self._data_set = None
         self.data_set = None
         self.last_strategy = None
         self.last_time = None
+        self.last_negscore = None # Higher score = worse (slower)
         self.local_strat_times = None
         self.max_time = None
         self.problem = None
@@ -79,15 +84,24 @@ class NearestNeighborScheduler(StrategyScheduler):
                 val = self.local_strat_times[i, j]
                 if val == -1:
                     continue
+                
                 local_avg_times[j] += val
                 local_solved[j] += 1
-                if val < self.max_time and val > local_max_times[j]:
-                    local_max_times[j] = val
 
         max_local_solved = max(local_solved)
         best_local_strategies = [i for i, i_solved in enumerate(local_solved) if i_solved == max_local_solved]
-        best_local_strategies_max_times = [local_max_times[i] for i in best_local_strategies]
-        self.last_strategy, self.last_time = min(zip(best_local_strategies, best_local_strategies_max_times), key=operator.itemgetter(1))
+        
+        best_local_strategies_times = [filter(lambda x : x != -1, self.local_strat_times.T[j]) for j in best_local_strategies]
+        best_local_strategies_max_times = map(max, best_local_strategies_times)
+        
+        if self.negscore_func is 'max':
+            best_local_strategies_negscore = best_local_strategies_max_times
+        elif self.negscore_func is 'median':
+            best_local_strategies_negscore = map(np.median, best_local_strategies_times)
+        elif self.negscore_func is 'mean':
+            best_local_strategies_negscore = map(np.mean, best_local_strategies_times)
+        
+        self.last_strategy, self.last_time, self.last_negscore = min(zip(best_local_strategies, best_local_strategies_max_times, best_local_strategies_negscore), key=operator.itemgetter(2))
         
         assert self.last_time > 0
         assert self.last_time <= self.max_time
