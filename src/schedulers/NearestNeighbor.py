@@ -44,7 +44,7 @@ class NearestNeighborScheduler(StrategyScheduler):
 
     def fit(self, data_set, max_time, good_problems=None):
         self.max_time = max_time
-        #self._data_set = remove_unsolveable_problems(data_set)
+        self._data_set = remove_unsolveable_problems(data_set)
         self.data_set = data_set
         self.model.fit(self.data_set.feature_matrix)
 
