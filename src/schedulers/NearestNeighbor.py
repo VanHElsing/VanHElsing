@@ -34,7 +34,6 @@ class NearestNeighborScheduler(StrategyScheduler):
             self.negscore_func = config.get('Learner', 'negscore_func')
         except:
             self.negscore_func = 'max'
-        print self.negscore_func
         self.nr_of_neighbors = 2000
         self.model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)
         self._data_set = None
@@ -95,11 +94,11 @@ class NearestNeighborScheduler(StrategyScheduler):
         best_local_strategies_times = [filter(lambda x : x != -1, self.local_strat_times.T[j]) for j in best_local_strategies]
         best_local_strategies_max_times = map(max, best_local_strategies_times)
         
-        if self.negscore_func is 'max':
+        if self.negscore_func == 'max':
             best_local_strategies_negscore = best_local_strategies_max_times
-        elif self.negscore_func is 'median':
+        elif self.negscore_func == 'median':
             best_local_strategies_negscore = map(np.median, best_local_strategies_times)
-        elif self.negscore_func is 'mean':
+        elif self.negscore_func == 'mean':
             best_local_strategies_negscore = map(np.mean, best_local_strategies_times)
         
         self.last_strategy, self.last_time, self.last_negscore = min(zip(best_local_strategies, best_local_strategies_max_times, best_local_strategies_negscore), key=operator.itemgetter(2))
