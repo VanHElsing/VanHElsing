@@ -31,9 +31,10 @@ class NearestNeighborScheduler(StrategyScheduler):
         except:
             self.mul_factor = 1.1
         try:
-            self.negscore_func = config.getstring('Learner', 'negscore_func')
+            self.negscore_func = config.get('Learner', 'negscore_func')
         except:
             self.negscore_func = 'max'
+        print self.negscore_func
         self.nr_of_neighbors = 2000
         self.model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)
         self._data_set = None
