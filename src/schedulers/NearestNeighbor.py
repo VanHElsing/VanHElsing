@@ -7,6 +7,8 @@ Created on May 15, 2014
 import copy
 import numpy as np
 import operator
+import sys
+
 from sklearn.neighbors import NearestNeighbors
 from src.data_util import not_solved_by_strat, remove_unsolveable_problems, load_dataset_from_config
 from src.schedulers.SchedulerTemplate import StrategyScheduler
@@ -54,19 +56,23 @@ class NearestNeighborScheduler(StrategyScheduler):
         local_avg_times = [0.0] * s_nr
         local_max_times = [self.max_time] * s_nr
         local_solved = [0.0] * s_nr
-
-        # Find similar problems
+        
+        # Find similar problems, and get the strategy times for those problems
         if self.local_strat_times is None:
             neighbors = self.model.kneighbors(self.features)
             # Find close neighbours
             n_distances = neighbors[0][0]
-            nr_index = min(len(n_distances)-1,self.min_neighbors)
+            nr_index = min(len(n_distances)-1,self.min_neighbors-1)
             max_dist = n_distances[nr_index] * self.mul_factor
+            
+            # Find until which index we are going to use (product: cut_off_index)
             for cut_off_index, dist in enumerate(n_distances):
                 if dist > max_dist:
                     break
-            n_indices = neighbors[1][0][:cut_off_index]
-            self.local_strat_times = self.data_set.strategy_matrix[np.ix_(n_indices, range(s_nr))]
+            
+            n_indices = neighbors[1][0][:cut_off_index] # List of similar problems
+            self.local_strat_times = self.data_set.strategy_matrix[np.ix_(n_indices, range(s_nr))] # Get strategy times for similar problems
+        
         # Get runtimes for similar problems
         for i in range(self.local_strat_times.shape[0]):
             for j in range(self.local_strat_times.shape[1]):
@@ -75,14 +81,17 @@ class NearestNeighborScheduler(StrategyScheduler):
                     continue
                 local_avg_times[j] += val
                 local_solved[j] += 1
-                if val > local_max_times[j] or local_max_times[j] == self.max_time:
+                if val < self.max_time and val > local_max_times[j]:
                     local_max_times[j] = val
 
         max_local_solved = max(local_solved)
         best_local_strategies = [i for i, i_solved in enumerate(local_solved) if i_solved == max_local_solved]
         best_local_strategies_max_times = [local_max_times[i] for i in best_local_strategies]
         self.last_strategy, self.last_time = min(zip(best_local_strategies, best_local_strategies_max_times), key=operator.itemgetter(1))
+        
         assert self.last_time > 0
+        assert self.last_time <= self.max_time
+        
         strategy = self.data_set.strategies[self.last_strategy]
         return strategy, self.last_time
 
