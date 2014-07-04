@@ -8,6 +8,7 @@ import numpy as np
 
 # Imports for ML CV
 import os, sys
+import multiprocessing as mp
 import ConfigParser
 from src.data_util import load_dataset_from_config
 from src.schedulers.util import choose_scheduler
@@ -79,13 +80,35 @@ def ml_cv_eval(configuration, folds, max_time=300, save_schedule_file='ml_eval')
             solved = 0
         LOGGER.info("Solved: {}".format(solved))
     LOGGER.info("Total score: {}".format(sumscore / kfolds))
+
+def ml_cv_eval_async(args):
+    neighbors, max_time, negscore_func = args
+    
+    configuration = ConfigParser.SafeConfigParser()
+    configuration.add_section('Learner')
+    configuration.set('Learner', 'scheduler', 'NN')
+    configuration.set('Learner', 'min_neighbors', str(neighbors))
+    configuration.set('Learner', 'negscore_func', negscore_func)
+    configuration.set('Learner', 'datasetfile', '/home/wgeraedts/tmp/train_solvable.data')
+    
+    configuration.add_section('ATP Settings')
+    configuration.set('ATP Settings', 'features', 'E')
+    
+    schedule_path = os.path.join(PATH, 'runs', 'theory', 'E', 'CV'+str(kfolds)+'_NN'+negscore_func+str(neighbors)+"_"+str(max_time))
+    
+    if os.path.isfile(schedule_path):
+        LOGGER.info(schedule_path + " already exists, not running ML CV")
+        pass
         
+    ml_cv_eval(configuration, folds=folds, max_time=max_time, save_schedule_file=schedule_path)
+
 if __name__ == '__main__':
     kfolds = 4
     configs = [
-#        (1, 300, 'max'), (2, 300, 'max'), (5, 300, 'max'),
-        (1, 300, 'median'), (2, 300, 'median'), (5, 300, 'median'),
-        (1, 300, 'mean'), (2, 300, 'mean'), (5, 300, 'mean')
+        #(1, 300, 'max'), (2, 300, 'max'), (5, 300, 'max'),
+        #(1, 300, 'median'), (2, 300, 'median'), (5, 300, 'median'),
+        #(1, 300, 'mean'), (2, 300, 'mean'), (5, 300, 'mean')
+        (1, 300, 'meanmedian'), (2, 300, 'meanmedian'), (5, 300, 'meanmedian'), (10, 300, 'meanmedian')
     ]
     
     configuration = ConfigParser.SafeConfigParser()
@@ -96,23 +119,10 @@ if __name__ == '__main__':
     dataset = load_dataset_from_config(configuration)
     folds = KFold(len(dataset.problems), n_folds=kfolds, indices=False)
     
-    for neighbors, max_time, negscore_func in configs:
-        configuration = ConfigParser.SafeConfigParser()
-        configuration.add_section('Learner')
-        configuration.set('Learner', 'scheduler', 'NN')
-        configuration.set('Learner', 'min_neighbors', str(neighbors))
-        configuration.set('Learner', 'negscore_func', negscore_func)
-        configuration.set('Learner', 'datasetfile', '/home/wgeraedts/tmp/train_solvable.data')
+    pool = mp.Pool()
         
-        configuration.add_section('ATP Settings')
-        configuration.set('ATP Settings', 'features', 'E')
-        
-        schedule_path = os.path.join(PATH, 'runs', 'theory', 'E', 'CV'+str(kfolds)+'_NN'+negscore_func+str(neighbors)+"_"+str(max_time))
-        
-        if os.path.isfile(schedule_path):
-            LOGGER.info(schedule_path + " already exists, not running ML CV")
-            continue
-            
-        ml_cv_eval(configuration, folds=folds, max_time=max_time, save_schedule_file=schedule_path)
+    pool.map_async(ml_cv_eval_async, configs)
+    pool.close()
+    pool.join()
         
     sys.exit(0)

@@ -100,6 +100,9 @@ class NearestNeighborScheduler(StrategyScheduler):
             best_local_strategies_negscore = map(np.median, best_local_strategies_times)
         elif self.negscore_func == 'mean':
             best_local_strategies_negscore = map(np.mean, best_local_strategies_times)
+        elif self.negscore_func == 'meanmedian':
+            best_local_strategies_negscore = map(np.mean, best_local_strategies_times)
+            best_local_strategies_max_times = map(np.median, best_local_strategies_times)
         
         self.last_strategy, self.last_time, self.last_negscore = min(zip(best_local_strategies, best_local_strategies_max_times, best_local_strategies_negscore), key=operator.itemgetter(2))
         
