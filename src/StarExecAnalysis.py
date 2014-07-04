@@ -25,60 +25,65 @@ if __name__ == '__main__':
     cpu = CPU()
     #cpu.load_or_gen_data()
     
-    strategy_file = 'protokoll_G-E--_042_C45_F1_PI_AE_Q4_CS_SP_PS_S4S'
-    #strategy_file = 'protokoll_X----_schedauto_300' # --auto-schedule
-    
-    dataset = DataSet()
-    dataset.whitelist = [strategy_file] # for faster loading
-    
-    dataset.load('E')
-    dataset = remove_unsolveable_problems(dataset)
-    
-    strategy_i = list(dataset.strategy_files).index(strategy_file)
-    strategy = dataset.strategies[strategy_i]
-
     if not os.path.isfile(benchmark_path):
-        times = []
-        for f in os.listdir(path):
-            fpath = os.path.join(path, f)
-            if not os.path.isfile(fpath):
-                continue
+        series = []
+        for strategy_file in os.listdir(path):
+            spath = os.path.join(path, strategy_file)
+        
+            dataset = DataSet()
+            dataset.whitelist = [strategy_file] # for faster loading
             
-            p_path = os.path.join(TPTPPath, 'Problems', f[:3], f)
+            dataset.load('E')
+            dataset = remove_unsolveable_problems(dataset)
             
-            lastline = None
-            with open(fpath, 'r') as inputstream:
-                for line in inputstream:
-                    lastline = line
-            
-            result = RX_TIME.match(lastline)
-            assert(not result is None)
-            used_time = float(result.groups()[0])
-            
-            if used_time >= 300.0:
-                used_time = -1.0
-            
-            if used_time <= 3.0:
-                continue
-            
-            real_time = cpu.measure(strategy, p_path)
-            print 'Finished %s in %f' % (p_path, real_time)
-                
-            times.append([(real_time, abs(used_time - real_time), used_time / real_time)])
+            strategy_i = list(dataset.strategy_files).index(strategy_file)
+            strategy = dataset.strategies[strategy_i]
 
-        print len(times)
+            times = []
+            for f in os.listdir(spath):
+                fpath = os.path.join(spath, f)
+                if not os.path.isfile(fpath):
+                    continue
+                
+                p_path = os.path.join(TPTPPath, 'Problems', f[:3], f)
+                
+                lastline = None
+                with open(fpath, 'r') as inputstream:
+                    for line in inputstream:
+                        lastline = line
+                
+                result = RX_TIME.match(lastline)
+                assert(not result is None)
+                used_time = float(result.groups()[0])
+                
+                if used_time >= 300.0:
+                    used_time = -1.0
+                
+                if used_time <= 3.0:
+                    continue
+                
+                real_time = cpu.measure(strategy, p_path)
+                
+                if real_time == -1:
+                    print 'Did not finish within time limit'
+                    continue
+                
+                print 'Finished %s in %f' % (p_path, real_time)
+                    
+                times.append((real_time, abs(used_time - real_time), used_time / real_time, f))
+            
+            series.append((strategy_file, times))
+
         with open(benchmark_path, 'wb') as out_s:
-            pickle.dump(times, out_s)
+            pickle.dump(series, out_s)
     else:
         with open(benchmark_path, 'rb') as in_s:
-            times = pickle.load(in_s)
+            series = pickle.load(in_s)
     
-    print times
-    
-    times = map(lambda x : x[0], times)
-    
-    times.sort(key=lambda x : x[0])
     pl.figure("StarExec comparison to current machine")
-    pl.plot(map(lambda x : x[0], times), map(lambda x : x[2] * x[0], times))
+    for strategy_file, times in series:
+        times.sort(key=lambda x : x[0])
+        print times
+        pl.plot(map(lambda x : x[0], times), map(lambda x : x[2] * x[0], times))
     
     pl.show()
