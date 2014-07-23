@@ -7,11 +7,6 @@ Created on May 23, 2014
 import os, sys
 from argparse import ArgumentParser
 
-from src.GlobalVars import PATH, LOGGER
-from src.IO import load_config, save_object
-from src.data_util import remove_unsolveable_problems, load_or_generate_dataset
-
-
 def set_up_parser():
     parser = ArgumentParser(description='Van HElsing ' +
                             'dataset tool 0.1 --- May 2014.')
@@ -81,7 +76,10 @@ def load_data(argv=sys.argv[1:]):
 
 
 if __name__ == '__main__':
-    # args = ['-c','satallax.ini']
-    # args = ['-c','e.ini']
-    # load_data(args)    
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    
+    from src.GlobalVars import PATH, LOGGER
+    from src.IO import load_config, save_object
+    from src.data_util import remove_unsolveable_problems, load_or_generate_dataset
+    
     sys.exit(load_data())

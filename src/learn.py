@@ -9,14 +9,6 @@ import os, sys
 from sklearn.cross_validation import KFold
 from argparse import ArgumentParser
 
-from src.data_util import load_dataset_from_config
-from src.GlobalVars import PATH, LOGGER
-from src.IO import load_config
-from src.schedulers.util import choose_scheduler
-from src.schedulers.util import save_scheduler
-from src.eval.ml_evaluations import eval_against_dataset
-
-
 def set_up_parser():
     parser = ArgumentParser(description='Van HElsing ' +
                             'strategy scheduler learner and tester 0.1 --- May 2014.')
@@ -100,7 +92,13 @@ def learn(argv=sys.argv[1:]):
                         scheduler_id, exportfile)
 
 if __name__ == '__main__':
-    #args = ['-c','satallax.ini']
-    #args = ['-c','e.ini']
-    #learn(args)        
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    
+    from src.data_util import load_dataset_from_config
+    from src.GlobalVars import PATH, LOGGER
+    from src.IO import load_config
+    from src.schedulers.util import choose_scheduler
+    from src.schedulers.util import save_scheduler
+    from src.eval.ml_evaluations import eval_against_dataset
+          
     sys.exit(learn())
