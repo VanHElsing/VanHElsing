@@ -1,7 +1,7 @@
 VanHElsing
 ==========
 
-Automatic Theorem Prover in Python based on the E prover
+Automatic Theorem Prover using Machine Learning of Strategies in Python based on the E prover and Satallax.
 
 Dependencies
 ============
@@ -11,14 +11,14 @@ This project has been tested with:
 * Python 2.7.4
 
 VanHElsing can be used without root access to the host machine. The only
-requirement is the availability of Python, basic compilation tools like GCC and
-Pip. (the alternative package manager for python)
+requirement is the availability of Python, basic compilation tools like GCC,
+gfortran and Pip. (the alternative package manager for python)
 
 TPTP
 ====
 
-Some components of `VanHelsing` require the [TPTP library](http://www.cs.miami.edu/~tptp/).
-Odds are you are using this library in any case. You can download the library
+Some components of `VanHElsing` require the [TPTP library](http://www.cs.miami.edu/~tptp/).
+Odds are you are using this library already. You can download the library
 if this is not the case:
 
 ```
@@ -59,7 +59,7 @@ $ export PATH=$PATH:~/.local/bin
 Installation (minimal)
 ======================
 
-Alternatively, if you have Ubuntu 14.04, you can directly install the minimally required dependancies:
+Alternatively, if you have Ubuntu 14.04, you can directly install the minimally required dependencies:
 
 ```
 # apt-get install python python-pip build-essential python-numpy python-scipy python-sklearn
