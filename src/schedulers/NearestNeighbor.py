@@ -7,6 +7,8 @@ Created on May 15, 2014
 import copy
 import numpy as np
 import operator
+import sys
+
 from sklearn.neighbors import NearestNeighbors
 from src.data_util import not_solved_by_strat, remove_unsolveable_problems, load_dataset_from_config
 from src.schedulers.SchedulerTemplate import StrategyScheduler
@@ -28,12 +30,17 @@ class NearestNeighborScheduler(StrategyScheduler):
             self.mul_factor = config.getfloat('Learner', 'mul_factor')
         except:
             self.mul_factor = 1.1
+        try:
+            self.negscore_func = config.get('Learner', 'negscore_func')
+        except:
+            self.negscore_func = 'max'
         self.nr_of_neighbors = 2000
         self.model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)
         self._data_set = None
         self.data_set = None
         self.last_strategy = None
         self.last_time = None
+        self.last_negscore = None # Higher score = worse (slower)
         self.local_strat_times = None
         self.max_time = None
         self.problem = None
@@ -42,7 +49,7 @@ class NearestNeighborScheduler(StrategyScheduler):
 
     def fit(self, data_set, max_time, good_problems=None):
         self.max_time = max_time
-        #self._data_set = remove_unsolveable_problems(data_set)
+        self._data_set = remove_unsolveable_problems(data_set)
         self.data_set = data_set
         self.model.fit(self.data_set.feature_matrix)
 
@@ -54,35 +61,54 @@ class NearestNeighborScheduler(StrategyScheduler):
         local_avg_times = [0.0] * s_nr
         local_max_times = [self.max_time] * s_nr
         local_solved = [0.0] * s_nr
-
-        # Find similar problems
+        
+        # Find similar problems, and get the strategy times for those problems
         if self.local_strat_times is None:
             neighbors = self.model.kneighbors(self.features)
             # Find close neighbours
             n_distances = neighbors[0][0]
-            nr_index = min(len(n_distances)-1,self.min_neighbors)
+            nr_index = min(len(n_distances)-1,self.min_neighbors-1)
             max_dist = n_distances[nr_index] * self.mul_factor
+            
+            # Find until which index we are going to use (product: cut_off_index)
             for cut_off_index, dist in enumerate(n_distances):
                 if dist > max_dist:
                     break
-            n_indices = neighbors[1][0][:cut_off_index]
-            self.local_strat_times = self.data_set.strategy_matrix[np.ix_(n_indices, range(s_nr))]
+            
+            n_indices = neighbors[1][0][:cut_off_index] # List of similar problems
+            self.local_strat_times = self.data_set.strategy_matrix[np.ix_(n_indices, range(s_nr))] # Get strategy times for similar problems
+        
         # Get runtimes for similar problems
         for i in range(self.local_strat_times.shape[0]):
             for j in range(self.local_strat_times.shape[1]):
                 val = self.local_strat_times[i, j]
                 if val == -1:
                     continue
+                
                 local_avg_times[j] += val
                 local_solved[j] += 1
-                if val > local_max_times[j] or local_max_times[j] == self.max_time:
-                    local_max_times[j] = val
 
         max_local_solved = max(local_solved)
         best_local_strategies = [i for i, i_solved in enumerate(local_solved) if i_solved == max_local_solved]
-        best_local_strategies_max_times = [local_max_times[i] for i in best_local_strategies]
-        self.last_strategy, self.last_time = min(zip(best_local_strategies, best_local_strategies_max_times), key=operator.itemgetter(1))
+        
+        best_local_strategies_times = [filter(lambda x : x != -1, self.local_strat_times.T[j]) for j in best_local_strategies]
+        best_local_strategies_max_times = map(max, best_local_strategies_times)
+        
+        if self.negscore_func == 'max':
+            best_local_strategies_negscore = best_local_strategies_max_times
+        elif self.negscore_func == 'median':
+            best_local_strategies_negscore = map(np.median, best_local_strategies_times)
+        elif self.negscore_func == 'mean':
+            best_local_strategies_negscore = map(np.mean, best_local_strategies_times)
+        elif self.negscore_func == 'meanmedian':
+            best_local_strategies_negscore = map(np.mean, best_local_strategies_times)
+            best_local_strategies_max_times = map(np.median, best_local_strategies_times)
+        
+        self.last_strategy, self.last_time, self.last_negscore = min(zip(best_local_strategies, best_local_strategies_max_times, best_local_strategies_negscore), key=operator.itemgetter(2))
+        
         assert self.last_time > 0
+        assert self.last_time <= self.max_time
+        
         strategy = self.data_set.strategies[self.last_strategy]
         return strategy, self.last_time
 
