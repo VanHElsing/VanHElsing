@@ -13,10 +13,6 @@ pip install --user \
     flake8 \
     pylint
 
-echo -e "\033[32mCompiling E theorem prover\033[0m"
-pushd contrib/E
-./configure
-make -j2
-popd
+./build_contrib
 
 echo -e "\033[32mDone installing deps\033[0m"
