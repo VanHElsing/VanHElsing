@@ -14,14 +14,7 @@ Created on May 14, 2014
 import os
 import sys
 from time import time
-
 from argparse import ArgumentParser
-from src.GlobalVars import PATH, LOGGER
-from src.IO import load_config
-from src.RunATP import get_ATP_from_config
-from src.schedulers.util import init_scheduler
-from src.CPU import CPU
-
 
 def set_up_parser():
     parser = ArgumentParser(description='Van HElsing 1.0 --- June 2014.')
@@ -91,4 +84,12 @@ def main(argv=sys.argv[1:]):
     return False
 
 if __name__ == '__main__':
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+    from src.GlobalVars import PATH, LOGGER
+    from src.IO import load_config
+    from src.RunATP import get_ATP_from_config
+    from src.schedulers.util import init_scheduler
+    from src.CPU import CPU
+
     sys.exit(main())
