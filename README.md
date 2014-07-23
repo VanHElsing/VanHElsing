@@ -3,6 +3,38 @@ VanHElsing
 
 Automatic Theorem Prover using Machine Learning of Strategies in Python based on the E prover and Satallax.
 
+Usage
+=====
+
+```
+VanHElsing$ python src/helsing.py -h
+usage: helsing.py [-h] [-t TIME] [-p PROBLEM] [-c CONFIGURATION]
+
+Van HElsing 1.0 --- June 2014.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -t TIME, --time TIME  Maximum runtime of Van HElsing.
+  -p PROBLEM, --problem PROBLEM
+                        The location of the problem.
+  -c CONFIGURATION, --configuration CONFIGURATION
+                        Which configuration file to use.
+```
+
+`VanHElsing` is [CASC](http://www.cs.miami.edu/~tptp/CASC/) compliant, and can be prepared using:
+
+```
+$ mkdir tmp
+$ python src/data.py -c configs/NNconfig.ini
+$ python src/learn.py -c configs/NNconfig.ini
+```
+
+And then run using for example:
+
+```
+$ python src/helsing.py -c configs/NNconfig.ini -t 300 -p data/PUZ001+1.p
+```
+
 Dependencies
 ============
 
