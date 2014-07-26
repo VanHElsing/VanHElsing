@@ -6,32 +6,32 @@ from src.CPU import CPU
 
 from src.DataSet import DataSet
 from src.data_util import remove_unsolveable_problems
-from src.GlobalVars import PATH, EPATH, LOGGER
+from src.GlobalVars import PATH, LOGGER
 
 import matplotlib.pylab as pl
 
 try:
-   import cPickle as pickle
-except:
-   import pickle
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 RX_TIME = re.compile(r"([0-9]+\.[0-9]+)/([0-9]+\.[0-9]+)	EOF")
 
-if __name__ == '__main__':
+
+# Compares results from StarExec to known entries in PEGASUS, plots it
+def main():
     benchmark_path = os.path.join(PATH, 'benchmark_starexec')
     path = os.path.join(PATH, 'data', 'StarExec')
     TPTPPath = os.getenv('TPTP')
     
-    cpu = CPU()
-    #cpu.load_or_gen_data()
-    
+    cpu = CPU()  # used for measuring only
     if not os.path.isfile(benchmark_path):
         series = []
         for strategy_file in os.listdir(path):
             spath = os.path.join(path, strategy_file)
         
             dataset = DataSet()
-            dataset.whitelist = [strategy_file] # for faster loading
+            dataset.whitelist = [strategy_file]  # for faster loading
             
             dataset.load('E')
             dataset = remove_unsolveable_problems(dataset)
@@ -53,7 +53,7 @@ if __name__ == '__main__':
                         lastline = line
                 
                 result = RX_TIME.match(lastline)
-                assert(not result is None)
+                assert result is not None
                 used_time = float(result.groups()[0])
                 
                 if used_time >= 300.0:
@@ -65,10 +65,10 @@ if __name__ == '__main__':
                 real_time = cpu.measure(strategy, p_path)
                 
                 if real_time == -1:
-                    print 'Did not finish within time limit'
+                    LOGGER.log('Problem did not finish within time limit')
                     continue
                 
-                print 'Finished %s in %f' % (p_path, real_time)
+                LOGGER.log('Finished %s in %f' % (p_path, real_time))
                     
                 times.append((real_time, abs(used_time - real_time), used_time / real_time, f))
             
@@ -82,8 +82,11 @@ if __name__ == '__main__':
     
     pl.figure("StarExec comparison to current machine")
     for strategy_file, times in series:
-        times.sort(key=lambda x : x[0])
-        print times
-        pl.plot(map(lambda x : x[0], times), map(lambda x : x[2] * x[0], times))
+        times.sort(key=lambda x: x[0])
+        pl.plot([x[0] for x in times], [x[2] * x[0] for x in times])
     
     pl.show()
+
+
+if __name__ == '__main__':
+    sys.exit(main())
