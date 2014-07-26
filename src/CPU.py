@@ -161,9 +161,11 @@ class CPU(object):
     
         return bestRatio
     
+def main():
+    cpu = CPU()
+    cpu.load_or_gen_data()
+    
+    return 0
 
 if __name__ == '__main__':
-    CPU_OBJ = CPU()
-    CPU_OBJ.load_or_gen_data()
-    
-    sys.exit(0)
+    sys.exit(main())
