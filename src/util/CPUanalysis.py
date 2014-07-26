@@ -5,20 +5,21 @@ import sys
 import matplotlib.pylab as pl
 import multiprocessing as mp
 
-from src.DataSet import DataSet
-from src.CPU import CPU
-from src.GlobalVars import PATH, EPATH, LOGGER
+from src.CPU import CPU, gen_tasks
+from src.GlobalVars import PATH, LOGGER
 
 try:
-   import cPickle as pickle
-except:
-   import pickle
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 
 def benchmark_task(args):
     cpu, strategy, p_path, p_name, strategy, pred_time, scaled_time = args
     real_time = cpu.measure(strategy, p_path)
     print 'Finished %s in %f' % (p_path, real_time)
     return (p_name, strategy, pred_time, scaled_time, real_time)
+
 
 def compute_benchmark(cpu, dataset):
     TPTPPath = os.getenv('TPTP')
@@ -30,6 +31,7 @@ def compute_benchmark(cpu, dataset):
         result.append(benchmark_task((cpu, strategy, p_path, p_name, strategy, pred_time, scaled_time)))
         
     return result
+
 
 def compute_benchmark_concurrent(cpu, dataset, cores=None):
     TPTPPath = os.getenv('TPTP')
@@ -45,7 +47,8 @@ def compute_benchmark_concurrent(cpu, dataset, cores=None):
     results.wait()
     
     return results.get()
-    
+
+
 def show_dataset(dataset, name, color):
     X = []
     y = []
@@ -67,11 +70,10 @@ def show_dataset(dataset, name, color):
     
     return pl.scatter(X, y, c=color)
 
+
 def execute_benchmark(cpu):
     path = os.path.join(PATH, 'tuning_benchmark')
     
-    print path
-    '''
     if os.path.isfile(path):
         with open(path, 'rb') as in_s:
             dataset = pickle.load(in_s)
@@ -85,16 +87,16 @@ def execute_benchmark(cpu):
         LOGGER.info("Executing single core series, first")
         dataset_single_first = compute_benchmark(cpu, tasks)
         
-        #LOGGER.info("Executing single core series, second")
-        #dataset_single_second = compute_benchmark(cpu, tasks)
+        LOGGER.info("Executing single core series, second")
+        dataset_single_second = compute_benchmark(cpu, tasks)
         
-        #LOGGER.info("Executing multicore series")
-        #dataset_concurrent = compute_benchmark_concurrent(cpu, tasks, mp.cpu_count())
+        LOGGER.info("Executing multicore series")
+        dataset_concurrent = compute_benchmark_concurrent(cpu, tasks, mp.cpu_count())
         
-        #LOGGER.info("Executing oversaturation series")
-        #dataset_oversat = compute_benchmark_concurrent(cpu, tasks, mp.cpu_count()*2)
+        LOGGER.info("Executing oversaturation series")
+        dataset_oversat = compute_benchmark_concurrent(cpu, tasks, mp.cpu_count() * 2)
         
-        dataset = dataset_single_first #, dataset_single_second, dataset_concurrent, dataset_oversat)
+        dataset = dataset_single_first, dataset_single_second, dataset_concurrent, dataset_oversat
         with open(path, 'wb') as out_s:
             pickle.dump(dataset, out_s)
     
@@ -103,24 +105,25 @@ def execute_benchmark(cpu):
     pl.figure("Composed")
     
     p1 = show_dataset(dataset_single_first, "Single core, first", "r")
-    #p2 = show_dataset(dataset_single_second, "Single core, second", "g")
-    #p3 = show_dataset(dataset_concurrent, "Concurrent, fitting", "b")
-    #p4 = show_dataset(dataset_oversat, "Concurrent, oversaturation", "y")
+    p2 = show_dataset(dataset_single_second, "Single core, second", "g")
+    p3 = show_dataset(dataset_concurrent, "Concurrent, fitting", "b")
+    p4 = show_dataset(dataset_oversat, "Concurrent, oversaturation", "y")
     
-    #pl.legend([p1, p2, p3, p4], ["Single core, first", "Single core, second", "Concurrent, fitting", "Concurrent, oversaturation"])
-    '''
-    cpu.ratios.sort(key=lambda x : x[0])
+    pl.legend([p1, p2, p3, p4], ["Single core, first", "Single core, second", "Concurrent, fitting", "Concurrent, oversaturation"])
+    pass
+
+
+def show_ratios(cpu):
+    cpu.ratios.sort(key=lambda x: x[0])
     pl.figure("Tuning")
-    pl.plot(map(lambda x : x[0], cpu.ratios), map(lambda x : x[2], cpu.ratios))
+    pl.plot([x[0] for x in cpu.ratios], [x[2] for x in cpu.ratios])
     
     pl.figure("Tuning samples")
-    pl.scatter(map(lambda x : x[0], cpu.ratios), map(lambda x : x[2] * x[0], cpu.ratios))
-    
-    pl.show()
-    
+    pl.scatter([x[0] for x in cpu.ratios], [x[2] * x[0] for x in cpu.ratios])
     pass
-    
-if __name__ == '__main__':
+
+
+def main():
     cpu = CPU()
     
     LOGGER.info("Tuning CPU on dataset... (or getting from cache)")
@@ -128,5 +131,13 @@ if __name__ == '__main__':
     
     LOGGER.info("Tuning completed, executing benchmark")
     execute_benchmark(cpu)
+    
+    LOGGER.info("Showing ratios")
+    show_ratios(cpu)
+    
+    pl.show()
+    
+    return 0
 
-    sys.exit(0)
+if __name__ == '__main__':
+    sys.exit(main())
