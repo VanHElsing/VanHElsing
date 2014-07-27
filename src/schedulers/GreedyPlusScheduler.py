@@ -1,11 +1,5 @@
 '''
-GreedyNN combines the Greedy and the NN schedulers.
-First, Greedy is run until the percentage of newly solved problems is lower
-than a threshold. Afterwards, the normal NN is used.
-
-Created on May 23, 2014
-
-@author: Daniel Kuehlwein
+Contains the GreedyPlus scheduler, a mixture of Greedy and NN.
 '''
 
 from src.GlobalVars import LOGGER
@@ -15,39 +9,45 @@ from src.schedulers.SchedulerTemplate import StrategyScheduler
 
 
 class GreedyPlusScheduler(StrategyScheduler):
-
+    '''
+    GreedyNN combines the Greedy and the NN schedulers.
+    First, Greedy is run until the percentage of newly solved problems is lower
+    than a threshold. Afterwards, the normal NN is used.
+    '''
     def __init__(self, config):
-        # TODO: Read Runtime from config
+        StrategyScheduler.__init__(self, config)
+        # IMPROVEMENT: Read Runtime from config
         self.inititial_predictions = []
-        self.plus_scheduler = NearestNeighborScheduler(config) # TODO: Cannot use util.choose_scheduler because of self - reference :/
-        self.newly_solved_threshold = .05 # 5 % need to be solved
+        self.plus_scheduler = NearestNeighborScheduler(config)
+        self.newly_solved_threshold = .05  # 5 % need to be solved
         self.greedy_run_time = 0.5
-        self.data_set = None
         self.problem = None
         self.features = None
         self.config = config
         self.prediction_counter = 0
 
     def fit(self, data_set, max_time):
-        self.data_set = data_set
         greedy_scheduler = GreedyScheduler(self.config)
         greedy_scheduler.fit(data_set, max_time)
-        solved_enough = True
-        i = 0
-        #while solved_enough:
-        while i < 10:
-            unsolved_problems = greedy_scheduler.data_set.strategy_matrix.shape[0]
-            prediction = greedy_scheduler.predict(max_time, self.greedy_run_time)
+        # i = 0
+        # while i < 10:
+        while True:
+            problem_nr = greedy_scheduler.data_set.strategy_matrix.shape[0]
+            prediction = greedy_scheduler.predict(max_time,
+                                                  self.greedy_run_time)
             greedy_scheduler.update()
-            new_problems_solved = float(unsolved_problems - greedy_scheduler.data_set.strategy_matrix.shape[0])
-            if (new_problems_solved / unsolved_problems) < self.newly_solved_threshold:
-                solved_enough = False
+            new_problems_solved = problem_nr - greedy_scheduler.data_set.strategy_matrix.shape[0]  # NOQA, pylint: disable=C0301
             self.inititial_predictions.append(prediction)
-            self.data_set = greedy_scheduler.data_set
-            i += 1
-        LOGGER.info('Picked %s strategies for initial greedy run', len(self.inititial_predictions))
-        LOGGER.info('Reduced the data set to %s', self.data_set.strategy_matrix.shape)
-        self.plus_scheduler.fit(self.data_set, max_time)
+            # i += 1
+            solved_ratio = new_problems_solved / float(problem_nr)
+            if solved_ratio < self.newly_solved_threshold:
+                break
+        data_set = greedy_scheduler.data_set
+        LOGGER.info('Picked %s strategies for initial greedy run',
+                    len(self.inititial_predictions))
+        LOGGER.info('Reduced the data set to %s',
+                    data_set.strategy_matrix.shape)
+        self.plus_scheduler.fit(data_set, max_time)
 
     def predict(self, time_left):
         if self.prediction_counter < len(self.inititial_predictions):
@@ -56,7 +56,8 @@ class GreedyPlusScheduler(StrategyScheduler):
             if self.features is None:
                 self.plus_scheduler.set_problem(self.problem)
             else:
-                self.plus_scheduler.set_problem_and_features(self.problem, self.features)
+                self.plus_scheduler.set_problem_and_features(self.problem,
+                                                             self.features)
         return self.plus_scheduler.predict(time_left)
 
     def reset(self):

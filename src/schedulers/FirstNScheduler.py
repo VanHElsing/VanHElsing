@@ -1,7 +1,5 @@
 '''
-Created on May 17, 2014
-
-@author: Sil van de Leemput
+Contains the FirstNScheulder
 '''
 
 from src.schedulers.SchedulerTemplate import StrategyScheduler
@@ -38,7 +36,7 @@ class FirstNScheduler(StrategyScheduler):
             strategy = self.strategies[self._count]
         return strategy, self._timeslice
 
-    def set_problem_and_features(self, problem_file, features):
+    def set_problem_and_features(self, problem_file, dummy_features):
         self.set_problem(problem_file)
 
     def set_problem(self, problem_file):

@@ -1,8 +1,3 @@
-'''
-Created on May 18, 2014
-
-@author: daniel
-'''
 import os
 import sys
 from time import time
@@ -15,9 +10,10 @@ from src.GlobalVars import PATH, EPATH, LOGGER
 from src.RunATP import ATP
 
 try:
-   import cPickle as pickle
-except:
-   import pickle
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
 
 def gen_tasks(dataset, problems_per_bin, strategy_file):
     TPTPPath = os.getenv('TPTP')
@@ -26,7 +22,7 @@ def gen_tasks(dataset, problems_per_bin, strategy_file):
     
     strategy_i = list(dataset.strategy_files).index(strategy_file)
     
-    bin_borders = [1.0, 10.0, 30.0, 60.0, 100.0, 150.0, 200.0, 250.0, 300.0] # Must be sorted
+    bin_borders = [1.0, 10.0, 30.0, 60.0, 100.0, 150.0, 200.0, 250.0, 300.0]  # Must be sorted
     bins = dict()
     
     for bin_border in bin_borders:
@@ -65,16 +61,18 @@ def gen_tasks(dataset, problems_per_bin, strategy_file):
     
     return result
 
+
 def gen_testdata():
-    strategy_file = 'protokoll_G-E--_042_C45_F1_PI_AE_Q4_CS_SP_PS_S4S' # --auto-schedule
+    strategy_file = 'protokoll_G-E--_042_C45_F1_PI_AE_Q4_CS_SP_PS_S4S'  # strategy using --auto-schedule
     
     dataset = DataSet()
-    dataset.whitelist = [strategy_file] # for faster loading
+    dataset.whitelist = [strategy_file]  # subset, for faster loading
     
     dataset.load('E')
     dataset = remove_unsolveable_problems(dataset)
     
     return gen_tasks(dataset, 3, strategy_file)
+
 
 class CPU(object):
     times = None
@@ -85,7 +83,7 @@ class CPU(object):
     def __init__(self):
         eprover_path = os.path.join(EPATH, 'eprover')
         self.atp = ATP(eprover_path, '--cpu-limit=',
-                  '--tstp-format -s --proof-object --memory-limit=2048')
+                       '--tstp-format -s --proof-object --memory-limit=2048')
         pass
     
     def measure(self, strategy, p_path):
@@ -121,7 +119,7 @@ class CPU(object):
                 measurements.append((p_time, abs(used_time - p_time), used_time / p_time))
                 
             series.append(measurements)
-	
+
         LOGGER.info('Finished CPU measurements')
 
         return series
@@ -143,30 +141,31 @@ class CPU(object):
 
         self.ratios = []
         for measurements in self.times:
-            measurements.sort(key=(lambda x : x[2]))
-            #self.ratios.append(max(measurements, key=(lambda x : x[2])))
+            measurements.sort(key=(lambda x: x[2]))
             self.ratios.extend(measurements)
         
         print self.ratios
 
-    def get_ratio(self, time):
+    def get_ratio(self, r_time):
         if self.ratios is None:
             self.load_or_gen_data()
     
         leastDiff = 1000000
         bestRatio = None
         
-        for p_time, diff_time, ratio in self.ratios:
-            diff = abs(p_time - time)
+        for p_time, _diff_time, ratio in self.ratios:
+            diff = abs(p_time - r_time)
             if diff < leastDiff:
                 leastDiff = diff
                 bestRatio = ratio
     
         return bestRatio
     
-
-if __name__ == '__main__':
+def main():
     cpu = CPU()
     cpu.load_or_gen_data()
     
-    sys.exit(0)
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())

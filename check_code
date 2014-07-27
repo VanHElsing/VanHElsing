@@ -2,8 +2,10 @@
 
 echo -e "Checking code with flake8\c"
 # E501 Line too long
+# W293 Blank line contains whitespace
+# N806 Variable in function should be lowercase (we use Pylint for naming conventions)
 flake_result=$(flake8 \
-    --ignore=E501 \
+    --ignore=E501,W293,N806 \
     src tests)
 flake_status=$?
 
@@ -39,8 +41,10 @@ pylint_result=$(PYTHONPATH=$PYTHONPATH:.:./src pylint \
     --good-names=x,y,X,Y,e,i,j \
     -rn \
     '--msg-template={path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' \
-    '-dC0111,R0904,R0922,W0511,W0403,R0801,I0011,W0105,W0107,W0613,R0201,R0914,C0301,E1101,E0602' \
-    --module-rgx="(([a-z_][a-z0-9_]*)|((_)?[A-Z][a-zA-Z0-9]+)|(test_[a-zA-Z0-9]+)|(setUp)|(setUpClass)|(tearDown))$" \
+    '-dC0111,R0904,R0922,W0511,W0403,R0801,I0011,W0105,W0107,W0613,R0201,R0914,C0301,E1101,E0602,C0303' \
+    --module-rgx="(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+)|(test_[a-zA-Z0-9]+)|(setUp)|(setUpClass)|(tearDown))$" \
+    --variable-rgx="(([a-z_][a-zA-Z0-9_]*)|(TPTPPath))$" \
+    --dummy-variables-rgx="(_[a-z][a-zA-Z0-9]*)" \
     src tests)
 pylint_status=$?
 

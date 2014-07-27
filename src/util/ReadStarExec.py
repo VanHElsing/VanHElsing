@@ -2,31 +2,28 @@ import os
 import sys
 import re
 
-from src.DataSet import DataSet
-from src.data_util import remove_unsolveable_problems
-from src.GlobalVars import PATH, EPATH, LOGGER
-
 try:
-   import cPickle as pickle
-except:
-   import pickle
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 RX_TIME = re.compile(r"([0-9]+\.[0-9]+)/([0-9]+\.[0-9]+)	EOF")
 
-if __name__ == '__main__':
+
+def main():
     tuning_path = os.path.join(PATH, 'tuning')
     path = os.path.join(PATH, 'data', 'StarExec')
     
     if os.path.isfile(tuning_path):
         LOGGER.info('First delete tuning file before attempting to generate it by reading StarExec output')
-        sys.exit(0)
+        return 1
     
     times = []
     for strategy_file in os.listdir(path):
         print strategy_file
     
         dataset = DataSet()
-        dataset.whitelist = [strategy_file] # for faster loading
+        dataset.whitelist = [strategy_file]  # subset, for faster loading
         
         dataset.load('E')
         dataset = remove_unsolveable_problems(dataset)
@@ -38,7 +35,7 @@ if __name__ == '__main__':
             if not os.path.isfile(fpath):
                 continue
             
-            if not f in dataset.problems:
+            if f not in dataset.problems:
                 continue
 
             problem_i = list(dataset.problems).index(f)
@@ -49,7 +46,8 @@ if __name__ == '__main__':
                     lastline = line
             
             result = RX_TIME.match(lastline)
-            assert(not result is None)
+            assert result is not None
+            
             used_time = float(result.groups()[0])
             print used_time
             if used_time >= 300.0:
@@ -72,3 +70,15 @@ if __name__ == '__main__':
     print len(times)
     with open(tuning_path, 'wb') as out_s:
         pickle.dump(times, out_s)
+    
+    return 0
+
+
+if __name__ == '__main__':
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+    from src.DataSet import DataSet
+    from src.data_util import remove_unsolveable_problems
+    from src.GlobalVars import PATH, LOGGER
+
+    sys.exit(main())

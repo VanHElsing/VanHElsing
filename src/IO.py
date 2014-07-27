@@ -1,9 +1,5 @@
 '''
 General IO functions.
-
-Created on May 9, 2014
-
-@author: Daniel Kuehlwein
 '''
 
 import ConfigParser
@@ -23,12 +19,11 @@ def expand_filename(file_name):
     if os.path.isfile(file_name):
         return file_name
     # Try TPTP env
-    TPTP = os.getenv('TPTP')  # NOQA, pylint: disable=C0103
-    try:
-        file_path = os.path.join(TPTP, file_name)
-    except:
-        raise IOError(11, ('Cannot find problem file %s and the TPTP ' +
-                           'environment is not defined.') % file_name)
+    tptp_dir = os.getenv('TPTP')
+    if tptp_dir is None:
+        raise IOError(11, ('Cannot find problem file %s and the TPTP\
+                           environment is not defined.') % file_name)
+    file_path = os.path.join(tptp_dir, file_name)
     if os.path.isfile(file_path):
         return file_path
     # Cannot find file
@@ -36,8 +31,10 @@ def expand_filename(file_name):
                   (file_name, file_path))
 
 
-# TODO: Set up content of config.ini during installation
 def load_config(config_file):
+    '''
+    Parses a configuration file.
+    '''
     if not os.path.exists(config_file):
         raise IOError(10, 'Cannot find configuration file %s' %
                       config_file)
@@ -54,7 +51,6 @@ def run_command(command, time_out):
     args = shlex.split(command)
     proc = subprocess.Popen(args, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE, preexec_fn=os.setsid)
-    # pylint: disable=E1101
     with TimeoutThread.processTimeout(time_out, proc.pid):
         stdout, stderr = proc.communicate()
     resultcode = proc.wait()
@@ -62,6 +58,9 @@ def run_command(command, time_out):
 
 
 def load_object(filename):
+    '''
+    Loads an object from a file.
+    '''
     handle = open(filename)
     data = load(handle)
     handle.close()
@@ -69,6 +68,9 @@ def load_object(filename):
 
 
 def save_object(obj, filename):
+    '''
+    Saves an object to a file.
+    '''
     handle = open(filename, 'w')
     dump(obj, handle)
     handle.close()
