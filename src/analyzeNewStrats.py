@@ -4,6 +4,7 @@ from src.GlobalVars import PATH
 import numpy as np
 import matplotlib.pylab as pl
 import DataSet
+from cPickle import dump, load
 
 
 def get_strategy_file_names(path=join(PATH, 'contrib/males/E/resultsTmp')):
@@ -53,7 +54,7 @@ def get_all_probs(all_strats):
     return list(set(all_keys))
 
 
-def load_all_strats():
+def load_strat_overlap_ratios():
     overlap = get_strat_overlap()
     all_strats = []
     for lap in overlap:
@@ -138,16 +139,90 @@ def load_solved_probs_by_E():
 
 def find_new_solved():
     solved_E = load_solved_probs_by_E()
-    all_strats, _ = load_all_strats()
+    all_strats, _ = load_strat_overlap_ratios()
     solved_males = get_all_probs(all_strats)
     return list(set(solved_males) - set(solved_E))
 
 
 def plot_all_ratios():
-    all_strats, strat_names = load_all_strats()
+    all_strats, strat_names = load_strat_overlap_ratios()
     all_probs = get_all_probs(all_strats)
     ratios = generate_ratio_matrix(all_strats, strat_names, all_probs)
     times = get_average_t_for_probs_per_strat(all_strats, all_probs)
     plot_scatter_per_strat(times)
 
-print 'Amount of newly solved problems: {}'.format(len(find_new_solved()))
+
+'''
+Prob & Times 1: Old strats
+Prob & Times 2: New strats
+'''
+def compare_two_strats(times1, times2):
+    count_both_solve = 0
+    count_solve_better = 0
+    for i1,i2 in zip(times1,times2):
+        if i1 != -1 and i2 != -1:
+            count_both_solve += 1
+            if i2 < i1:
+                count_solve_better += 1
+    return count_both_solve, count_solve_better
+
+
+def compare_all_strats():
+    ds = DataSet.DataSet()
+    ds.load('E')
+    old_times = ds.strategy_matrix
+    print 'Old times: {}'.format(old_times.shape)
+    all_strats, strat_names = load_strat_overlap_ratios()
+    print 'all_strats: {}'.format(len(all_strats))
+    print 'strat_names: {}'.format(len(strat_names))
+    new_times = generate_ratio_matrix(all_strats, strat_names, ds.problems)
+    print 'New times: {}'.format(new_times.shape)
+    print 'Done loading times'
+    for new_t in new_times.T:
+        print new_t.shape
+        for old_t in old_times.T:
+            print old_t.shape
+            print compare_two_strats(old_t, new_t)
+            break
+        break
+
+def load_object(filename):
+    handle = open(filename)
+    data = load(handle)
+    handle.close()
+    return data
+
+
+def save_object(obj, filename):
+    handle = open(filename, 'w')
+    dump(obj, handle)
+    handle.close()
+    return
+
+ds = DataSet.DataSet()
+ds.load('E')
+all_probs = ds.problems
+new_strats = get_strategy_file_names()
+print 'Starting loading files'
+new_strat_times = [load_new_strat(new_strat) for new_strat in new_strats]
+print 'Done loading files'
+# 
+results = np.empty((len(all_probs),len(new_strats)))
+results[:] = -1
+print results.shape
+print results[:5,:5]
+
+for col,new_strat in enumerate(new_strat_times):
+    print col
+    for row,p in enumerate(all_probs):
+        if p in new_strat.keys():
+            results[row,col] = new_strat[p][0]
+
+print 'Done'
+
+save_object(results,'males_E_results.cpickle')
+
+# compare_all_strats()
+
+# test1 = np.array([[1,2,3,4],[2,3,4,4]])
+# test2 = np.array([[8,6,5,4],[4,7,5,7]])
