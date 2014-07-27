@@ -1,9 +1,5 @@
 '''
-Contains all global variables that might be of use.
-
-Created on May 9, 2014
-
-@author: Daniel Kuehlwein
+Contains all global variables for VanHElsing.
 '''
 
 import logging
@@ -18,8 +14,6 @@ except ImportError:
 
 PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 EPATH = os.path.join(PATH, 'contrib', 'E', 'PROVER')
-
-# TODO: Define logfile name
 LOGFILE = os.path.join(PATH, 'log')
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s' +
@@ -32,6 +26,5 @@ CONSOLE = logging.StreamHandler(sys.stdout)
 CONSOLE.setLevel(logging.INFO)
 CONSOLE.setFormatter(FORMATTER)
 LOGGER = logging.getLogger('')
-# TODO: Better check if CONSOLE is already a handler
-if len(LOGGER.handlers) < 2:
+if CONSOLE not in LOGGER.handlers:
     LOGGER.addHandler(CONSOLE)

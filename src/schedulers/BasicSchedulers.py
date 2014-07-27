@@ -1,7 +1,5 @@
 '''
-Created on May 15, 2014
-
-@author: Daniel Kuehlwein
+Contains several simple strategy schedulers.
 '''
 
 import numpy as np
@@ -15,7 +13,6 @@ class EAutoScheduler(StrategyScheduler):
 
     def __init__(self, config=None):
         StrategyScheduler.__init__(self, config)
-        pass
 
     def fit(self, data_set, max_time):
         pass
@@ -50,15 +47,13 @@ class SingleStrategyScheduler(StrategyScheduler):
             idx = config.getint("SingleStrategyScheduler", "strategy_index")
             self.strategy_index = idx
         self._avg_time = self._strategy = 0
-        pass
 
     def fit(self, data_set, max_time):
         strat_col = data_set.strategy_matrix[:, self.strategy_index]
         mask_invalid_times = strat_col != -1
-        avg = np.average(strat_col, axis=0, weights=mask_invalid_times)
+        avg = np.average(strat_col, axis=0, weights=mask_invalid_times)  # NOQA, pylint: disable=E1101
         self._avg_time = avg
         self._strategy = data_set.strategies[self.strategy_index]
-        pass
 
     def predict(self, time_left):
         return self._strategy, self._avg_time

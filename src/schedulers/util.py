@@ -1,9 +1,5 @@
 '''
 Contains utility functions for schedulers
-
-Created on May 15, 2014
-
-@author: Daniel Kuehlwein
 '''
 
 import src.schedulers.BasicSchedulers as bs
@@ -17,6 +13,9 @@ from src.IO import load_object, save_object
 
 
 def load_scheduler(scheduler_file):
+    '''
+    Loads a strategy scheduler from a file.
+    '''
     scheduler = load_object(scheduler_file)
     if not isinstance(scheduler, StrategyScheduler):
         raise IOError(99, "file: {} is not of type StrategyScheduler"
@@ -25,6 +24,9 @@ def load_scheduler(scheduler_file):
 
 
 def save_scheduler(scheduler, scheduler_file):
+    '''
+    Saves a strategy scheduler to a file.
+    '''
     if not isinstance(scheduler, StrategyScheduler):
         raise IOError(99, "Input object is not of type StrategyScheduler")
     save_object(scheduler, scheduler_file)
@@ -32,25 +34,27 @@ def save_scheduler(scheduler, scheduler_file):
 
 
 def init_scheduler(problem, scheduler_file):
+    '''
+    Loads a strategy scheduler from a file and initializes it to a problem.
+    '''
     scheduler = load_scheduler(scheduler_file)
     scheduler.set_problem(problem)
     return scheduler
 
 
 def choose_scheduler(scheduler_id):
-    if scheduler_id == 'EAuto':
-        return bs.EAutoScheduler
-    elif scheduler_id == 'Single':
-        return bs.SingleStrategyScheduler
-    elif scheduler_id == 'FirstN':
-        return FirstNScheduler
-    elif scheduler_id == 'NN':
-        return NearestNeighborScheduler
-    elif scheduler_id == 'Group1':
-        return Group1Scheduler
-    elif scheduler_id == 'Greedy':
-        return GreedyScheduler
-    elif scheduler_id == 'GreedyPlus':
-        return GreedyPlusScheduler
-    else:
+    '''
+    Switch for strategy schedulers.
+    '''
+    schedulers = {'EAuto': bs.EAutoScheduler,
+                  'Single': bs.SingleStrategyScheduler,
+                  'FirstN': FirstNScheduler,
+                  'NN': NearestNeighborScheduler,
+                  'Group1': Group1Scheduler,
+                  'Greedy': GreedyScheduler,
+                  'GreedyPlus': GreedyPlusScheduler
+                  }
+    try:
+        return schedulers[scheduler_id]
+    except KeyError:
         raise IOError(99, 'Unknown scheduler ID %s ' % scheduler_id)

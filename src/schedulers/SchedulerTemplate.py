@@ -1,16 +1,15 @@
 """
-The metaclass for all StrategySchedulers.
-
-Created on May 14, 2014
-
-@author: Sil van de Leemput
+Metaclass for StrategySchedulers.
 """
 
 from abc import ABCMeta, abstractmethod
-from src.Features import get_feature_parser
+from src.Features import get_feature_function
 
 
 class StrategyScheduler(object):
+    '''
+    Metaclass for strategy schedulers
+    '''
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -18,7 +17,7 @@ class StrategyScheduler(object):
         """
         config: Load settings from a SafeConfigParser instance
         """
-        self.feature_parser = get_feature_parser(config)
+        self.feature_parser = get_feature_function(config)
 
     @abstractmethod
     def fit(self, data_set, max_time):
