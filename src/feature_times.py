@@ -1,5 +1,5 @@
 '''
-Generates feature calculation times for all problems
+Used to generate feature calculation times for all problems
 '''
 
 from multiprocessing import Pool
@@ -59,8 +59,16 @@ def solve_problem(prob):
     return (prob, (time.clock() - curr_time))
 
 
-if __name__ == '__main__':
-    cores = 2
+def calculate_feature_times(cores=2):
+    '''
+    Calculate the time needed to classify a problem for all problems and
+    stores it in a file
+
+    Parameters
+    ----------
+    cores : int
+        The amount of cores that can be used for calculations
+    '''
     m_problems = get_all_problems()
 #     m_problems = ['AGT001+1.p','AGT001+2.p','AGT002+1.p','SWB005+2.p','SET013+4.p']
     pool = Pool(processes=cores)
