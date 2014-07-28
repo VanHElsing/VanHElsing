@@ -48,7 +48,7 @@ class NearestNeighborScheduler(StrategyScheduler):
     def fit(self, data_set, max_time):
         self.max_time = max_time
         self._data_set = remove_unsolveable_problems(data_set)
-        self.data_set = data_set
+        self.data_set = remove_unsolveable_problems(data_set)
         self.model.fit(self.data_set.feature_matrix)
 
     def predict(self, time_left):
@@ -91,7 +91,7 @@ class NearestNeighborScheduler(StrategyScheduler):
 
         best_local_strategies_times = [filter(lambda x: x != -1, self.local_strat_times.T[j]) for j in best_local_strategies] # NOQA, pylint: disable=C0301
         best_local_strategies_max_times = map(max, best_local_strategies_times)
-
+        
         if self.negscore_func == 'max':
             best_local_strategies_negscore = best_local_strategies_max_times
         elif self.negscore_func == 'median':
@@ -108,11 +108,11 @@ class NearestNeighborScheduler(StrategyScheduler):
         # IMPROVEMENT: Run von the mean/median/etc instead of always the max
         zipped = zip(best_local_strategies, best_local_strategies_max_times,
                      best_local_strategies_negscore)
+        
         self.last_strategy, self.last_time, dummy_s = min(zipped, key=operator.itemgetter(2))  # NOQA, pylint: disable=C0301
         assert self.last_time > 0
-        assert self.last_time <= self.max_time
         strategy = self.data_set.strategies[self.last_strategy]
-        return strategy, self.last_time
+        return strategy, min(self.last_time, time_left)
 
     def reset(self):
         if self._data_set is None:
@@ -144,9 +144,8 @@ class NearestNeighborScheduler(StrategyScheduler):
             self.data_set = self.data_set.mask(good_problems)
         # Local Update
         s_nr = self.data_set.strategy_matrix.shape[1]
-        local_good_problems = not_solved_by_strat(self.local_strat_times,
-                                                  self.last_strategy,
-                                                  self.last_time)
+        lp_nr = self.local_strat_times.shape[0]
+        local_good_problems = [i for i in range(lp_nr) if (self.local_strat_times[i, self.last_strategy] > self.last_time)]
         if len(local_good_problems) == 0:
             self.local_strat_times = None
             self.model.fit(self.data_set.feature_matrix)
