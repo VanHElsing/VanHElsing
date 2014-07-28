@@ -1,57 +1,27 @@
+'''
+Used for some simple feature time analysis.
+
+The data file should be in the format:
+    problem_name,feature_calculation_time,number_of_lines
+'''
+
 import numpy as np
 import matplotlib.pyplot as pl
-import IO
 import DataSet
 
-# def load_feature_times():
-#     feature_times_temp = []
-#     feature_problems_temp = []
-#     with open('feature_times.csv','r') as f:
-#         for l in f:
-#             line_split = l.strip().split(',')
-#             feature_problems_temp.append(line_split[0])
-#             feature_times_temp.append(float(line_split[1]))
-#     return np.array(feature_times_temp), np.array(feature_problems_temp)
-#  
-#  
-# times, problems = load_feature_times()
-# 
-# def get_prob_path(prob):
-#     return IO.expand_filename('Problems/{}/{}'.format(prob[:3], prob))
-# 
-# def parse_inputs(line):
-#     temp_split = line.split("'")
-#     amount = 0
-#     with open(IO.expand_filename(temp_split[1]),'r') as f2:
-#         for l2 in f2:
-#             amount += 1
-#     return amount
-
-# file_lengths = []
-# for i,p in enumerate(problems):
-#     print i
-#     amount_of_lines = 0
-#     with open(get_prob_path(p),'r') as f:
-#         for l in f:
-#             amount_of_lines += 1
-#             if l.startswith('include'):
-#                 amount_of_lines += parse_inputs(l)
-#     file_lengths.append(amount_of_lines)
-#     
-# with open('length_results.csv','w') as f:
-#     for l in file_lengths:
-#         f.write('{}\n'.format(l))
-# 
-# with open('prob_time_length_results.csv','w') as f:
-#     for p,t,l in zip(list(problems),list(times),file_lengths):
-#         f.write('{},{},{}\n'.format(p,t,l))
-# 
-# file_lengths_array = np.array(file_lengths)
-# 
-# pl.scatter(file_lengths_array,times)
-# pl.show()
 
 def read_prob_time_length():
+    '''
+    Reads the problem name, calculation time and number of lines
+    from a file
+
+    Returns
+    -------
+    probs : 1 x N Numpy array
+        Contains all problem names
+    data : N x 2 Numpy array
+        Contains the times and lengths for each problem
+    '''
     probs = []
     data = []
     with open('../data/E/prob_time_length_results.csv','r') as f:
@@ -83,12 +53,50 @@ print 'Amount of problems: {}'.format(problems.shape)
 print 'Amount of probs v strats: {}'.format(strategy_matrix.shape)
 
 def remove_unsolvable_probs(f_strat_matrix, f_problems):
+    '''
+    Removes unsolvable problems from the problem array and 
+    strategy matrix array
+
+    Parameters
+    ----------
+    f_strat_matrix : Numpy array
+        Contains all strategy times
+    f_problems : Numpy array
+        Contains all problem names
+
+    Returns
+    -------
+    f_strat_matrix : Numpy array
+        Contains all remaining strategy times for problems that
+        are left after removing unsolvable problems
+    f_problems : Numpy array
+        Contains all problem names after removing unsolvable probs
+    '''
     mask = np.sum((f_strat_matrix != -1.), axis = 1) != 0
     f_strat_matrix = f_strat_matrix[mask]
     f_problems = f_problems[mask]
     return f_strat_matrix, f_problems
 
 def remove_unused_strats(f_strat_matrix, f_strategies):
+    '''
+    Removes unused strategies from the strategy name array and 
+    strategy matrix array
+
+    Parameters
+    ----------
+    f_strat_matrix : Numpy array
+        Contains problem times and lengths for all problems
+    f_strategies : Numpy array
+        Contains all strategy names
+
+    Returns
+    -------
+    f_strat_matrix : Numpy array
+        Contains all remaining strategy times for strategies that
+        are left after removing unused strategies
+    f_strategies : Numpy array
+        Contains all strategies after removing unsolvable probs
+    '''
     mask = np.sum((f_strat_matrix != -1.), axis = 0) != 0
     f_strategies = f_strategies[mask]
     f_strat_matrix = f_strat_matrix[:,mask]
@@ -111,3 +119,10 @@ n = 5
 print 'Means for first {} best strats: {}'.format(n, np.mean(sorted_strategy_matrix,axis=0)[:n])
 print 'Medians for first {} best strats: {}'.format(n, np.median(sorted_strategy_matrix,axis=0)[:n])
 print 'Maximums for first {} best strats: {}'.format(n, np.max(sorted_strategy_matrix,axis=0)[:n])
+
+pl.hist(sorted_strategy_matrix[:,0], bins = 12)
+pl.xlabel('Time in seconds')
+pl.ylabel('Amount of solves')
+pl.xlim((0,300))
+pl.title('Best strategy for files with at least 200000 lines')
+pl.show()
