@@ -13,9 +13,10 @@ def add_pca_features(X, V, pcas=None):
     Apply n pca values on X resulting in X'_n then append the matrices to X
     X is the original feature matrix 
     V is the pca matrix (from determine_pca)
-    pcas is a list with integer values representing the pca number to used
+    pcas is a list with integer values representing the pca numbers to use
 
-    Returns X2, that is X app X'_0 app ... app X'_n.    
+    Returns X2, that is X app X'_0 app ... app X'_n. Where X'_i is the 
+    matrix obtained by using V and the 1 t/m value of the i-th pca from pcas.
     '''
     X2 = X
     if pcas is None:
