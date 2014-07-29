@@ -1,3 +1,9 @@
+'''
+Created on May 17, 2014
+
+@author: Sil van de Leemput
+'''
+
 from sklearn.neighbors import KNeighborsClassifier 
 import numpy as np
 
@@ -18,7 +24,7 @@ class StrategySelectorTimeKNN(object):
     def __init__(self, time, n_neighbors = 5):
         self.classifier_ = KNeighborsClassifier(n_neighbors= n_neighbors)
         self._time = time
-        pass
+
 
     def fit(self, X, Y):
         """Build the model from the training set (X, y).
@@ -37,8 +43,8 @@ class StrategySelectorTimeKNN(object):
         self : object
             Returns self.
         """
-        Ytrue = (Y > -1) & (Y <= self._time)
-        self.classifier_.fit(X, Ytrue)
+        temp = (Y > -1) & (Y <= self._time)
+        self.classifier_.fit(X, temp)
 
 
     def predict(self, X):

@@ -84,21 +84,3 @@ def standardize_features_means_stds(X, means, stds, cap=False, capval=2.5):
         X[X > capval] = capval
         X[X < -capval] = -capval
     return X
-
-
-if __name__ == '__main__':
-    # Tests...
-    X1 = np.array([[1.0, 2, 3], [2, 3, 4], [3, 7, 5], [2, 9, 1]])
-    V = determine_pca(X1)
-    B = perform_pca(X1, V, 3)
-    C = add_pca_features(X1, V, [3, 2, 1])
-    X2, MEANS, STDS = standardize_features(X1)
-    X3 = standardize_features_means_stds(X1, MEANS, STDS)
-
-    print 'X1', X1
-    print '\nB', B
-    print '\nC', C
-    print '\nX2', X2
-    print '\nmeans', MEANS
-    print '\nstds', STDS
-    print '\nX3', X3

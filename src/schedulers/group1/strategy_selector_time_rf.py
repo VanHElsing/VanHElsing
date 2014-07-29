@@ -1,4 +1,10 @@
-from sklearn.ensemble import RandomForestClassifier as rf
+'''
+Created on May 17, 2014
+
+@author: Frank Dorssers, Sil van de Leemput
+'''
+
+from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 
 
@@ -18,9 +24,9 @@ class StrategySelectorTimeRF(object):
     def __init__(self, time):
         self.classifiers_ = []
         self._time = time
-        pass
 
-    def _fitClassifiers(self, X, Y):
+
+    def _fit_classifiers(self, X, Y):
         """Build the model from the training set (X, y).
 
         Iterate through all strategies and fit a classifier to them
@@ -40,13 +46,14 @@ class StrategySelectorTimeRF(object):
             Returns a list of the classifiers fitted to the strategies.
         """
         Y = np.array(Y)
-        Ytrue = (Y > -1) & (Y <= self._time)
+        temp = (Y > -1) & (Y <= self._time)
         classifiers = []
-        for y in Ytrue.T:
-            clf = rf()
+        for y in temp.T:
+            clf = RandomForestClassifier()
             clf.fit(X, y)
             classifiers.append(clf)
         return classifiers
+
 
     def fit(self, X, Y):
         """Build the model from the training set (X, y).
@@ -65,8 +72,8 @@ class StrategySelectorTimeRF(object):
         self : object
             Returns self.
         """
-        self.classifiers_ = self._fitClassifiers(X, Y)
-        pass
+        self.classifiers_ = self._fit_classifiers(X, Y)
+
 
     def predict(self, X):
         """Predict class for X.

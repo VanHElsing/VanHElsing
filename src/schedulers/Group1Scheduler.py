@@ -8,7 +8,7 @@ import numpy as np
 
 from src.GlobalVars import LOGGER
 from src.schedulers.SchedulerTemplate import StrategyScheduler
-import src.preprocessing as pp
+import src.schedulers.group1.preprocessing as pp
 
 
 #from src.schedulers.group1.strategy_selector_time_rf \
