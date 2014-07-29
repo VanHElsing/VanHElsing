@@ -4,23 +4,27 @@ Created on May 23, 2014
 @author: Sil van de Leemput
 '''
 
-import os, sys
+import os, sys, ConfigParser
 from argparse import ArgumentParser
 
+
 def set_up_parser():
+    """
+    Creates the ArgumentParser instance for use with the CLI
+    """
     parser = ArgumentParser(description='Van HElsing ' +
-                            'dataset tool 0.1 --- May 2014.')
+                            'dataset tool 0.2 --- May 2014.')
     parser.add_argument('-i', '--inputfile',
-                        help='(optional) input dataset file.',
+                        help='(optional) Input dataset file.',
                         default='')
     parser.add_argument('-o', '--outputfile',
-                        help='file to save the output dataset to.',
+                        help='File to save the output dataset to.',
                         default='')
     parser.add_argument('-c', '--configuration',
                         help='Which configuration file to use.',
                         default=os.path.join(PATH, 'config.ini'))
     parser.add_argument('-lp', '--limitprobs',
-                        help='Limit the amount of problems in the dataset for testing.',
+                        help='Puts a max-limit on the amount of problems.',
                         type=int, default=-1)
     return parser
 
@@ -61,13 +65,15 @@ def load_data(argv=sys.argv[1:]):
 
     # store strategy matrix as sparse matrix
     try: 
-        sparse = configuration.getboolean('DataUtil', 'sparse')
-    except:
-        sparse = False
-    if sparse:
+        sparsify = configuration.getboolean('DataUtil', 'sparse')
+    except ConfigParser.NoOptionError:
+        sparsify = False
+    if sparsify:
         dataset.sparsify()
-        LOGGER.info("Sparsify strategy matrix - nonzero elements / total elements: %i / %i",
-                len(dataset.strategy_matrix.nonzero()[0]), (dataset.strategy_matrix.shape[0] * dataset.strategy_matrix.shape[1]))  
+        shape = dataset.strategy_matrix.shape
+        total = shape[0] * shape[1]
+        LOGGER.info("Sparsify strat matrix - nonzero / total elements: %i / %i",
+                len(dataset.strategy_matrix.nonzero()[0]), total)  
   
 
     # save dataset
@@ -80,6 +86,7 @@ if __name__ == '__main__':
     
     from src.GlobalVars import PATH, LOGGER
     from src.IO import load_config, save_object
-    from src.data_util import remove_unsolveable_problems, load_or_generate_dataset
+    from src.data_util import remove_unsolveable_problems, \
+                                load_or_generate_dataset
     
     sys.exit(load_data())
