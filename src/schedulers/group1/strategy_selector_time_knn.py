@@ -1,40 +1,48 @@
 '''
+A StrategySelector class based on a KNN model
+
 Created on May 17, 2014
 
 @author: Sil van de Leemput
 '''
 
-from sklearn.neighbors import KNeighborsClassifier 
+from sklearn.neighbors import KNeighborsClassifier
 import numpy as np
 
 
 class StrategySelectorTimeKNN(object):
-    """A random forest model
-
-    A classifier that uses a combination of random forests. One random forest
-    for each classifier.
+    '''
+    A strategy selector class based on a nearest neighbor model (KNN)
 
     Attributes
     ----------
-    `classifiers_` : list of random forests
-        The collection of random forests for all strategies
+    `_classifier` : KNN model
+    `_time` : double
+        Maximum amount of time available for solving problems
+    '''
 
-    """
-
-    def __init__(self, time, n_neighbors = 5):
-        self.classifier_ = KNeighborsClassifier(n_neighbors= n_neighbors)
+    def __init__(self, time, n_neighbors=5):
+        '''
+        Parameters
+        ----------
+        time : double
+            Maximum amount of time available for solving problems
+        n_neighbors : integer
+            KNN model parameter, amount of neighbors considered
+        '''
+        self._classifier = KNeighborsClassifier(n_neighbors=n_neighbors)
         self._time = time
 
-
     def fit(self, X, Y):
-        """Build the model from the training set (X, y).
+        '''
+        Build the model from the training set (X, Y).
 
         Parameters
         ----------
         X : array-like of shape = [n_samples, n_features]
             The training input samples.
 
-        y : array-like, shape = [n_samples, n_strategies]
+        Y : array-like, shape = [n_samples, n_strategies]
             The target values (integers that correspond to classes in
             classification, real numbers in regression).
 
@@ -42,13 +50,13 @@ class StrategySelectorTimeKNN(object):
         -------
         self : object
             Returns self.
-        """
+        '''
         temp = (Y > -1) & (Y <= self._time)
-        self.classifier_.fit(X, temp)
-
+        self._classifier.fit(X, temp)
 
     def predict(self, X):
-        """Predict class for X.
+        '''
+        Predict class for X.
 
         Predicts all strategies based on the previously generated list of
         classifiers
@@ -62,5 +70,5 @@ class StrategySelectorTimeKNN(object):
         -------
         y : array of shape = [n_samples, n_strategies]
             The predicted classes.
-        """
-        return np.array(self.classifier_.predict(X))
+        '''
+        return np.array(self._classifier.predict(X))

@@ -4,7 +4,9 @@ Created on May 23, 2014
 @author: Sil van de Leemput
 '''
 
-import os, sys, ConfigParser
+import os
+import sys
+import ConfigParser
 from argparse import ArgumentParser
 
 
@@ -28,12 +30,14 @@ def set_up_parser():
                         type=int, default=-1)
     return parser
 
+
 def load_data(argv=sys.argv[1:]):
     """
     input: Config file, (optional dataset)
     output: stores model in modelfile
     """
     LOGGER.info('Loading Data')
+
     # load config
     parser = set_up_parser()
     args = parser.parse_args(argv)
@@ -46,16 +50,15 @@ def load_data(argv=sys.argv[1:]):
         msg = "Could not start process, no output filename was given"
         LOGGER.error(msg)
         raise IOError(99, msg)
-       
+
     # load dataset
     dataset = load_or_generate_dataset(args.inputfile, configuration)
-
 
     # remove unsolvable problems
     if configuration.getboolean('DataUtil', 'removeunsolvables'):
         dataset = remove_unsolveable_problems(dataset)
         LOGGER.info("Removing unsolvable problems - prob x strats: %i x %i",
-                len(dataset.problems), len(dataset.strategies))
+                    len(dataset.problems), len(dataset.strategies))
 
     # retain only a few problems if option set
     if args.limitprobs > -1:
@@ -64,7 +67,7 @@ def load_data(argv=sys.argv[1:]):
                     len(dataset.problems), len(dataset.strategies))
 
     # store strategy matrix as sparse matrix
-    try: 
+    try:
         sparsify = configuration.getboolean('DataUtil', 'sparse')
     except ConfigParser.NoOptionError:
         sparsify = False
@@ -72,9 +75,8 @@ def load_data(argv=sys.argv[1:]):
         dataset.sparsify()
         shape = dataset.strategy_matrix.shape
         total = shape[0] * shape[1]
-        LOGGER.info("Sparsify strat matrix - nonzero / total elements: %i / %i",
-                len(dataset.strategy_matrix.nonzero()[0]), total)  
-  
+        text = "Sparsify strat matrix - nonzero / total elements: %i / %i"
+        LOGGER.info(text, len(dataset.strategy_matrix.nonzero()[0]), total)
 
     # save dataset
     save_object(dataset, outfile)
@@ -83,10 +85,10 @@ def load_data(argv=sys.argv[1:]):
 
 if __name__ == '__main__':
     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-    
+
     from src.GlobalVars import PATH, LOGGER
     from src.IO import load_config, save_object
     from src.data_util import remove_unsolveable_problems, \
-                                load_or_generate_dataset
-    
+        load_or_generate_dataset
+
     sys.exit(load_data())

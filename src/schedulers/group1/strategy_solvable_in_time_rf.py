@@ -17,14 +17,33 @@ class StrategySolvableInTimeRF(object):
     '''
     Optimization classifier, that predicts if a problem is solvable
     in t time. Uses RF and bagging.
+
+    Attributes
+    ----------
+    `_bag_rounds` : integer
+            Amount of random forests to use. Each random forests classifier
+            uses a new bootstrapped population.
+    `_time` : double
+        Maximum amount of time available for solving problems
+    `_logits` : list of random forest classifiers, shape = [_bag_rounds]
+        List for storing the random forest classifiers
     '''
+
     def __init__(self, time=10, bag_rounds=10):
+        '''
+        Parameters
+        ----------
+        time : double
+            Maximum amount of time available for solving problems
+        bag_rounds : integer
+            Amount of random forests to use. Each random forests classifier
+            uses a new bootstrapped population.
+        '''
         # time constraint
         self._time = time
         # rounds of bagging
         self._bag_rounds = bag_rounds
         self._logits = None
-
 
     def fit(self, X, Y):
         '''
@@ -72,7 +91,6 @@ class StrategySolvableInTimeRF(object):
             forest_classifier = ens.RandomForestClassifier()
             forest_classifier.fit(x_train, y_train.A.ravel())
             self._logits[i] = forest_classifier
-
 
     def predict(self, X):
         '''

@@ -11,7 +11,7 @@ from src.schedulers.SchedulerTemplate import StrategyScheduler
 import src.schedulers.group1.preprocessing as pp
 
 
-#from src.schedulers.group1.strategy_selector_time_rf \
+# from src.schedulers.group1.strategy_selector_time_rf \
 #   import StrategySelectorTimeRF as StrategySelector
 from src.schedulers.group1.strategy_selector_time_knn \
     import StrategySelectorTimeKNN as StrategySelector
@@ -27,8 +27,8 @@ class Group1Scheduler(StrategyScheduler):
 
     def __init__(self, config=None):
         '''
-        Constructor - loads settings from config object 
-        The config should have a "Group1Scheduler" group 
+        Constructor - loads settings from config object
+        The config should have a "Group1Scheduler" group
         '''
         StrategyScheduler.__init__(self, config)
         self._config = config
@@ -70,23 +70,28 @@ class Group1Scheduler(StrategyScheduler):
         self._sel = None
         self._yt = None
         self._cover = None
-        
 
     def cfg_get(self, prop, boolean=False):
         '''
         Convenience function for loading settings from configuration object
-        @param prop - name of the property
-        @param boolean - set to true if property represents a boolean
 
-        @return returns value of the associated property
+        Variables
+        ---------
+        prop : string
+            Name of the property
+        boolean : boolean
+            Set to true if property represents a boolean
+
+        Returns
+        -------
+        return : string or boolean
+            Returns value of the associated property
         '''
         if boolean:
             return self._config.get("Group1Scheduler", prop).lower() == "true"
         return self._config.get("Group1Scheduler", prop)
 
-
     def fit(self, data_set, max_time):
-
         X = data_set.feature_matrix
         Y = data_set.strategy_matrix
         self._stratnames = data_set.strategies
@@ -98,8 +103,8 @@ class Group1Scheduler(StrategyScheduler):
         # sanitize features - standardization
         if self._standardize:
             LOGGER.info("standardization")
-            X, self._means, self._stds = pp.standardize_features(X, True, \
-                                                self._stdcap)
+            X, self._means, self._stds = pp.standardize_features(X, True,
+                                                                 self._stdcap)
         # apply PCAs
         if len(self._pcas) > 0:
             LOGGER.info("applying PCAs")
@@ -129,16 +134,14 @@ class Group1Scheduler(StrategyScheduler):
         self._mat_pred = np.array((self._stratselector.predict(X) > 0))
         self._Y = Y
         self._mat_cover = (self._Y > -1)
-        temp = self._Y * self._mat_cover 
+        temp = self._Y * self._mat_cover
         temp = temp + np.invert(self._mat_cover) * self._max_time * 2
         self._mins = np.min(temp, axis=0)
         self._maxs = np.max(self._Y, axis=0)
 
-
     def set_problem(self, problem_file):
         features = self.feature_parser.get(problem_file)
         self.set_problem_and_features(problem_file, features)
-
 
     def set_problem_and_features(self, problem_file, features):
         # Convert np.array to [1 x features] dims
@@ -147,7 +150,7 @@ class Group1Scheduler(StrategyScheduler):
 
         if self._standardize:
             x = pp.standardize_features_means_stds(x, self._means, self._stds,
-                                                    True, self._stdcap)
+                                                   True, self._stdcap)
         x = pp.add_pca_features(x, self._V, self._pcas)
 
         ys = self._stratselector.predict(x)[0, :]
@@ -156,7 +159,7 @@ class Group1Scheduler(StrategyScheduler):
         else:
             yo = 0
         yt = self._strattimereg.predict(x)
-        #print yt.shape, ys.shape, x.shape, yo
+
         # PREPROCESS time regression values fit them between values
         yt = self.__process_regression_vector(yt, yo)
 
@@ -169,18 +172,24 @@ class Group1Scheduler(StrategyScheduler):
         # administration vars for looping
         self._stratsleft = np.ones((yt.shape[0]))
 
-
     def __process_regression_vector(self, Yt, yo):
         '''
-        This function preprocesses the regression vector Yt based on optimization
-        estimates from yo. If yo predicts the problem to be hard, times are 
-        at least higher than _opt_t otherwise the values cannot be higher than
-        _opt_t
+        This function preprocesses the regression vector Yt based on
+        optimization estimates from yo. If yo predicts the problem to
+        be hard, times are at least higher than _opt_t otherwise the
+        values cannot be higher than _opt_t
 
-        @param Yt - regression vector for the problems (problems x strats)
-        @param yo - boolean vector if the problem is a hard problem (problems) 
+        Variables
+        ---------
+        Yt : numpy array (problems x strats)
+            Regression vector for the problems
+        yo : numpy array (problems)
+            Boolean vector if the problem is a hard problem
 
-        @return Yt' - modified regression vector with more sensible values 
+        Returns
+        -------
+        Yt' : numpy array (problems x strats)
+            Modified regression vector with more sensible values
         '''
         temp = Yt < self._opt_t
         # if it is a hard problem (yo) and regression value is below
@@ -192,7 +201,7 @@ class Group1Scheduler(StrategyScheduler):
         # clamp and fix all predicted t values to sensible times
         # get time from regression prediction and multiply it so that it
         # overestimates a little
-        Yt = np.maximum(Yt, np.maximum(self._mins, 0)) 
+        Yt = np.maximum(Yt, np.maximum(self._mins, 0))
         Yt = Yt * self._tmultiplier + np.ones(Yt.shape) * self._tadder
         Yt = np.minimum(Yt, np.minimum(self._maxs, self._max_time))
 
@@ -204,7 +213,6 @@ class Group1Scheduler(StrategyScheduler):
             targets = (np.invert(temp).T & np.invert(yo)).T
             Yt = Yt * np.invert(targets) + self._opt_t * targets
         return Yt
-
 
     def predict(self, time_left):
         # while time_left > 0 and np.sum(self._stratsleft) > 0:
@@ -231,7 +239,6 @@ class Group1Scheduler(StrategyScheduler):
         strategy = self._stratnames[self._sel]
         return strategy, time
 
-
     def update(self):
         sel = self._sel
         # Prune solved/covered problems
@@ -240,7 +247,6 @@ class Group1Scheduler(StrategyScheduler):
         self._probs = self._probs[mask, :]
         # Prune used strat
         self._stratsleft[sel] = 0
-
 
     def reset(self):
         pass

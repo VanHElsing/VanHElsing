@@ -1,4 +1,6 @@
 '''
+A StrategySelector class based on multiple random forests
+
 Created on May 17, 2014
 
 @author: Frank Dorssers, Sil van de Leemput
@@ -9,25 +11,31 @@ import numpy as np
 
 
 class StrategySelectorTimeRF(object):
-    """A random forest model
-
+    '''
     A classifier that uses a combination of random forests. One random forest
     for each classifier.
 
     Attributes
     ----------
-    `classifiers_` : list of random forests
+    `_classifiers` : list of random forests
         The collection of random forests for all strategies
-
-    """
+    `_time` : double
+        Maximum amount of time available for solving problems
+    '''
 
     def __init__(self, time):
-        self.classifiers_ = []
+        '''
+        Parameters
+        ----------
+        time : double
+            Maximum amount of time available for solving problems
+        '''
+        self._classifiers = []
         self._time = time
 
-
     def _fit_classifiers(self, X, Y):
-        """Build the model from the training set (X, y).
+        '''
+        Build the model from the training set (X, Y).
 
         Iterate through all strategies and fit a classifier to them
 
@@ -36,15 +44,15 @@ class StrategySelectorTimeRF(object):
         X : array-like of shape = [n_samples, n_features]
             The training input samples.
 
-        y : array-like, shape = [n_samples, n_strategies]
+        Y : array-like, shape = [n_samples, n_strategies]
             The target values (integers that correspond to classes in
             classification, real numbers in regression).
 
         Returns
         -------
-        classifiers : list of classifiers
+        classifiers : list of classifiers of shape = [n_strategies]
             Returns a list of the classifiers fitted to the strategies.
-        """
+        '''
         Y = np.array(Y)
         temp = (Y > -1) & (Y <= self._time)
         classifiers = []
@@ -54,16 +62,16 @@ class StrategySelectorTimeRF(object):
             classifiers.append(clf)
         return classifiers
 
-
     def fit(self, X, Y):
-        """Build the model from the training set (X, y).
+        '''
+        Build the model from the training set (X, Y).
 
         Parameters
         ----------
         X : array-like of shape = [n_samples, n_features]
             The training input samples.
 
-        y : array-like, shape = [n_samples, n_strategies]
+        Y : array-like, shape = [n_samples, n_strategies]
             The target values (integers that correspond to classes in
             classification, real numbers in regression).
 
@@ -71,12 +79,12 @@ class StrategySelectorTimeRF(object):
         -------
         self : object
             Returns self.
-        """
-        self.classifiers_ = self._fit_classifiers(X, Y)
-
+        '''
+        self._classifiers = self._fit_classifiers(X, Y)
 
     def predict(self, X):
-        """Predict class for X.
+        '''
+        Predict class for X.
 
         Predicts all strategies based on the previously generated list of
         classifiers
@@ -90,8 +98,8 @@ class StrategySelectorTimeRF(object):
         -------
         y : array of shape = [n_samples, n_strategies]
             The predicted classes.
-        """
+        '''
         y_pred = []
-        for classifier in self.classifiers_:
+        for classifier in self._classifiers:
             y_pred.append(classifier.predict(X))
         return np.array(y_pred).T

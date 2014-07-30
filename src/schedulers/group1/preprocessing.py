@@ -1,4 +1,6 @@
 '''
+Module containing default preprocessing functions
+
 Created on May 18, 2014
 
 @author: R.J. Drenth, Sil van de Leemput
@@ -10,13 +12,26 @@ import scipy.linalg as linalg
 
 def add_pca_features(X, V, pcas=None):
     '''
-    Apply n pca values on X resulting in X'_n then append the matrices to X
-    X is the original feature matrix 
-    V is the pca matrix (from determine_pca)
-    pcas is a list with integer values representing the pca numbers to use
+    Each integer i with value $pcas[i]$ within the pcas list determines
+    a range (1 - pcas[i]) of principle components used for reconstructing X
+    giving X'_i. The resulting matrices are concatenated vertically after
+    the original matrix X and returned as a whole new matrix.
 
-    Returns X2, that is X app X'_0 app ... app X'_n. Where X'_i is the 
-    matrix obtained by using V and the 1 t/m value of the i-th pca from pcas.
+    Variables
+    ---------
+    X    : matrix                   (problems x strategies)
+           original feature matrix
+    V    : matrix                   (strategies x strategies)
+           the unitary matrix from the determine_pca function
+    pcas : list                     (Npcas)
+           with integer values representing the pca numbers to use
+           default = [] i.e. only X is returned. No X'_i is created
+
+    Returns
+    -------
+    X2 : matrix             (problems x (strategies * (N_pcas + 1)))
+        that is the concatenated matrix:
+            X concat X'_1 concat ... concat X'_Npcas
     '''
     X2 = X
     if pcas is None:
@@ -29,9 +44,16 @@ def add_pca_features(X, V, pcas=None):
 
 def determine_pca(X):
     '''
-    Determines the principal components from data matrix X
+    Determines the unitary matrix V from data matrix X,
+    which is required for performing PCA
 
-    Returns V, the unitary matrices, which are required for performing PCA
+    Variables
+    ---------
+    X : the data matrix             (problems x strategies)
+
+    Returns
+    -------
+    V : the unitary matrix          (strategies x strategies)
     '''
     U, S, V = linalg.svd(np.mat(X), full_matrices=False)
     return np.array(V).T
@@ -39,11 +61,19 @@ def determine_pca(X):
 
 def perform_pca(X, V, number_pcas=-1):
     '''
-    Performs PCA on the given dataset X, utilising the unitary matrices V.
-    number_pcas is the number of PCAs that are used to reconstruct the data.
-    Default value is -1, which means all PCAs are used.
+    Performs PCA on the given dataset X, utilising the unitary matrix V.
 
-    Returns Z, the data expressed in its PCA's.
+    Variables
+    ---------
+    X           : numpy array        (problems x strategies)
+    V           : the unitary matrix (strategies x strategies)
+    number_pcas : integer, the number of PCAs that are used to reconstruct
+                the data. Default value is -1, which means all PCAs are used.
+
+    Returns
+    -------
+    Z : the data matrix              (problems x strategies)
+        expressed in its PCA's.
     '''
     X2 = X.dot(V)
     if number_pcas == -1:
@@ -55,13 +85,22 @@ def perform_pca(X, V, number_pcas=-1):
 
 def standardize_features(X, cap=False, capval=2.5):
     '''
-    Returns X, means, stds.
-    X is the standardized multidimensional array with means and stds
-    holding the respective means and standard deviations of each column.
+    Column-wise standardization of a data matrix
 
-    If cap=True (default = false), then it will also cap the Z scores at the
-    given capval (default = 2.5). For negative scores, it will be capped at
-    -capval.
+    Variables
+    ---------
+    X      : data matrix             (problems x strategies)
+    cap    : boolean
+    capval : double
+            If cap=True (default = false), then it will also cap the Z scores
+            at the given capval (default = 2.5). For negative scores, it will
+            be capped at -capval.
+
+    Returns
+    -------
+    X     : standardized data matrix (problems x strategies)
+    means : respective means of X    (strategies)
+    stds  : respective stds of X     (strategies)
     '''
     means = np.mean(X, axis=0)
     stds = np.std(X, axis=0)
@@ -71,13 +110,23 @@ def standardize_features(X, cap=False, capval=2.5):
 
 def standardize_features_means_stds(X, means, stds, cap=False, capval=2.5):
     '''
-    Returns X
-    X is a normalised multidimensional array, with means and stds
-    as the normalisation parameters.
+    Column-wise standardization of a data matrix using precalculated
+    means and stds
 
-    If cap=True (default = false), then it will also cap the Z scores at the
-    given capval (default = 2.5). For negative scores, it will be capped at
-    -capval.
+    Variables
+    ---------
+    X      : numpy array             (problems x strategies)
+    means  : respective means of X   (strategies)
+    stds   : respective stds of X    (strategies)
+    cap    : boolean
+    capval : double
+            If cap=True (default = false), then it will also cap the Z scores
+            at the given capval (default = 2.5). For negative scores, it will
+            be capped at -capval.
+
+    Returns
+    -------
+    X     : standardized numpy array (problems x strategies)
     '''
     X = ((X - means) / stds)
     if cap:
