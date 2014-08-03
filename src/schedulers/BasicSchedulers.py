@@ -36,7 +36,8 @@ class EAutoScheduler(StrategyScheduler):
 class SingleStrategyScheduler(StrategyScheduler):
     '''
     Basic scheduler that runs the first strategy in the dataset
-    for its average time.
+    for its average time, or a specific strategy specified by
+    SingleStrategyScheduler.strategy_index.
     '''
 
     def __init__(self, config=None):
