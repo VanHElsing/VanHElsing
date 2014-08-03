@@ -38,7 +38,7 @@ def get_prob_path(prob):
     return IO.expand_filename('Problems/{}/{}'.format(prob[:3], prob))
 
 
-def solve_problem(prob):
+def calculate_feature_time(prob):
     '''
     Classifies a problem and measures the elapsed time
 
@@ -71,7 +71,7 @@ def calculate_feature_times(cores=2):
     '''
     m_problems = get_all_problems()
     pool = Pool(processes=cores)
-    results = pool.map_async(solve_problem, m_problems)
+    results = pool.map_async(calculate_feature_time, m_problems)
     pool.close()
     pool.join()
     results.wait()
