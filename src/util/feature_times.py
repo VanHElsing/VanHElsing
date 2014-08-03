@@ -3,7 +3,6 @@ Used to generate feature calculation times for all problems
 '''
 
 from multiprocessing import Pool
-import DataSet
 import time
 import IO
 
@@ -17,7 +16,7 @@ def get_all_problems():
     result : 1 x N Numpy array
         All problem names
     '''
-    ds = DataSet.DataSet()
+    ds = DataSet()
     ds.load('E')
     return ds.problems
 
@@ -53,9 +52,10 @@ def solve_problem(prob):
     result : tuple
         Contains the problem name (1) and the time (2)
     '''
-    cmd = '../contrib/E/PROVER/classify_problem -caaaaaaaaaaaaa --tstp-in {}'
+    feature_obj = EFeatures()
+    
     curr_time = time.clock()
-    print IO.run_command(cmd.format(get_prob_path(prob)), 30)
+    print feature_obj.get(get_prob_path(prob), 30)
     return (prob, (time.clock() - curr_time))
 
 
@@ -70,7 +70,6 @@ def calculate_feature_times(cores=2):
         The amount of cores that can be used for calculations
     '''
     m_problems = get_all_problems()
-#     m_problems = ['AGT001+1.p','AGT001+2.p','AGT002+1.p','SWB005+2.p','SET013+4.p']
     pool = Pool(processes=cores)
     results = pool.map_async(solve_problem, m_problems)
     pool.close()
@@ -81,3 +80,10 @@ def calculate_feature_times(cores=2):
         for prob, tm in results:
             f.write('{},{}\n'.format(prob, tm))
     print 'Done'
+
+if __name__ == '__main__':
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    from src.Features import EFeatures
+    import src.DataSet
+    
+    calculate_feature_times()
