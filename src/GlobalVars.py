@@ -25,6 +25,6 @@ FORMATTER = logging.Formatter('%% %(message)s')
 CONSOLE = logging.StreamHandler(sys.stdout)
 CONSOLE.setLevel(logging.INFO)
 CONSOLE.setFormatter(FORMATTER)
-LOGGER = logging.getLogger('')
+LOGGER = logging.getLogger('VanHElsing')
 if CONSOLE not in LOGGER.handlers:
     LOGGER.addHandler(CONSOLE)
