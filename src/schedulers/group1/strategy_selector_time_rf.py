@@ -1,9 +1,5 @@
 '''
 A StrategySelector class based on multiple random forests
-
-Created on May 17, 2014
-
-@author: Frank Dorssers, Sil van de Leemput
 '''
 
 from sklearn.ensemble import RandomForestClassifier
@@ -57,7 +53,7 @@ class StrategySelectorTimeRF(object):
         temp = (Y > -1) & (Y <= self._time)
         classifiers = []
         for y in temp.T:
-            clf = RandomForestClassifier()
+            clf = RandomForestClassifier()  # pylint: disable=no-value-for-parameter
             clf.fit(X, y)
             classifiers.append(clf)
         return classifiers
