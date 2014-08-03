@@ -4,7 +4,8 @@ Used to generate feature calculation times for all problems
 
 from multiprocessing import Pool
 import time
-import IO
+import sys
+import os
 
 
 def get_all_problems():
@@ -35,7 +36,7 @@ def get_prob_path(prob):
     result : tuple
         Contains the problem name (1) and the time (2)
     '''
-    return IO.expand_filename('Problems/{}/{}'.format(prob[:3], prob))
+    return expand_filename('Problems/{}/{}'.format(prob[:3], prob))
 
 
 def calculate_feature_time(prob):
@@ -82,8 +83,9 @@ def calculate_feature_times(cores=2):
     print 'Done'
 
 if __name__ == '__main__':
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
     from src.Features import EFeatures
-    import src.DataSet
+    from src.DataSet import DataSet
+    from src.IO import expand_filename
     
     calculate_feature_times()
