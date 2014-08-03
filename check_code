@@ -5,8 +5,9 @@ echo -e "Checking code with flake8\c"
 # W293 Blank line contains whitespace
 # N806 Variable in function should be lowercase (we use Pylint for naming conventions)
 # E124 Closing bracket does not match visual indentation (we use Pylint for brackets)
+# N803 Argument name should be lowercase
 flake_result=$(flake8 \
-    --ignore=E501,W293,N806,E124 \
+    --ignore=E501,W293,N806,E124,N803 \
     src tests)
 flake_status=$?
 
