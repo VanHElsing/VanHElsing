@@ -13,7 +13,7 @@ from src.data_util import not_solved_by_strat,\
 from src.schedulers.SchedulerTemplate import StrategyScheduler
 
 
-class NearestNeighborScheduler(StrategyScheduler):
+class NearestNeighborScheduler(StrategyScheduler):  # pylint: disable=too-many-instance-attributes
     '''
     Uses the nearest neighbor algorithm to predict which strategy to run next.
     The strategy that solves most of the neigboring problems in the least
@@ -34,7 +34,7 @@ class NearestNeighborScheduler(StrategyScheduler):
         except ConfigParser.NoOptionError:
             self.negscore_func = 'max'
         self.nr_of_neighbors = 2000
-        self.model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)
+        self.model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)  # pylint: disable=unexpected-keyword-arg, no-value-for-parameter
         self._data_set = None
         self.data_set = None
         self.last_strategy = None
@@ -64,10 +64,12 @@ class NearestNeighborScheduler(StrategyScheduler):
             neighbors = self.model.kneighbors(self.features)
             # Find close neighbors
             n_distances = neighbors[0][0]
-            nr_index = min(len(n_distances), self.min_neighbors)-1
+            nr_index = min(len(n_distances), self.min_neighbors) - 1
             max_dist = n_distances[nr_index] * self.mul_factor
-            for cut_off_index, dist in enumerate(n_distances):
+            cut_off_index = None
+            for loc_cut_off_index, dist in enumerate(n_distances):
                 if dist > max_dist:
+                    cut_off_index = loc_cut_off_index
                     break
 
             # List of similar problems
@@ -89,27 +91,23 @@ class NearestNeighborScheduler(StrategyScheduler):
         best_local_strategies = [i for i, i_solved in enumerate(local_solved)
                                  if i_solved == max_local_solved]
 
-        best_local_strategies_times = [filter(lambda x: x != -1, self.local_strat_times.T[j]) for j in best_local_strategies] # NOQA, pylint: disable=C0301
-        best_local_strategies_max_times = map(max, best_local_strategies_times)
+        best_local_strategies_times = [[time for time in self.local_strat_times.T[j] if time != -1] for j in best_local_strategies]
+        best_local_strategies_max_times = [max(times) for times in best_local_strategies_times]
         
         if self.negscore_func == 'max':
             best_local_strategies_negscore = best_local_strategies_max_times
         elif self.negscore_func == 'median':
-            best_local_strategies_negscore = map(np.median,  # NOQA, pylint: disable=E1101
-                                                 best_local_strategies_times)
+            best_local_strategies_negscore = [np.median(times) for times in best_local_strategies_times]
         elif self.negscore_func == 'mean':
-            best_local_strategies_negscore = map(np.mean,  # NOQA, pylint: disable=E1101
-                                                 best_local_strategies_times)
+            best_local_strategies_negscore = [np.mean(times) for times in best_local_strategies_times]
         elif self.negscore_func == 'meanmedian':
-            best_local_strategies_negscore = map(np.mean,  # NOQA, pylint: disable=E1101
-                                                 best_local_strategies_times)
-            best_local_strategies_max_times = map(np.median,  # NOQA, pylint: disable=E1101
-                                                  best_local_strategies_times)
-        # IMPROVEMENT: Run von the mean/median/etc instead of always the max
+            best_local_strategies_negscore = [np.mean(times) for times in best_local_strategies_times]
+            best_local_strategies_max_times = [np.median(times) for times in best_local_strategies_times]
+        
         zipped = zip(best_local_strategies, best_local_strategies_max_times,
                      best_local_strategies_negscore)
         
-        self.last_strategy, self.last_time, dummy_s = min(zipped, key=operator.itemgetter(2))  # NOQA, pylint: disable=C0301
+        self.last_strategy, self.last_time, _s = min(zipped, key=operator.itemgetter(2))  # NOQA, pylint: disable=C0301
         assert self.last_time > 0
         strategy = self.data_set.strategies[self.last_strategy]
         return strategy, min(self.last_time, time_left)
