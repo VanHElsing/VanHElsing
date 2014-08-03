@@ -27,6 +27,43 @@ def set_up_parser():
     return parser
 
 
+def eval_sched_cv(kfolds, dataset, scheduler):
+    folds = KFold(len(dataset.problems), n_folds=kfolds, indices=False) # pylint: disable=unexpected-keyword-arg, no-value-for-parameter
+    LOGGER.info("TRAINING + PREDICTION (Cross-validation folds %i)",
+                kfolds)
+    sumscore = 0
+    for i, (train_idx, test_idx) in enumerate(folds):
+        train_dataset = dataset.mask(train_idx)
+        test_dataset = dataset.mask(test_idx)
+        LOGGER.info("Fold: %i -- #train: %i/%i",
+                    i + 1, len(train_dataset.problems),
+                    len(dataset.problems))
+        LOGGER.info("Fitting model.")
+        scheduler.fit(train_dataset, max_time)
+        LOGGER.info("Evaluating model.")
+        solved, _dummy_score = eval_against_dataset(test_dataset,
+                                                    scheduler, max_time)
+        try:
+            sumscore += solved
+        except TypeError:
+            LOGGER.warn("Evaluation score is not a number.")
+            solved = 0
+        LOGGER.info("Solved: %s", solved)
+    LOGGER.info("Total score: %s", sumscore / kfolds)
+
+
+def eval_sched_whole(dataset, scheduler):
+    LOGGER.info("EVALUATING (Whole dataset):.")
+    solved, score = eval_against_dataset(dataset, scheduler, max_time)
+    try:
+        solved += 0
+    except TypeError:
+        LOGGER.warn("Evaluation score is not a number.")
+        solved = 0
+    LOGGER.info("Solved: %s", solved)
+    LOGGER.info("Score: %s", score)
+
+
 def learn(argv):
     """
     Learns and saves a model for predicting the best strategy for the dataset.
@@ -49,41 +86,13 @@ def learn(argv):
 
     if eval_kfolds:
         kfolds = max(int(configuration.get('Learner', 'kfolds')), 2)
-        folds = KFold(len(dataset.problems), n_folds=kfolds, indices=False)
-        LOGGER.info("TRAINING + PREDICTION (Cross-validation folds %i)",
-                    kfolds)
-        sumscore = 0
-        for i, (train_idx, test_idx) in enumerate(folds):
-            train_dataset = dataset.mask(train_idx)
-            test_dataset = dataset.mask(test_idx)
-            LOGGER.info("Fold: %i -- #train: %i/%i",
-                        i + 1, len(train_dataset.problems),
-                        len(dataset.problems))
-            LOGGER.info("Fitting model.")
-            scheduler.fit(train_dataset, max_time)
-            LOGGER.info("Evaluating model.")
-            solved, dummy_score = eval_against_dataset(test_dataset,
-                                                       scheduler, max_time)
-            try:
-                sumscore += solved
-            except TypeError:
-                LOGGER.warn("Evaluation score is not a number.")
-                solved = 0
-            LOGGER.info("Solved: %s", solved)
-        LOGGER.info("Total score: %s", sumscore / kfolds)
+        eval_sched_cv(kfolds, dataset, scheduler)
+    
     if eval_whole or export_model:
         LOGGER.info("TRAINING (Whole dataset):")
         scheduler.fit(dataset, max_time)
         if eval_whole:
-            LOGGER.info("EVALUATING (Whole dataset):.")
-            solved, score = eval_against_dataset(dataset, scheduler, max_time)
-            try:
-                solved += 0
-            except TypeError:
-                LOGGER.warn("Evaluation score is not a number.")
-                solved = 0
-            LOGGER.info("Solved: %s", solved)
-            LOGGER.info("Score: %s", score)
+            eval_sched_whole(dataset, scheduler)
         if export_model:
             exportfile = args.outputfile
             if exportfile == '':
