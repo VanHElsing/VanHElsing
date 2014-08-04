@@ -17,6 +17,11 @@ from argparse import ArgumentParser
 def set_up_parser():
     '''
     Initializes parser.
+
+    Returns
+    -------
+    Parser : ArgumentParser
+        Initialized ArgumentParser which contains relevant arguments
     '''
     parser = ArgumentParser(description='Van HElsing 1.0 --- June 2014.\n')
     parser.add_argument('-t', '--time', help='Maximum runtime of Van HElsing.',
@@ -30,6 +35,11 @@ def set_up_parser():
 def check_args(args):
     '''
     Verifies the existence of the expected arguments.
+
+    Parameters
+    ----------
+    args : Arguments
+        Should contain arguments for the time, problem and configuration
     '''
     if args.time is None:
         LOGGER.error("No argument for time found.")
@@ -47,10 +57,17 @@ def helsing(argv):
     Main function for VanHElsing.
     Runs an ATP on the problem $p$ with a strategy schedule predicted with
     the model defined in the configuration $c$ for the time limit $t$.
-    Input (via the command line):
-    c: Configuration file
-    t: Time limit
-    p: Problem file
+
+    Inputs (command line)
+    ---------------------
+    c : Configuration file
+    t : Time limit
+    p : Problem file
+
+    Returns
+    -------
+    Result : boolean
+        True if a proof has been found
     '''
     parser = set_up_parser()
     args = parser.parse_args(argv)
