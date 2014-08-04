@@ -17,8 +17,8 @@ def add_pca_features(X, V, pcas=None):
     giving X'_i. The resulting matrices are concatenated vertically after
     the original matrix X and returned as a whole new matrix.
 
-    Variables
-    ---------
+    Parameters
+    ----------
     X    : matrix                   (problems x strategies)
            original feature matrix
     V    : matrix                   (strategies x strategies)
@@ -47,8 +47,8 @@ def determine_pca(X):
     Determines the unitary matrix V from data matrix X,
     which is required for performing PCA
 
-    Variables
-    ---------
+    Parameters
+    ----------
     X : the data matrix             (problems x strategies)
 
     Returns
@@ -63,8 +63,8 @@ def perform_pca(X, V, number_pcas=-1):
     '''
     Performs PCA on the given dataset X, utilising the unitary matrix V.
 
-    Variables
-    ---------
+    Parameters
+    ----------
     X           : numpy array        (problems x strategies)
     V           : the unitary matrix (strategies x strategies)
     number_pcas : integer, the number of PCAs that are used to reconstruct
@@ -87,8 +87,8 @@ def standardize_features(X, cap=False, capval=2.5):
     '''
     Column-wise standardization of a data matrix
 
-    Variables
-    ---------
+    Parameters
+    ----------
     X      : data matrix             (problems x strategies)
     cap    : boolean
     capval : double
@@ -113,8 +113,8 @@ def standardize_features_means_stds(X, means, stds, cap=False, capval=2.5):
     Column-wise standardization of a data matrix using precalculated
     means and stds
 
-    Variables
-    ---------
+    Parameters
+    ----------
     X      : numpy array             (problems x strategies)
     means  : respective means of X   (strategies)
     stds   : respective stds of X    (strategies)
