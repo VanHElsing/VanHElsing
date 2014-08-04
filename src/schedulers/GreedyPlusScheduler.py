@@ -28,10 +28,19 @@ class GreedyPlusScheduler(StrategyScheduler):
         self.prediction_counter = 0
 
     def fit(self, data_set, max_time):
+        '''
+        Fits the model to a certain dataset with a certain maximum amount
+        of time that can be used for solving problems
+
+        Parameters
+        ----------
+        data_set : DataSet
+            The dataset that the scheduler has to be fitted to
+        max_time : int
+            The total amount of time that can be used to solve problems
+        '''
         greedy_scheduler = GreedyScheduler(self.config)
         greedy_scheduler.fit(data_set, max_time)
-        # i = 0
-        # while i < 10:
         while True:
             problem_nr = greedy_scheduler.data_set.strategy_matrix.shape[0]
             prediction = greedy_scheduler.predict(max_time,
@@ -51,6 +60,14 @@ class GreedyPlusScheduler(StrategyScheduler):
         self.plus_scheduler.fit(data_set, max_time)
 
     def predict(self, time_left):
+        '''
+        Predicts the current problem based on a certain amount of time left
+        
+        Parameters
+        ----------
+        time_left : int
+            The amount of time that is left for solving problems
+        '''
         if self.prediction_counter < len(self.inititial_predictions):
             return self.inititial_predictions[self.prediction_counter]
         if self.prediction_counter == len(self.inititial_predictions):
@@ -62,17 +79,41 @@ class GreedyPlusScheduler(StrategyScheduler):
         return self.plus_scheduler.predict(time_left)
 
     def reset(self):
+        '''
+        Resets the prediction counter and the plus scheduler
+        '''
         self.prediction_counter = 0
         self.plus_scheduler.reset()
 
     def set_problem(self, problem_file):
+        '''
+        Changes the problem to a specific problem that will be solved
+
+        Parameters
+        ----------
+        problem_file : string
+            The new problem that should be solved
+        '''
         self.problem = problem_file
 
     def set_problem_and_features(self, problem_file, problem_features):
+        '''
+        Changes the problem to a specific problem and its features that will be solved
+
+        Parameters
+        ----------
+        problem_file : string
+            The new problem that should be solved
+        self.problem_features : Numpy array
+            The features of the new problems
+        '''
         self.problem = problem_file
         self.features = problem_features
 
     def update(self):
+        '''
+        Updates the prediction counter by one
+        '''
         if self.prediction_counter < len(self.inititial_predictions):
             self.prediction_counter += 1
             return
