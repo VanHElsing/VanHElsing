@@ -38,10 +38,12 @@ class TimeRegression():
         '''
         Function for training the linear regression model
 
-        Variables
-        ---------
-        X : feature matrix          (problems x features)
-        Y : target timing matrix    (problems x strategies)
+        Parameters
+        ----------
+        X : numpy array
+            feature matrix          (problems x features)
+        Y : numpy array
+            target timing matrix    (problems x strategies)
         '''
         # Reset model list
         self._models = []
@@ -58,14 +60,15 @@ class TimeRegression():
         Predicts the time each strategy needs to solve the problem
         using the trained model
 
-        Variables
+        Parameters
         ---------
-        X : feature matrix          (problems x features)
+        X : numpy array
+            feature matrix          (problems x features)
 
         Returns
         -------
-        result : matrix             (problems x strategies)
-            with time estimates for each strategy
+        result : numpy array
+            with time estimates for each strategy (problems x strategies)
         '''
         prediction = np.zeros([len(self._models)])
         for i, model in enumerate(self._models):
@@ -77,10 +80,12 @@ class TimeRegression():
         Predicts the time each strategy needs to solve the problem
         using the trained model
 
-        Variables
-        ---------
-        X : feature matrix          (problems x features)
-        Y : target timing matrix    (problems x strategies)
+        Parameters
+        ----------
+        X : numpy array
+            feature matrix          (problems x features)
+        Y : numpy array
+            target timing matrix    (problems x strategies)
 
         Returns
         -------
