@@ -15,15 +15,26 @@ class StrategyScheduler(object):
     @abstractmethod
     def __init__(self, config):
         """
-        config: Load settings from a SafeConfigParser instance
+        Initializes a scheduler
+
+        Parameters
+        ----------
+        config : SafeConfigParser
+            Load settings from a SafeConfigParser instance
         """
         self.feature_parser = get_feature_function(config)
 
     @abstractmethod
     def fit(self, data_set, max_time):
         """
-        data_set: As defined in DataSet.py
-        max_time: Maximum time for scheduling
+        Fits the scheduler to a problem
+
+        Parameters
+        ----------
+        data_set : DataSet
+            As defined in DataSet.py
+        max_time : int
+            Maximum time for scheduling
         """
         pass
 
@@ -33,9 +44,12 @@ class StrategyScheduler(object):
         This method is to be called to determining the next best (strat, t)
         pair for solving the problem
 
-        return (strategy, time)
-            strategy: strategy string,
-            time: time strategy should run (sec)
+        Returns
+        -------
+        strategy : string
+            The strategy that has to be used
+        time : int
+            The time that the strategy should be run
         """
         pass
 
@@ -49,15 +63,26 @@ class StrategyScheduler(object):
     @abstractmethod
     def set_problem(self, problem_file):
         """
-        problem_file: absolute path to the problem
+        Sets a problem that will be handled by the scheduler
+
+        Parameters
+        ----------
+        problem_file : string
+            absolute path to the problem
         """
         pass
 
     @abstractmethod
     def set_problem_and_features(self, problem_file, problem_features):
         """
-        problem_file: absolute path to the problem
-        problem_features: features of the problem as numpy.array
+        Sets a problem and its features that will be handled by the scheduler
+
+        Parameters
+        ----------
+        problem_file : string
+            absolute path to the problem
+        problem_features : numpy array
+            features of the problem as numpy.array
         """
         pass
 
