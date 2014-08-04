@@ -7,7 +7,7 @@ import re
 from time import time
 from src.IO import run_command
 from src.GlobalVars import LOGGER
-
+# pylint: disable=R0903
 # For matching /usr/bin/time
 RX_TIME_USER = re.compile(r"user ([0-9]+\.[0-9]+)")
 

@@ -22,7 +22,7 @@ class RunDataSetTestCase(unittest.TestCase):
                          "Amount of problems in the DataSet doesn't match"
                          + "the known amount of problems")
 
-    def test_feature_matrix_array_shape(self):
+    def test_feature_matrix_shape(self):
         self.assertEqual(self.ds.feature_matrix.shape[0], self.amount_problems,
                          "Amount of rows in the feature matrix doesn't match"
                          + "the known amount of problems")
@@ -30,7 +30,7 @@ class RunDataSetTestCase(unittest.TestCase):
                          "Amount of columns in the feature matrix doesn't"
                          + " match the known amount of features")
 
-    def test_strategy_matrix_array_shape(self):
+    def test_strategy_matrix_shape(self):
         self.assertEqual(self.ds.strategy_matrix.shape[0],
                          self.amount_problems,
                          "Amount of rows in the feature matrix doesn't"

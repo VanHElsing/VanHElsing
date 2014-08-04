@@ -71,8 +71,8 @@ def helsing(argv):
         strat, strat_time = scheduler.predict(time_left)
         run_time = min(time_left, strat_time)
         LOGGER.info("Running %s for %s seconds", strat, strat_time)
-        proof_found, dummy_cs, output, dummy_time = atp.run(strat, run_time,
-                                                            args.problem)
+        proof_found, _cs, output, _time = atp.run(strat, run_time,
+                                                  args.problem)
         if not proof_found:
             scheduler.update()
             time_left = args.time - (time() - start_time)

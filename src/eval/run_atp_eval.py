@@ -13,7 +13,7 @@ PROVER = 'helsing'
 RUNTIME = 305
 OUT = 'runs/real/atp_eval_CASC_Training_Group1_DT_001'
 PROBLEMS = os.path.join(PATH, 'data', 'E', 'CASC24Training')
-#PROBLEMS = os.path.join(PATH, 'data', 'Satallax', 'CASC24Training')
+# PROBLEMS = os.path.join(PATH, 'data', 'Satallax', 'CASC24Training')
 atp_eval(PROBLEMS, PROVER, RUNTIME, OUT, CORES)
 
 """

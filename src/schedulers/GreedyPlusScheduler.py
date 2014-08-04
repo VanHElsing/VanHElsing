@@ -6,6 +6,7 @@ from src.GlobalVars import LOGGER
 from src.schedulers.GreedyScheduler import GreedyScheduler
 from src.schedulers.NearestNeighbor import NearestNeighborScheduler
 from src.schedulers.SchedulerTemplate import StrategyScheduler
+# pylint: disable=R0902
 
 
 class GreedyPlusScheduler(StrategyScheduler):

@@ -7,6 +7,7 @@ from src.data_util import load_dataset_from_config
 from src.schedulers.util import choose_scheduler
 from sklearn.cross_validation import KFold
 from src.GlobalVars import PATH, LOGGER
+# pylint: disable=R0913
 
 
 def eval_against_dataset(dataset, scheduler, max_time=300, save_schedule_file='ml_eval'):

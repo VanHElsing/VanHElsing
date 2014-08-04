@@ -1,10 +1,8 @@
 import numpy as np
 import os
 import sys
-
 import matplotlib.pylab as pl
 import multiprocessing as mp
-
 from src.CPU import CPU, gen_tasks
 from src.GlobalVars import PATH, LOGGER
 
@@ -15,25 +13,33 @@ except ImportError:
 
 
 def benchmark_task(args):
+    """
+    Wrapper for cpu_measurements.
+    """
     cpu, strategy, p_path, p_name, strategy, pred_time, scaled_time = args
     real_time = cpu.measure(strategy, p_path)
-    print 'Finished %s in %f' % (p_path, real_time)
+    LOGGER.info('Finished %s in %f', p_path, real_time)
     return (p_name, strategy, pred_time, scaled_time, real_time)
 
 
 def compute_benchmark(cpu, dataset):
+    """
+    Measures the CPU times for each problem in dataset.
+    """
     TPTPPath = os.getenv('TPTP')
 
     result = []
     for p_name, strategy, pred_time, scaled_time in dataset:
         p_path = os.path.join(TPTPPath, 'Problems', p_name[:3], p_name)
-        
         result.append(benchmark_task((cpu, strategy, p_path, p_name, strategy, pred_time, scaled_time)))
         
     return result
 
 
 def compute_benchmark_concurrent(cpu, dataset, cores=None):
+    """
+    Measures the CPU times for each problem in dataset concurrently.
+    """
     TPTPPath = os.getenv('TPTP')
     
     if cores is None:
@@ -54,14 +60,16 @@ def show_dataset(dataset, name, color):
     y = []
     for row in dataset:
         p_name, strategy, pred_time, scaled_time, real_time = row
-    
+
+        # """ Debug
         print "----"
         print p_name
         print strategy
         print pred_time
         print scaled_time
         print real_time
-        
+        # """
+
         X.append(pred_time)
         y.append(scaled_time / real_time)
     
@@ -78,7 +86,10 @@ def execute_benchmark(cpu):
         with open(path, 'rb') as in_s:
             dataset = pickle.load(in_s)
     else:
-        strategies = ['protokoll_G-E--_107_C45_F1_PI_AE_Q7_CS_SP_PS_S0Y', 'protokoll_H----_102_C18_F1_PI_AE_Q4_CS_SP_S1S', 'protokoll_H----_047_C18_F1_AE_R8_CS_SP_S2S', 'protokoll_G-E--_042_C45_F1_PI_AE_Q4_CS_SP_PS_S4S']
+        strategies = ['protokoll_G-E--_107_C45_F1_PI_AE_Q7_CS_SP_PS_S0Y',
+                      'protokoll_H----_102_C18_F1_PI_AE_Q4_CS_SP_S1S',
+                      'protokoll_H----_047_C18_F1_AE_R8_CS_SP_S2S',
+                      'protokoll_G-E--_042_C45_F1_PI_AE_Q4_CS_SP_PS_S4S']
         
         tasks = []
         for strategy in strategies:
@@ -110,7 +121,6 @@ def execute_benchmark(cpu):
     p4 = show_dataset(dataset_oversat, "Concurrent, oversaturation", "y")
     
     pl.legend([p1, p2, p3, p4], ["Single core, first", "Single core, second", "Concurrent, fitting", "Concurrent, oversaturation"])
-    pass
 
 
 def show_ratios(cpu):
@@ -120,7 +130,6 @@ def show_ratios(cpu):
     
     pl.figure("Tuning samples")
     pl.scatter([x[0] for x in cpu.ratios], [x[2] * x[0] for x in cpu.ratios])
-    pass
 
 
 def main():

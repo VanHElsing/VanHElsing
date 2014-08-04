@@ -53,7 +53,7 @@ class NearestNeighborScheduler(StrategyScheduler):  # pylint: disable=too-many-i
 
     def predict(self, time_left):
         if self.data_set is None:
-            # IMPROVEMENT: Made default mode an option of the config file.
+            # IMPROVEMENT: Make default mode an option of the config file.
             return '', time_left
         s_nr = self.data_set.strategy_matrix.shape[1]
         local_avg_times = [0.0] * s_nr
@@ -93,7 +93,7 @@ class NearestNeighborScheduler(StrategyScheduler):  # pylint: disable=too-many-i
 
         best_local_strategies_times = [[time for time in self.local_strat_times.T[j] if time != -1] for j in best_local_strategies]
         best_local_strategies_max_times = [max(times) for times in best_local_strategies_times]
-        
+
         if self.negscore_func == 'max':
             best_local_strategies_negscore = best_local_strategies_max_times
         elif self.negscore_func == 'median':
@@ -103,10 +103,11 @@ class NearestNeighborScheduler(StrategyScheduler):  # pylint: disable=too-many-i
         elif self.negscore_func == 'meanmedian':
             best_local_strategies_negscore = [np.mean(times) for times in best_local_strategies_times]
             best_local_strategies_max_times = [np.median(times) for times in best_local_strategies_times]
-        
+
         zipped = zip(best_local_strategies, best_local_strategies_max_times,
                      best_local_strategies_negscore)
-        
+
+        # IMPROVEMENT: Use median/mean times instead of max.
         self.last_strategy, self.last_time, _s = min(zipped, key=operator.itemgetter(2))  # NOQA, pylint: disable=C0301
         assert self.last_time > 0
         strategy = self.data_set.strategies[self.last_strategy]
@@ -141,12 +142,12 @@ class NearestNeighborScheduler(StrategyScheduler):  # pylint: disable=too-many-i
         else:
             self.data_set = self.data_set.mask(good_problems)
         # Local Update
-        s_nr = self.data_set.strategy_matrix.shape[1]
         lp_nr = self.local_strat_times.shape[0]
         local_good_problems = [i for i in range(lp_nr) if (self.local_strat_times[i, self.last_strategy] > self.last_time)]
         if len(local_good_problems) == 0:
             self.local_strat_times = None
             self.model.fit(self.data_set.feature_matrix)
         else:
+            s_nr = self.data_set.strategy_matrix.shape[1]
             idx = np.ix_(local_good_problems, range(s_nr))  # NOQA, pylint: disable=E1101
             self.local_strat_times = self.local_strat_times[idx]

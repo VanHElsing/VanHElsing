@@ -38,7 +38,7 @@ class Features(object):
         self.filename = IO.expand_filename(filename)
         binary = os.path.join(GlobalVars.PATH, self.binary)
         command = ' '.join([binary, self.args, self.filename])
-        resultcode, stdout, dummy_stderr = IO.run_command(command, time_out)
+        resultcode, stdout, _stderr = IO.run_command(command, time_out)
         if resultcode < 0:
             raise IOError(10, 'Could not compute features. ' +
                           'Try running %s' % command)

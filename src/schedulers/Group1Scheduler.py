@@ -1,7 +1,5 @@
 '''
-Created on May 17, 2014
-
-@author: Sil van de Leemput
+Strategy Scheduler based on the work of the Group1 student project.
 '''
 
 import numpy as np
@@ -9,10 +7,6 @@ import numpy as np
 from src.GlobalVars import LOGGER
 from src.schedulers.SchedulerTemplate import StrategyScheduler
 import src.schedulers.group1.preprocessing as pp
-
-
-# from src.schedulers.group1.strategy_selector_time_rf \
-#   import StrategySelectorTimeRF as StrategySelector
 from src.schedulers.group1.strategy_selector_time_knn \
     import StrategySelectorTimeKNN as StrategySelector
 from src.schedulers.group1.timeregression import TimeRegression
@@ -31,7 +25,7 @@ class Group1Scheduler(StrategyScheduler):
         The config should have a "Group1Scheduler" group
         '''
         StrategyScheduler.__init__(self, config)
-        self._config = config
+        self._config = config  # TODO: I think you don't need cfg_get. The config parser should do this for you.
 
         self._pcas = map(int, list(self.cfg_get('pcas').split()))
         self._standardize = self.cfg_get('standardize', True)
@@ -108,7 +102,7 @@ class Group1Scheduler(StrategyScheduler):
         # apply PCAs
         if len(self._pcas) > 0:
             LOGGER.info("applying PCAs")
-        self._V = pp.determine_pca(X)
+        self._V = pp.determine_pca(X)  # TODO: I think you're missing indentation here and in the next line.
         X = pp.add_pca_features(X, self._V, self._pcas)
 
         # fit models
@@ -151,7 +145,7 @@ class Group1Scheduler(StrategyScheduler):
         if self._standardize:
             x = pp.standardize_features_means_stds(x, self._means, self._stds,
                                                    True, self._stdcap)
-        x = pp.add_pca_features(x, self._V, self._pcas)
+        x = pp.add_pca_features(x, self._V, self._pcas)  # TODO: if self._pca?
 
         ys = self._stratselector.predict(x)[0, :]
         if self._use_optimizer:
@@ -249,4 +243,4 @@ class Group1Scheduler(StrategyScheduler):
         self._stratsleft[sel] = 0
 
     def reset(self):
-        pass
+        pass  # TODO: At least print a warning. All ML evals will fail.

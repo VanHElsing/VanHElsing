@@ -1,7 +1,5 @@
 '''
-Created on May 23, 2014
-
-@author: Sil van de Leemput
+Contains code for loading a dataset.
 '''
 
 import os

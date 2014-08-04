@@ -27,8 +27,8 @@ def set_up_parser():
     return parser
 
 
-def eval_sched_cv(kfolds, dataset, scheduler):
-    folds = KFold(len(dataset.problems), n_folds=kfolds, indices=False) # pylint: disable=unexpected-keyword-arg, no-value-for-parameter
+def eval_sched_cv(kfolds, dataset, scheduler, max_time):
+    folds = KFold(len(dataset.problems), n_folds=kfolds, indices=False)  # pylint: disable=unexpected-keyword-arg, no-value-for-parameter
     LOGGER.info("TRAINING + PREDICTION (Cross-validation folds %i)",
                 kfolds)
     sumscore = 0
@@ -52,7 +52,7 @@ def eval_sched_cv(kfolds, dataset, scheduler):
     LOGGER.info("Total score: %s", sumscore / kfolds)
 
 
-def eval_sched_whole(dataset, scheduler):
+def eval_sched_whole(dataset, scheduler, max_time):
     LOGGER.info("EVALUATING (Whole dataset):.")
     solved, score = eval_against_dataset(dataset, scheduler, max_time)
     try:
@@ -86,13 +86,13 @@ def learn(argv):
 
     if eval_kfolds:
         kfolds = max(int(configuration.get('Learner', 'kfolds')), 2)
-        eval_sched_cv(kfolds, dataset, scheduler)
+        eval_sched_cv(kfolds, dataset, scheduler, max_time)
     
     if eval_whole or export_model:
         LOGGER.info("TRAINING (Whole dataset):")
         scheduler.fit(dataset, max_time)
         if eval_whole:
-            eval_sched_whole(dataset, scheduler)
+            eval_sched_whole(dataset, scheduler, max_time)
         if export_model:
             exportfile = args.outputfile
             if exportfile == '':

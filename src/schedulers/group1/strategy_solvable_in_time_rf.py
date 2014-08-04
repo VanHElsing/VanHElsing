@@ -2,14 +2,9 @@
 StrategySolvableInTimeRF
 Optimization classifier class that predicts if a problem is solvable
 within a given period of time
-
-Created on May 17, 2014
-
-@author: Sil van de Leemput
 '''
 
 import numpy as np
-
 import sklearn.ensemble as ens
 
 

@@ -2,10 +2,8 @@ import os
 import sys
 from time import time
 import numpy as np
-
 from src.DataSet import DataSet
 from src.data_util import remove_unsolveable_problems
-
 from src.GlobalVars import PATH, EPATH, LOGGER
 from src.RunATP import ATP
 
@@ -16,30 +14,32 @@ except ImportError:
 
 
 def gen_tasks(dataset, problems_per_bin, strategy_file):
+    """
+    Returns the first $problems_per_bin problem that are solvable for the
+    strategy defined in $strategy_file. The number of bins is hardcoded.
+    """
     TPTPPath = os.getenv('TPTP')
     if TPTPPath is None:
         raise IOError('$TPTP is not defined.')
-    
+
     strategy_i = list(dataset.strategy_files).index(strategy_file)
-    
+
     bin_borders = [1.0, 10.0, 30.0, 60.0, 100.0, 150.0, 200.0, 250.0, 300.0]  # Must be sorted
     bins = dict()
-    
+
     for bin_border in bin_borders:
         bins[bin_border] = []
-    
+
     problem_is = range(dataset.problems.size)
     np.random.shuffle(problem_is)
-    
-    result = []
+
     for problem_i in problem_is:
         pred_time = dataset.strategy_matrix[problem_i][strategy_i]
         if pred_time == -1.0:
             continue
-            
-        if pred_time < 0.5:
+        elif pred_time < 0.5:
             continue
-        
+
         # Find the correct bin
         current_bin = None
         for bin_border in bin_borders:
@@ -47,57 +47,63 @@ def gen_tasks(dataset, problems_per_bin, strategy_file):
                 if len(bins[bin_border]) < problems_per_bin:
                     current_bin = bin_border
                 break
-        
+
         if current_bin is None:
             continue
-        
+
         p_name = dataset.problems[problem_i]
         strategy = dataset.strategies[strategy_i]
 
         bins[current_bin].append((p_name, strategy, pred_time))
-    
+
+    result = []
     for problems in bins.values():
         result.extend(problems)
-    
+
     return result
 
 
 def gen_testdata():
-    strategy_file = 'protokoll_G-E--_042_C45_F1_PI_AE_Q4_CS_SP_PS_S4S'  # strategy using --auto-schedule
-    
+    """
+    Runs gen_tasks on 'protokoll_G-E--_042_C45_F1_PI_AE_Q4_CS_SP_PS_S4S'
+    """
+    strategy_file = 'protokoll_G-E--_042_C45_F1_PI_AE_Q4_CS_SP_PS_S4S'
+
     dataset = DataSet()
     dataset.whitelist = [strategy_file]  # subset, for faster loading
-    
+
     dataset.load('E')
     dataset = remove_unsolveable_problems(dataset)
-    
+
     return gen_tasks(dataset, 3, strategy_file)
 
 
 class CPU(object):
+    """
+    Class for time-measurements with E prover.
+    """
     times = None
     ratios = None
-    
     atp = None
-    
+
     def __init__(self):
         eprover_path = os.path.join(EPATH, 'eprover')
         self.atp = ATP(eprover_path, '--cpu-limit=',
                        '--tstp-format -s --proof-object --memory-limit=2048')
-        pass
-    
+
     def measure(self, strategy, p_path):
         use_cpu_time = (os.name is "posix")
         start_time = time()
-        
-        proof_found, _cs, _o, cpu_time = self.atp.run(strategy, 400, p_path, use_cpu_time)
+
+        proof_found, _cs, _o, cpu_time = self.atp.run(strategy, 400,
+                                                      p_path, use_cpu_time)
         assert proof_found
-        
+
         if use_cpu_time:
             used_time = cpu_time
         else:
             used_time = time() - start_time
-        
+
         return used_time
 
     def compare_cpu_with_data_set(self, runs=3):
@@ -116,21 +122,22 @@ class CPU(object):
             for i in range(runs):
                 LOGGER.info('Run %s / %s', i, runs)
                 used_time = self.measure(p_strategy, p_path)
-                measurements.append((p_time, abs(used_time - p_time), used_time / p_time))
-                
-            series.append(measurements)
+                abs_time = abs(used_time - p_time)
+                rat_time = used_time / p_time
+                measurements.append((p_time, abs_time, rat_time))
 
+            series.append(measurements)
         LOGGER.info('Finished CPU measurements')
 
         return series
 
     def load_or_gen_data(self):
         if self.ratios is not None:
-            pass
-    
+            pass  # TODO: What's the point?
+
         path = os.path.join(PATH, 'tuning')
-    
-        print path
+
+        print path  # TODO: LOGGER instead of print? Or is this debugging code?
         if os.path.isfile(path):
             with open(path, 'rb') as in_s:
                 self.times = pickle.load(in_s)
@@ -141,31 +148,31 @@ class CPU(object):
 
         self.ratios = []
         for measurements in self.times:
-            measurements.sort(key=(lambda x: x[2]))
+            measurements.sort(key=(lambda x: x[2]))  # TODO: Use itemgetter instead?
             self.ratios.extend(measurements)
-        
+
         print self.ratios
 
     def get_ratio(self, r_time):
         if self.ratios is None:
             self.load_or_gen_data()
-    
-        leastDiff = 1000000
-        bestRatio = None
-        
+
+        least_diff = 1000000
+        best_ratio = None
+
         for p_time, _diff_time, ratio in self.ratios:
             diff = abs(p_time - r_time)
-            if diff < leastDiff:
-                leastDiff = diff
-                bestRatio = ratio
-    
-        return bestRatio
-    
+            if diff < least_diff:
+                least_diff = diff
+                best_ratio = ratio
+
+        return best_ratio
+
+
 def main():
     cpu = CPU()
     cpu.load_or_gen_data()
-    
-    return 0
+    return
 
 if __name__ == '__main__':
     sys.exit(main())

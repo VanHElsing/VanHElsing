@@ -8,22 +8,6 @@ import multiprocessing as mp
 import os
 from src.GlobalVars import PATH, EPATH
 from src.RunATP import ATP
-"""
-#TODO: Is this necessary?
-class NoDaemonProcess(mp.Process):
-    # make 'daemon' attribute always return False
-    def _get_daemon(self):
-        return False
-    def _set_daemon(self, value):
-        pass
-    daemon = property(_get_daemon, _set_daemon)
-
-# We sub-class multiprocessing.pool.Pool instead of multiprocessing.Pool
-# because the latter is only a wrapper function, not a proper class.
-class MyPool(mp.pool.Pool):
-    Process = NoDaemonProcess
-#End TODO
-"""
 
 
 def run_e_auto(args):
@@ -39,7 +23,7 @@ def run_e_auto(args):
 def run_helsing(args):
     problem_file, time_limit = args
     path = os.path.join(PATH, 'src', 'helsing.py')
-    #atp = ATP(path, '-t ', '-c /home/daniel/workspace/VanHElsing/src/satallax.ini')
+    # atp = ATP(path, '-t ', '-c /home/daniel/workspace/VanHElsing/src/satallax.ini')
     atp = ATP(path, '-t ', '-c config.ini')
     # TODO: Get rid of this -p hack
     proof_found, _cs, _out, used_time = atp.run('', time_limit,
@@ -63,7 +47,7 @@ def run_satallax(args):
     problem_file, time_limit = args
     # Hack
     path = os.path.join('/home/daniel/workspace/starexec/install/satallax-2.7/bin', 'satallax.opt')
-    atp = ATP(path, '-t','')
+    atp = ATP(path, '-t', '')
     proof_found, _cs, _out, used_time = atp.run('', time_limit,
                                                 problem_file)
     return problem_file, proof_found, used_time
@@ -86,15 +70,14 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
     if prover == 'E':
         prover_call = run_e_auto
     elif prover == 'satallax':
-        prover_call = run_satallax     
+        prover_call = run_satallax
     elif prover == 'helsing':
         prover_call = run_helsing
     elif prover == 'emales':
         prover_call = run_emales
-    problems = load_problems(problem_file) #[:5]
+    problems = load_problems(problem_file)  # [:5]
     print len(problems)
-    with open(outfile, 'w') as OS:
-        # pool = MyPool(processes = cores)
+    with open(outfile, 'w') as out_stream:
         pool = mp.Pool(processes=cores)
         
         args = [[p, run_time] for p in problems]
@@ -105,7 +88,4 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
         results = results.get()
         for problem, proofFound, usedTime in results:
             if proofFound:
-                OS.write('%s,%s\n' % (problem, usedTime))
-            #else:
-            #    OS.write('NOTFOUND: %s\n' % (usedTime))
-
+                out_stream.write('%s,%s\n' % (problem, usedTime))
