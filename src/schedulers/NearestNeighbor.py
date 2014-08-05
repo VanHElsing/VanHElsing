@@ -1,5 +1,5 @@
 '''
-Contains the nearest neighbour scheduler.
+Contains the nearest neighbor scheduler.
 '''
 
 import ConfigParser
@@ -16,7 +16,7 @@ from src.schedulers.SchedulerTemplate import StrategyScheduler
 class NearestNeighborScheduler(StrategyScheduler):  # pylint: disable=too-many-instance-attributes
     '''
     Uses the nearest neighbor algorithm to predict which strategy to run next.
-    The strategy that solves most of the neigboring problems in the least
+    The strategy that solves most of the neighboring problems in the least
     amount of time is picked.
     '''
     def __init__(self, config=None):
@@ -133,7 +133,7 @@ class NearestNeighborScheduler(StrategyScheduler):  # pylint: disable=too-many-i
         good_problems = not_solved_by_strat(self.data_set,
                                             self.last_strategy,
                                             self.last_time)
-        # Have to check that we do not run out of options
+        # Check that we do not run out of options
         if len(good_problems) == 0:
             self.model = None
             self.data_set = None
