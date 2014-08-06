@@ -1,4 +1,6 @@
 '''
+Module for scheduler machine learning evaluation
+
 Created on May 17, 2014
 
 @author: Daniel Kuehlwein, Wouter Geraedts

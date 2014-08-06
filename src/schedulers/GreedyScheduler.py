@@ -1,5 +1,5 @@
 '''
-Contains the GreedySchedulder
+Contains the GreedyScheduler
 '''
 
 import copy

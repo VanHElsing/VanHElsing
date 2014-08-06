@@ -1,5 +1,5 @@
 '''
-Contains the FirstNScheulder
+Contains the FirstNScheduler
 '''
 
 from src.schedulers.SchedulerTemplate import StrategyScheduler
