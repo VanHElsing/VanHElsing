@@ -25,22 +25,22 @@ class Group1Scheduler(StrategyScheduler):
         The config should have a "Group1Scheduler" group
         '''
         StrategyScheduler.__init__(self, config)
-        self._config = config  # TODO: I think you don't need cfg_get. The config parser should do this for you.
+        self._config = config
 
-        self._pcas = map(int, list(self.cfg_get('pcas').split()))
-        self._standardize = self.cfg_get('standardize', True)
-        self._stdcap = float(self.cfg_get('stdcap'))
+        self._pcas = [int(i) for i in config.get('Group1Scheduler', 'pcas').split()]
+        self._standardize = config.getboolean('Group1Scheduler', 'standardize')
+        self._stdcap = float(config.getfloat('Group1Scheduler', 'stdcap'))
 
-        self._alpha = float(self.cfg_get('alpha'))
-        self._beta = float(self.cfg_get('beta'))
-        self._gamma = float(self.cfg_get('gamma'))
-        self._delta = float(self.cfg_get('delta'))
-        self._tmultiplier = float(self.cfg_get('tmultiplier'))
-        self._tadder = float(self.cfg_get('tadder'))
-        self._use_optimizer = self.cfg_get('toptimizer', True)
-        self._opt_t = float(self.cfg_get('topt'))
+        self._alpha = float(config.getfloat('Group1Scheduler', 'alpha'))
+        self._beta = float(config.getfloat('Group1Scheduler', 'beta'))
+        self._gamma = float(config.getfloat('Group1Scheduler', 'gamma'))
+        self._delta = float(config.getfloat('Group1Scheduler', 'delta'))
+        self._tmultiplier = float(config.getfloat('Group1Scheduler', 'tmultiplier'))
+        self._tadder = float(config.getfloat('Group1Scheduler', 'tadder'))
+        self._use_optimizer = config.getboolean('Group1Scheduler', 'toptimizer')
+        self._opt_t = float(config.getfloat('Group1Scheduler', 'topt'))
 
-        self._log = self.cfg_get('log', True)
+        self._log = config.getboolean('Group1Scheduler', 'log')
         self._max_time = 0
 
         self._stratselector = None
@@ -65,26 +65,6 @@ class Group1Scheduler(StrategyScheduler):
         self._yt = None
         self._cover = None
 
-    def cfg_get(self, prop, boolean=False):
-        '''
-        Convenience function for loading settings from configuration object
-
-        Variables
-        ---------
-        prop : string
-            Name of the property
-        boolean : boolean
-            Set to true if property represents a boolean
-
-        Returns
-        -------
-        return : string or boolean
-            Returns value of the associated property
-        '''
-        if boolean:
-            return self._config.get("Group1Scheduler", prop).lower() == "true"
-        return self._config.get("Group1Scheduler", prop)
-
     def fit(self, data_set, max_time):
         X = data_set.feature_matrix
         Y = data_set.strategy_matrix
@@ -102,8 +82,8 @@ class Group1Scheduler(StrategyScheduler):
         # apply PCAs
         if len(self._pcas) > 0:
             LOGGER.info("applying PCAs")
-        self._V = pp.determine_pca(X)  # TODO: I think you're missing indentation here and in the next line.
-        X = pp.add_pca_features(X, self._V, self._pcas)
+            self._V = pp.determine_pca(X)
+            X = pp.add_pca_features(X, self._V, self._pcas)
 
         # fit models
         if self._log:
@@ -145,7 +125,8 @@ class Group1Scheduler(StrategyScheduler):
         if self._standardize:
             x = pp.standardize_features_means_stds(x, self._means, self._stds,
                                                    True, self._stdcap)
-        x = pp.add_pca_features(x, self._V, self._pcas)  # TODO: if self._pca?
+        if len(self._pcas) > 0:
+            x = pp.add_pca_features(x, self._V, self._pcas)
 
         ys = self._stratselector.predict(x)[0, :]
         if self._use_optimizer:
