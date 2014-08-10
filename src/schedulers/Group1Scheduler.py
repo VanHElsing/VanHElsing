@@ -29,16 +29,16 @@ class Group1Scheduler(StrategyScheduler):
 
         self._pcas = [int(i) for i in config.get('Group1Scheduler', 'pcas').split()]
         self._standardize = config.getboolean('Group1Scheduler', 'standardize')
-        self._stdcap = float(config.getfloat('Group1Scheduler', 'stdcap'))
+        self._stdcap = config.getfloat('Group1Scheduler', 'stdcap')
 
-        self._alpha = float(config.getfloat('Group1Scheduler', 'alpha'))
-        self._beta = float(config.getfloat('Group1Scheduler', 'beta'))
-        self._gamma = float(config.getfloat('Group1Scheduler', 'gamma'))
-        self._delta = float(config.getfloat('Group1Scheduler', 'delta'))
-        self._tmultiplier = float(config.getfloat('Group1Scheduler', 'tmultiplier'))
-        self._tadder = float(config.getfloat('Group1Scheduler', 'tadder'))
+        self._alpha = config.getfloat('Group1Scheduler', 'alpha')
+        self._beta = config.getfloat('Group1Scheduler', 'beta')
+        self._gamma = config.getfloat('Group1Scheduler', 'gamma')
+        self._delta = config.getfloat('Group1Scheduler', 'delta')
+        self._tmultiplier = config.getfloat('Group1Scheduler', 'tmultiplier')
+        self._tadder = config.getfloat('Group1Scheduler', 'tadder')
         self._use_optimizer = config.getboolean('Group1Scheduler', 'toptimizer')
-        self._opt_t = float(config.getfloat('Group1Scheduler', 'topt'))
+        self._opt_t = config.getfloat('Group1Scheduler', 'topt')
 
         self._log = config.getboolean('Group1Scheduler', 'log')
         self._max_time = 0
