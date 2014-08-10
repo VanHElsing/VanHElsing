@@ -1,5 +1,5 @@
+# pylint: disable=C0103
 import unittest
-
 import src.schedulers.group1.preprocessing as pp
 import numpy as np
 

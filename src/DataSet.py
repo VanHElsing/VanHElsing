@@ -4,6 +4,7 @@ Created on May 15, 2014
 @author: Frank Dorssers
 '''
 
+# pylint: disable=C0103, E0611, W0141
 from os import listdir
 from os.path import isfile, join
 import numpy as np
@@ -87,8 +88,8 @@ class DataSet(object):
         self.problems, self.feature_matrix = self.sat_load_features()
         satallax_files = [f for f in self.sat_get_strat_file_names() if f.endswith('.results')]
         satallax_strats = [self.sat_load_strat(sat) for sat in satallax_files]
-        tmp_strategies = map(lambda x: x.replace('.results', ''), satallax_files)
-        self.strategies = np.array(map(lambda x: '-m ' + x, tmp_strategies))
+        tmp_strategies = ['-m ' + sfile.replace('.results', '') for sfile in satallax_files]
+        self.strategies = np.array(tmp_strategies)
         self.strategy_matrix = self.sat_generate_strat_matrix(self.problems, satallax_strats)
 
     def parse_E_data(self):  # NOQA

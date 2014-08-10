@@ -6,6 +6,7 @@ within a given period of time
 
 import numpy as np
 import sklearn.ensemble as ens
+# pylint: disable=C0103
 
 
 class StrategySolvableInTimeRF(object):
