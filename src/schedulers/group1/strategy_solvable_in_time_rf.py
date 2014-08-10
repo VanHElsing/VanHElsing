@@ -84,7 +84,7 @@ class StrategySolvableInTimeRF(object):
             x_train, y_train = bootstrap(X, y, N, weights)
 
             # Fit logistic regression model to training data and save result
-            forest_classifier = ens.RandomForestClassifier()
+            forest_classifier = ens.RandomForestClassifier()  # pylint: disable=no-value-for-parameter
             forest_classifier.fit(x_train, y_train.A.ravel())
             self._logits[i] = forest_classifier
 

@@ -47,4 +47,3 @@ class RunDataSetTestCase(unittest.TestCase):
                         'Did not recognize a valid strategy')
         self.assertFalse(self.ds.is_relevant_strategy(non_valid_protocol),
                          'Recognized an non-valid strategy as valid')
-        

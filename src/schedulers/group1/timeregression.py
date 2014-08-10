@@ -48,7 +48,7 @@ class TimeRegression(object):
         # Reset model list
         self._models = []
         for strat in Y.T:
-            linr = linear_model.Ridge(alpha=self._alpha, solver=self._solver,
+            linr = linear_model.Ridge(alpha=self._alpha, solver=self._solver,  # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
                                       fit_intercept=True, normalize=True)
             # Only use problems that can be solved
             mask = (strat > self._t_min) & (strat <= self._t_max)
