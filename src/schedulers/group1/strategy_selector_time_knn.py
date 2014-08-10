@@ -30,7 +30,7 @@ class StrategySelectorTimeKNN(object):
         n_neighbors : integer
             KNN model parameter, amount of neighbors considered
         '''
-        self._classifier = KNeighborsClassifier(n_neighbors=n_neighbors)
+        self._classifier = KNeighborsClassifier(n_neighbors=n_neighbors)  # pylint: disable=unexpected-keyword-arg,no-value-for-parameter
         self._time = time
 
     def fit(self, X, Y):

@@ -99,7 +99,7 @@ class Group1Scheduler(StrategyScheduler):
         if self._use_optimizer:
             if self._log:
                 LOGGER.info("Fit optimizer")
-            self._stratsolvesint = StrategySolvableInTimeRF(t=self._opt_t)
+            self._stratsolvesint = StrategySolvableInTimeRF(time=self._opt_t)
             self._stratsolvesint.fit(X, Y)
         if self._log:
             LOGGER.info("Calculate statistics")

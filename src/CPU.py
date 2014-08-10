@@ -1,5 +1,6 @@
 import os
 import sys
+import operator
 from time import time
 import numpy as np
 from src.DataSet import DataSet
@@ -82,11 +83,11 @@ class CPU(object):
     """
     Class for time-measurements with E prover.
     """
-    times = None
-    ratios = None
-    atp = None
-
     def __init__(self):
+        self.times = None
+        self.ratios = None
+        self.atp = None
+    
         eprover_path = os.path.join(EPATH, 'eprover')
         self.atp = ATP(eprover_path, '--cpu-limit=',
                        '--tstp-format -s --proof-object --memory-limit=2048')
@@ -133,11 +134,10 @@ class CPU(object):
 
     def load_or_gen_data(self):
         if self.ratios is not None:
-            pass  # TODO: What's the point?
+            pass  # Data is already loaded, do not continue.
 
         path = os.path.join(PATH, 'tuning')
 
-        print path  # TODO: LOGGER instead of print? Or is this debugging code?
         if os.path.isfile(path):
             with open(path, 'rb') as in_s:
                 self.times = pickle.load(in_s)
@@ -148,7 +148,7 @@ class CPU(object):
 
         self.ratios = []
         for measurements in self.times:
-            measurements.sort(key=(lambda x: x[2]))  # TODO: Use itemgetter instead?
+            measurements.sort(operator.itemgetter(2))
             self.ratios.extend(measurements)
 
         print self.ratios
