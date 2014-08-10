@@ -39,7 +39,6 @@ echo -e "Checking code with pylint\c"
 # E0602 Undefined variable
 # E1101 No-Member
 # E1103 Maybe-No-Member
-# C0330 Bad-continuation (indentation is handled by Flake8)
 
 pylint_result=$(PYTHONPATH=$PYTHONPATH:.:./src pylint \
     --good-names=x,y,X,Y,e,i,j \
