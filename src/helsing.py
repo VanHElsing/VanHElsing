@@ -8,10 +8,10 @@ the ATP with the schedule.
 @author: Frank Dorssers, Wouter Geraedts, Daniel Kuehlwein, Sil van de Leemput
 """
 
+import argparse as ap
 import os
 import sys
 from time import time
-from argparse import ArgumentParser
 
 
 def set_up_parser():
@@ -23,7 +23,15 @@ def set_up_parser():
     Parser : ArgumentParser
         Initialized ArgumentParser which contains relevant arguments
     '''
-    parser = ArgumentParser(description='Van HElsing 1.0 --- June 2014.\n')
+    parser = ap.ArgumentParser(description="""
+Van HElsing 1.0 --- June 2014
+
+Runs an ATP on the problem p with a strategy schedule predicted with
+the model defined in the configuration c for the time limit t.
+
+Created by Frank Dorssers, Wouter Geraedts, Daniel Kuehlwein
+and Sil van de Leemput
+                               """, formatter_class=ap.RawTextHelpFormatter)
     parser.add_argument('-t', '--time', help='Maximum runtime of Van HElsing.',
                         type=int)
     parser.add_argument('-p', '--problem', help='The location of the problem.')
