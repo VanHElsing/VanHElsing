@@ -68,8 +68,7 @@ def plot_theory_e():
     axis_vals = [1, 350, 0, 11000]
     path = os.path.join(PATH, 'runs', 'theory', 'E')
     best_times = (os.path.join(path, 'bestTimes'), 'Best')
-    best_times_wo_x = (os.path.join(path,
-                       'bestTimesWithoutX'), 'Best without X')
+    best_times_wo_x = (os.path.join(path, 'bestTimesWithoutX'), 'Best without X')
     # nn10 = (os.path.join(path, 'NN10'), 'NN10')
     # nn_10_local = (os.path.join(path, 'NN10Local'), 'NN10Local')
     # nn_20_local = (os.path.join(path, 'NN20Local'), 'NN20Local')
