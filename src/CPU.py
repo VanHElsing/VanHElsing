@@ -134,7 +134,7 @@ class CPU(object):
 
     def load_or_gen_data(self):
         if self.ratios is not None:
-            pass  # Data is already loaded, do not continue.
+            return  # Data is already loaded, do not continue.
 
         path = os.path.join(PATH, 'tuning')
 
@@ -150,8 +150,6 @@ class CPU(object):
         for measurements in self.times:
             measurements.sort(operator.itemgetter(2))
             self.ratios.extend(measurements)
-
-        print self.ratios
 
     def get_ratio(self, r_time):
         if self.ratios is None:
