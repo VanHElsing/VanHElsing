@@ -13,7 +13,11 @@ def get_feature_function(config):
     '''
     Loads the feature function corresponding to the config settings.
     '''
-    feature_type = config.get('ATP Settings', 'features')
+    if config is None:
+        feature_type = 'E'
+    else:
+        feature_type = config.get('ATP Settings', 'features')
+    
     if feature_type == 'E':
         return EFeatures()
     if feature_type == 'TPTP':
