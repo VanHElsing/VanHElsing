@@ -3,7 +3,7 @@ wrote this code. As long as you retain this notice you
 can do whatever you want with this stuff. If we meet some day, and you think 
 this stuff is worth it, you can buy us a drink in return. 
 
-  [1]: frank.dorssers@gmail.com
+  [1]: <frank.dorssers@gmail.com>
   [2]: http://woutergeraedts.nl/
   [3]: http://www.cs.ru.nl/~kuehlwein/
-  [4]: sileemput@gmail.com
+  [4]: <sileemput@gmail.com>
