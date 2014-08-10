@@ -12,6 +12,7 @@ from src.schedulers.group1.strategy_selector_time_knn \
 from src.schedulers.group1.timeregression import TimeRegression
 from src.schedulers.group1.strategy_solvable_in_time_rf \
     import StrategySolvableInTimeRF
+# pylint: disable=C0103, R0902
 
 
 class Group1Scheduler(StrategyScheduler):

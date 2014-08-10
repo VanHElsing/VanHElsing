@@ -10,7 +10,7 @@ from sklearn import linear_model
 import numpy as np
 
 
-class TimeRegression():
+class TimeRegression(object):
     '''
     Trains a regression model for every search strategy,
     which is used for predicting the time a strategy needs to solve a problem

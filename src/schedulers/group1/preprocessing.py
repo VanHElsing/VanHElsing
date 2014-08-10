@@ -6,6 +6,7 @@ Created on May 18, 2014
 @author: R.J. Drenth, Sil van de Leemput
 '''
 
+# pylint: disable=C0103, W0612, E0611
 import numpy as np
 import scipy.linalg as linalg
 
