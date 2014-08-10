@@ -11,10 +11,8 @@ import os
 import sys
 import multiprocessing as mp
 import ConfigParser
-from src.data_util import load_dataset_from_config
-from src.schedulers.util import choose_scheduler
+from argparse import ArgumentParser
 from sklearn.cross_validation import KFold
-from src.GlobalVars import PATH, LOGGER
 # pylint: disable=R0913
 
 
@@ -86,7 +84,7 @@ def eval_against_dataset(dataset, scheduler, max_time=300, save_schedule_file='m
     return schedule_solved, schedule_score / best_score
 
 
-def ml_cv_eval(configuration, dataset, kfolds, folds, max_time=300, save_schedule_file='ml_eval'):
+def ml_cv_eval(configuration, dataset, folds, max_time=300, save_schedule_file='ml_eval'):
     '''
     Evaluates a scheduler against a dataset using cross-validation
 
@@ -96,21 +94,26 @@ def ml_cv_eval(configuration, dataset, kfolds, folds, max_time=300, save_schedul
         Filename of the configuration file for the scheduler settings
     dataset : DataSet
         A dataset object containing problems to evaluate
-    kfolds : integer
-        Number of folds used for cross validation
     folds : list [kfolds x problems]
         List of masks with indices for each problem
     max_time : double
         The maximum time the scheduler can take for solving a problem
     save_schedule_file : String
         Filename for the output file
+    
+    Returns
+    -------
+    result : sumsolved, avgscore
+        Amount of solved problems and score relative to the best score possible,
+        averaged over all the folds.
     '''
     scheduler_id = configuration.get('Learner', 'scheduler')
 
     scheduler_class = choose_scheduler(scheduler_id)
     scheduler = scheduler_class(configuration)
 
-    LOGGER.info("TRAINING + PREDICTION (Cross-validation folds %i)", kfolds)
+    LOGGER.info("TRAINING + PREDICTION (Cross-validation folds %i)", len(folds))
+    sumsolved = 0
     sumscore = 0
     for i, (train_idx, test_idx) in enumerate(folds):
         train_dataset = dataset.mask(train_idx)
@@ -124,20 +127,21 @@ def ml_cv_eval(configuration, dataset, kfolds, folds, max_time=300, save_schedul
         scheduler.fit(train_dataset, max_time)
 
         LOGGER.info("Evaluating model.")
-        solved, _score = eval_against_dataset(test_dataset, scheduler, max_time, save_schedule_file)
+        solved, score = eval_against_dataset(test_dataset, scheduler, max_time, save_schedule_file)
 
         try:
-            sumscore += solved
+            sumsolved += solved
+            sumscore += score
         except TypeError:
             LOGGER.warn("Evaluation score is not a number.")
             solved = 0
 
         LOGGER.info("Solved: {}".format(solved))
-    LOGGER.info("Total score: {}".format(sumscore / kfolds))
-    # TODO this method looks very similar to eval_against_dataset,
-    # maybe it is neater to make the return values the same.
-    # TODO giving both kfolds seems to be unnecessary,
-    # since kfolds can be determined from folds e.g.: len(folds)
+        
+    avgscore = sumscore / len(folds)
+    LOGGER.info("Average score: {}".format(avgscore))
+    
+    return sumsolved, avgscore
 
 
 def ml_cv_eval_async(args):
@@ -148,13 +152,11 @@ def ml_cv_eval_async(args):
 
     Parameters
     ----------
-    args : (env=(dataset, kfolds, folds), config=(neighbors, max_time, negscore_func))
+    args : (env=(dataset, folds), config=(neighbors, max_time, negscore_func))
         Composite arguments tuple of triplets
 
     dataset : DataSet
         A dataset object containing problems to evaluate
-    kfolds : integer
-        Number of folds used for cross validation
     folds : list [kfolds x problems]
         List of masks with indices for each problem
 
@@ -168,7 +170,7 @@ def ml_cv_eval_async(args):
     env, config = args
 
     # unpack environment and configuration
-    dataset, kfolds, folds = env
+    dataset, folds = env
     neighbors, max_time, negscore_func = config
 
     configuration = ConfigParser.SafeConfigParser()
@@ -176,47 +178,57 @@ def ml_cv_eval_async(args):
     configuration.set('Learner', 'scheduler', 'NN')
     configuration.set('Learner', 'min_neighbors', str(neighbors))
     configuration.set('Learner', 'negscore_func', negscore_func)
-    configuration.set('Learner', 'datasetfile', '/home/wgeraedts/tmp/train_solvable.data')
-    # TODO remove the hardcoded path
 
     configuration.add_section('ATP Settings')
     configuration.set('ATP Settings', 'features', 'E')
 
-    result_file = 'CV' + str(kfolds) + '_NN' + negscore_func + str(neighbors) + "_" + str(max_time)
+    result_file = 'CV' + str(len(folds)) + '_NN' + negscore_func + str(neighbors) + "_" + str(max_time)
     schedule_path = os.path.join(PATH, 'runs', 'theory', 'E', result_file)
 
     if os.path.isfile(schedule_path):
         os.remove(schedule_path)
 
-    ml_cv_eval(configuration, dataset, kfolds, folds, max_time, schedule_path)
+    ml_cv_eval(configuration, dataset, folds, max_time, schedule_path)
 
 
-def main():
+def set_up_parser():
     '''
-    Initiates cross-validation tests over several processor cores
-    The tests are currently only for the NearestNeighborScheduler
+    Initializes parser.
     '''
-    # TODO maybe in general give in CLI arguments to use the functions on other configurations
-    # then NearestNeighborScheduler
+    parser = ArgumentParser(description='Run cross-validation for multiple Scheduler configurations.\n')
+    parser.add_argument('-d', '--dataset',
+                        help='The dataset file to fit and evaluate the Schedulers on.',
+                        default=None)
+    return parser
+    
+
+def main(argv):
+    '''
+    Initiates cross-validation tests over several processor cores.
+    The tests are only for specific NearestNeighborSchedulers, code should be
+    added or changed when executing different tests.
+    '''
+    parser = set_up_parser()
+    args = parser.parse_args(argv)
+
     kfolds = 4
     configs = [
         (1, 300, 'mean'), (2, 300, 'mean'), (5, 300, 'mean'),
         (1, 300, 'meanmedian'), (2, 300, 'meanmedian'), (5, 300, 'meanmedian'), (10, 300, 'meanmedian')
     ]
 
-    configuration = ConfigParser.SafeConfigParser()
-    configuration.add_section('Learner')
-    configuration.set('Learner', 'datasetfile', '/home/wgeraedts/tmp/train_solvable.data')
-    # TODO remove the hardcoded path
-
-    # load dataset
-    dataset = load_dataset_from_config(configuration)
+    # Load dataset
+    if args.dataset is None:
+        print "Error: please set the datafile commandline parameter. (See -h)"
+        return 1
+    
+    dataset = load_dataset_from_file(args.dataset)
     folds = KFold(len(dataset.problems), n_folds=kfolds, indices=False)  # pylint: disable=unexpected-keyword-arg, no-value-for-parameter
 
-    env = (dataset, kfolds, folds)
+    env = (dataset, folds)
     args = [(env, x) for x in configs]
 
-    # run jobs async
+    # Run jobs async
     pool = mp.Pool()
 
     pool.map_async(ml_cv_eval_async, args)
@@ -227,4 +239,8 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+    from src.data_util import load_dataset_from_file
+    from src.schedulers.util import choose_scheduler
+    from src.GlobalVars import PATH, LOGGER
+    sys.exit(main(sys.argv[1:]))
