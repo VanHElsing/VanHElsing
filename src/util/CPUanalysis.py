@@ -64,12 +64,11 @@ def show_dataset(dataset, name, color):
         print p_name
         print strategy
         print pred_time
-        print scaled_time
         print real_time
         # """
 
         X.append(pred_time)
-        y.append(scaled_time / real_time)
+        # y.append(scaled_time / real_time)
     
     X = np.array(X)
     y = np.array(y)
