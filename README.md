@@ -87,7 +87,7 @@ Installation (complete)
 On any Debian-like OS using aptitude, use: (with root)
 
 ```
-# apt-get install python python-dev python-pip build-essential libblas-dev liblapack-dev gfortran
+# apt-get install python python-dev python-pip build-essential libblas-dev liblapack-dev gfortran zlib1g-dev
 ```
 
 Then, clone this git repository and run:
@@ -111,7 +111,7 @@ Installation (minimal)
 Alternatively, if you have Ubuntu 14.04, you can directly install the minimally required dependencies:
 
 ```
-# apt-get install python python-pip build-essential python-numpy python-scipy python-sklearn
+# apt-get install python python-pip build-essential python-numpy python-scipy python-sklearn zlib1g-dev
 ```
 
 Then, clone this git repository and run:
