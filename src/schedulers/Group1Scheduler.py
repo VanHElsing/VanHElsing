@@ -225,4 +225,4 @@ class Group1Scheduler(StrategyScheduler):
         self._stratsleft[sel] = 0
 
     def reset(self):
-        pass  # TODO: At least print a warning. All ML evals will fail.
+        pass
