@@ -3,8 +3,6 @@ import os
 import sys
 import matplotlib.pylab as pl
 import multiprocessing as mp
-from src.CPU import CPU, gen_tasks
-from src.GlobalVars import PATH, LOGGER
 
 try:
     import cPickle as pickle
@@ -16,10 +14,10 @@ def benchmark_task(args):
     """
     Wrapper for cpu_measurements.
     """
-    cpu, strategy, p_path, p_name, strategy, pred_time, scaled_time = args
+    cpu, strategy, p_path, p_name, strategy, pred_time = args
     real_time = cpu.measure(strategy, p_path)
     LOGGER.info('Finished %s in %f', p_path, real_time)
-    return (p_name, strategy, pred_time, scaled_time, real_time)
+    return (p_name, strategy, pred_time, real_time)
 
 
 def compute_benchmark(cpu, dataset):
@@ -29,9 +27,9 @@ def compute_benchmark(cpu, dataset):
     TPTPPath = os.getenv('TPTP')
 
     result = []
-    for p_name, strategy, pred_time, scaled_time in dataset:
+    for p_name, strategy, pred_time in dataset:
         p_path = os.path.join(TPTPPath, 'Problems', p_name[:3], p_name)
-        result.append(benchmark_task((cpu, strategy, p_path, p_name, strategy, pred_time, scaled_time)))
+        result.append(benchmark_task((cpu, strategy, p_path, p_name, strategy, pred_time)))
         
     return result
 
@@ -59,7 +57,7 @@ def show_dataset(dataset, name, color):
     X = []
     y = []
     for row in dataset:
-        p_name, strategy, pred_time, scaled_time, real_time = row
+        p_name, strategy, pred_time, real_time = row
 
         # """ Debug
         print "----"
@@ -91,36 +89,36 @@ def execute_benchmark(cpu):
                       'protokoll_H----_047_C18_F1_AE_R8_CS_SP_S2S',
                       'protokoll_G-E--_042_C45_F1_PI_AE_Q4_CS_SP_PS_S4S']
         
+        ds = DataSet()
+        ds.load('E')
+        ds = remove_unsolveable_problems(ds)
+        
         tasks = []
         for strategy in strategies:
-            tasks.extend(gen_tasks(cpu, 3, strategy))
+            tasks.extend(gen_tasks(ds, 3, strategy))
         
-        LOGGER.info("Executing single core series, first")
-        dataset_single_first = compute_benchmark(cpu, tasks)
-        
-        LOGGER.info("Executing single core series, second")
-        dataset_single_second = compute_benchmark(cpu, tasks)
-        
-        LOGGER.info("Executing multicore series")
-        dataset_concurrent = compute_benchmark_concurrent(cpu, tasks, mp.cpu_count())
-        
-        LOGGER.info("Executing oversaturation series")
-        dataset_oversat = compute_benchmark_concurrent(cpu, tasks, mp.cpu_count() * 2)
-        
-        dataset = dataset_single_first, dataset_single_second, dataset_concurrent, dataset_oversat
+        series_args = [1, 1, 2, 4, 8]
+        dataset = []
+        for dataset_arg in series_args:
+            LOGGER.info("Executing series %i" % dataset_arg)
+            dataset_run = compute_benchmark(cpu, tasks)
+            dataset.append((dataset_arg, dataset_run))
+
         with open(path, 'wb') as out_s:
             pickle.dump(dataset, out_s)
     
-    dataset_single_first = dataset
-    
     pl.figure("Composed")
     
-    p1 = show_dataset(dataset_single_first, "Single core, first", "r")
-    p2 = show_dataset(dataset_single_second, "Single core, second", "g")
-    p3 = show_dataset(dataset_concurrent, "Concurrent, fitting", "b")
-    p4 = show_dataset(dataset_oversat, "Concurrent, oversaturation", "y")
+    dataset_figures = []
+    dataset_names = []
+    colors = ['r', 'g', 'b', 'y', 'p']
+    for dataset_i in range(len(dataset)):
+        dataset_arg, dataset_run = dataset[dataset_i]
+        dataset_name = "Series n=%i" % dataset_arg
+        dataset_names.append(dataset_name)
+        dataset_figures.append(show_dataset(dataset_run, dataset_name, colors[dataset_i]))
     
-    pl.legend([p1, p2, p3, p4], ["Single core, first", "Single core, second", "Concurrent, fitting", "Concurrent, oversaturation"])
+    pl.legend(dataset_figures, dataset_names)
 
 
 def show_ratios(cpu):
@@ -149,4 +147,11 @@ def main():
     return 0
 
 if __name__ == '__main__':
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+    
+    from src.CPU import CPU, gen_tasks
+    from src.GlobalVars import PATH, LOGGER
+    from src.DataSet import DataSet
+    from src.data_util import remove_unsolveable_problems
+    
     sys.exit(main())
