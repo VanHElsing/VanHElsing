@@ -46,7 +46,7 @@ $ python src/learn.py -c CASC-J7-satallax.ini
 And then run using for example:
 
 ```
-$ python src/helsing.py -c configs/CASC-J7-satallax.ini -t 300 -p data/PUZ001+1.p
+$ python src/helsing.py -c configs/CASC-J7-satallax.ini -t 300 -p data/PUZ081^1.p
 ```
 
 For both VanHElsing and Satallax-MaLeS, the initialisation via data.py and learn.py need to by run only once.
