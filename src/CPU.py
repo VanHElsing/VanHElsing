@@ -148,7 +148,7 @@ class CPU(object):
 
         self.ratios = []
         for measurements in self.times:
-            measurements.sort(operator.itemgetter(2))
+            measurements.sort(key=operator.itemgetter(2))
             self.ratios.extend(measurements)
 
     def get_ratio(self, r_time):
