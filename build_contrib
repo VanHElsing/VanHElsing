@@ -8,3 +8,26 @@ pushd contrib/E
 ./configure
 make -j2
 popd
+
+echo -e "\033[32mInstalling Stallax 2.7\033[0m"
+pushd contrib
+tar -xf satallax-2.7.tar.gz
+pushd satallax-2.7
+pushd minisat
+export MROOT=`pwd`
+pushd core
+make Solver.o
+popd
+pushd simp
+make SimpSolver.o
+popd
+popd
+pushd picosat-936
+./configure
+make
+popd
+./configure
+make
+./test #| grep ERROR
+popd
+popd
