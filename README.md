@@ -39,8 +39,8 @@ $ python src/helsing.py -c configs/CASC-J7-e.ini -t 300 -p data/PUZ001+1.p
 
 ```
 $ mkdir tmp
-$ python src/data.py -c CASC-J7-satallax.ini
-$ python src/learn.py -c CASC-J7-satallax.ini
+$ python src/data.py -c configs/CASC-J7-satallax.ini
+$ python src/learn.py -c configs/CASC-J7-satallax.ini
 ```
 
 And then run using for example:
