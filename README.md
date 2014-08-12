@@ -25,15 +25,32 @@ optional arguments:
 
 ```
 $ mkdir tmp
-$ python src/data.py -c configs/NNconfig.ini
-$ python src/learn.py -c configs/NNconfig.ini
+$ python src/data.py -c configs/CASC-J7-e.ini
+$ python src/learn.py -c configs/CASC-J7-e.ini
 ```
 
 And then run using for example:
 
 ```
-$ python src/helsing.py -c configs/NNconfig.ini -t 300 -p data/PUZ001+1.p
+$ python src/helsing.py -c configs/CASC-J7-e.ini -t 300 -p data/PUZ001+1.p
 ```
+
+`Satallax-MaLeS 1.3` is started by using a different config file:
+
+```
+$ mkdir tmp
+$ python src/data.py -c CASC-J7-satallax.ini
+$ python src/learn.py -c CASC-J7-satallax.ini
+```
+
+And then run using for example:
+
+```
+$ python src/helsing.py -c configs/CASC-J7-satallax.ini -t 300 -p data/PUZ001+1.p
+```
+
+For both VanHElsing and Satallax-MaLeS, the initialisation via data.py and learn.py need to by run only once.
+Note that the config files use relative paths. You'll need to change them if you want to use VanHElsing/Satallax-MaLeS from anywhere. 
 
 Dependencies
 ============
