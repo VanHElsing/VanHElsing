@@ -3,6 +3,7 @@ import os
 import sys
 import matplotlib.pylab as pl
 import multiprocessing as mp
+import operator
 
 try:
     import cPickle as pickle
@@ -64,15 +65,18 @@ def show_dataset(dataset, name, color):
         print p_name
         print strategy
         print pred_time
-        print scaled_time
         print real_time
         # """
 
         X.append(pred_time)
-        y.append(scaled_time / real_time)
+        y.append(pred_time / real_time)
     
     X = np.array(X)
     y = np.array(y)
+    
+    tups = zip(X, y)
+    tups.sort(key=operator.itemgetter(0))
+    X, y = zip(*tups)
     
     return pl.scatter(X, y, c=color)
 
@@ -111,7 +115,7 @@ def execute_benchmark(cpu):
     
     dataset_figures = []
     dataset_names = []
-    colors = ['r', 'g', 'b', 'y', 'p']
+    colors = ['r', 'g', 'b', 'y', 'purple']
     for dataset_i in range(len(dataset)):
         dataset_arg, dataset_run = dataset[dataset_i]
         dataset_name = "Series n=%i" % dataset_arg
