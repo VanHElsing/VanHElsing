@@ -69,7 +69,7 @@ def show_dataset(dataset, name, color):
         # """
 
         X.append(pred_time)
-        y.append(pred_time / real_time)
+        y.append(real_time)
     
     X = np.array(X)
     y = np.array(y)
@@ -83,28 +83,36 @@ def show_dataset(dataset, name, color):
 
 def execute_benchmark(cpu):
     path = os.path.join(PATH, 'tuning_benchmark')
+    path_tasks = os.path.join(PATH, 'tuning_benchmark_tasks')
     
     if os.path.isfile(path):
         with open(path, 'rb') as in_s:
             dataset = pickle.load(in_s)
     else:
-        strategies = ['protokoll_G-E--_107_C45_F1_PI_AE_Q7_CS_SP_PS_S0Y',
-                      'protokoll_H----_102_C18_F1_PI_AE_Q4_CS_SP_S1S',
-                      'protokoll_H----_047_C18_F1_AE_R8_CS_SP_S2S',
-                      'protokoll_G-E--_042_C45_F1_PI_AE_Q4_CS_SP_PS_S4S']
+        if os.path.isfile(path_tasks):
+            with open(path_tasks, 'rb') as in_s:
+                tasks = pickle.load(in_s)
+        else:
+            strategies = ['protokoll_G-E--_107_C45_F1_PI_AE_Q7_CS_SP_PS_S0Y',
+                          'protokoll_H----_102_C18_F1_PI_AE_Q4_CS_SP_S1S',
+                          'protokoll_H----_047_C18_F1_AE_R8_CS_SP_S2S',
+                          'protokoll_G-E--_042_C45_F1_PI_AE_Q4_CS_SP_PS_S4S']
+            
+            ds = DataSet()
+            ds.load('E')
+            ds = remove_unsolveable_problems(ds)
+            
+            tasks = []
+            for strategy in strategies:
+                tasks.extend(gen_tasks(ds, 3, strategy))
         
-        ds = DataSet()
-        ds.load('E')
-        ds = remove_unsolveable_problems(ds)
-        
-        tasks = []
-        for strategy in strategies:
-            tasks.extend(gen_tasks(ds, 3, strategy))
+            with open(path_tasks, 'wb') as out_s:
+                pickle.dump(tasks, out_s)
         
         series_args = [1, 1, 2, 4, 8]
         dataset = []
         for dataset_arg in series_args:
-            LOGGER.info("Executing series %i" % dataset_arg)
+            LOGGER.info("series Executing %i" % dataset_arg)
             dataset_run = compute_benchmark(cpu, tasks)
             dataset.append((dataset_arg, dataset_run))
 
