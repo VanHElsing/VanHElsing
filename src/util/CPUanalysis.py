@@ -54,20 +54,10 @@ def compute_benchmark_concurrent(cpu, dataset, cores=None):
     return results.get()
 
 
-def show_dataset(dataset, name, color):
+def compute_graph(dataset):
     X = []
     y = []
-    for row in dataset:
-        p_name, strategy, pred_time, real_time = row
-
-        # """ Debug
-        print "----"
-        print p_name
-        print strategy
-        print pred_time
-        print real_time
-        # """
-
+    for p_name, strategy, pred_time, real_time in dataset:
         X.append(pred_time)
         y.append(real_time)
     
@@ -78,7 +68,7 @@ def show_dataset(dataset, name, color):
     tups.sort(key=operator.itemgetter(0))
     X, y = zip(*tups)
     
-    return pl.scatter(X, y, c=color)
+    return X, y
 
 
 def execute_benchmark(cpu):
@@ -119,6 +109,10 @@ def execute_benchmark(cpu):
         with open(path, 'wb') as out_s:
             pickle.dump(dataset, out_s)
     
+    return dataset
+
+
+def show_benchmark(dataset):
     pl.figure("Composed")
     
     dataset_figures = []
@@ -128,9 +122,21 @@ def execute_benchmark(cpu):
         dataset_arg, dataset_run = dataset[dataset_i]
         dataset_name = "Series n=%i" % dataset_arg
         dataset_names.append(dataset_name)
-        dataset_figures.append(show_dataset(dataset_run, dataset_name, colors[dataset_i]))
+        
+        X, y = compute_graph(dataset_run)
+        pl_obj = pl.scatter(X, y, c=colors[dataset_i])
+
+        dataset_figures.append(pl_obj)
     
     pl.legend(dataset_figures, dataset_names)
+
+
+def output_benchmark(dataset):
+    for dataset_i in range(len(dataset)):
+        dataset_arg, dataset_run = dataset[dataset_i]
+        X, y = compute_graph(dataset_run)
+        for xi, yi in zip(X, y):
+            print "%f   %f  i" % (xi, yi)
 
 
 def show_ratios(cpu):
@@ -149,12 +155,17 @@ def main():
     cpu.load_or_gen_data()
     
     LOGGER.info("Tuning completed, executing benchmark")
-    execute_benchmark(cpu)
+    dataset = execute_benchmark(cpu)
     
-    LOGGER.info("Showing ratios")
-    show_ratios(cpu)
+    output_benchmark(dataset)
     
-    pl.show()
+    #LOGGER.info("Showing benchmark")
+    #show_benchmark(dataset)
+    
+    #LOGGER.info("Showing ratios")
+    #show_ratios(cpu)
+    
+    #pl.show()
     
     return 0
 
