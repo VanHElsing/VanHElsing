@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Stop at first error
+set -e
+set +x
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+pushd $DIR/.. > /dev/null
+mkdir -p tmp
+pushd tmp > /dev/null
+
+if [ -d "CASCJ7" ]; then
+    echo -e "\033[32mGrabbing CASC-J7 problem set from disk\033[0m"
+else
+    echo -e "\033[32mDownloading CASC-J7 problem set\033[0m"
+    wget http://www.cs.miami.edu/~tptp/CASC/J7/Problems.tgz
+
+    echo -e "\033[32mExtracting\033[0m"
+    tar -xzf Problems.tgz
+    rm Problems.tgz
+    mv Problems CASCJ7
+fi
+
+popd > /dev/null
+
+echo -e "\033[32mComputing results\033[0m"
+python src/util/CASCstatistics.py -d tmp/CASCJ7/FOF
+
+popd > /dev/null

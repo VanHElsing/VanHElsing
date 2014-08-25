@@ -60,9 +60,9 @@ def load_problems(problem_file):
         for p in p_stream:
             problems.append(os.path.join(tptp_dir, p.strip()))
     return problems
-
-
-def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
+    
+    
+def atp_eval_problems(problems, prover, run_time, outfile=None, cores=None):
     if outfile is None:
         os.path.join(PATH, 'runs', 'atp_eval')
     if cores is None:
@@ -75,7 +75,7 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
         prover_call = run_helsing
     elif prover == 'emales':
         prover_call = run_emales
-    problems = load_problems(problem_file)  # [:5]
+
     print len(problems)
     with open(outfile, 'w') as out_stream:
         pool = mp.Pool(processes=cores)
@@ -86,6 +86,16 @@ def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
         pool.join()
         results.wait()
         results = results.get()
+        
+        proofsFound = 0
         for problem, proofFound, usedTime in results:
             if proofFound:
                 out_stream.write('%s,%s\n' % (problem, usedTime))
+                proofsFound = proofsFound + 1
+        
+        return proofsFound / float(len(results))
+
+
+def atp_eval(problem_file, prover, run_time, outfile=None, cores=None):
+    problems = load_problems(problem_file)
+    return atp_eval_problems(problems, prover, run_time, outfile, cores)
