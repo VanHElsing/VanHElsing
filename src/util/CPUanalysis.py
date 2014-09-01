@@ -132,11 +132,12 @@ def show_benchmark(dataset):
 
 
 def output_benchmark(dataset):
+    print "Pred	Real	Cores"
     for dataset_i in range(len(dataset)):
         dataset_arg, dataset_run = dataset[dataset_i]
         X, y = compute_graph(dataset_run)
         for xi, yi in zip(X, y):
-            print "%f   %f  i" % (xi, yi)
+            print "%f	%f	%i_%i" % (xi, yi, dataset_i, dataset_arg)
 
 
 def show_ratios(cpu):
