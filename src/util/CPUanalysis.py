@@ -45,7 +45,7 @@ def compute_benchmark_concurrent(cpu, dataset, cores=None):
         cores = mp.cpu_count()
     
     pool = mp.Pool(processes=cores)
-    args = [(cpu, strategy, os.path.join(TPTPPath, 'Problems', p_name[:3], p_name), p_name, strategy, pred_time, scaled_time) for p_name, strategy, pred_time, scaled_time in dataset]
+    args = [(cpu, strategy, os.path.join(TPTPPath, 'Problems', p_name[:3], p_name), p_name, strategy, pred_time) for p_name, strategy, pred_time in dataset]
     results = pool.map_async(benchmark_task, args)
     pool.close()
     pool.join()
@@ -103,7 +103,7 @@ def execute_benchmark(cpu):
         dataset = []
         for dataset_arg in series_args:
             LOGGER.info("series Executing %i" % dataset_arg)
-            dataset_run = compute_benchmark(cpu, tasks)
+            dataset_run = compute_benchmark_concurrent(cpu, tasks, dataset_arg)
             dataset.append((dataset_arg, dataset_run))
 
         with open(path, 'wb') as out_s:
@@ -164,9 +164,9 @@ def main():
     #show_benchmark(dataset)
     
     #LOGGER.info("Showing ratios")
-    #show_ratios(cpu)
+    show_ratios(cpu)
     
-    #pl.show()
+    pl.show()
     
     return 0
 
