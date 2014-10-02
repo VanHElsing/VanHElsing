@@ -214,7 +214,9 @@ def main(argv):
     kfolds = 4
     configs = [
         (1, 300, 'mean'), (2, 300, 'mean'), (5, 300, 'mean'),
-        (1, 300, 'meanmedian'), (2, 300, 'meanmedian'), (5, 300, 'meanmedian'), (10, 300, 'meanmedian')
+        (1, 300, 'median'), (2, 300, 'median'), (5, 300, 'median'),
+        (1, 300, 'meanmedian'), (2, 300, 'meanmedian'), (5, 300, 'meanmedian'),
+        (1, 300, 'max'), (2, 300, 'max'), (5, 300, 'max'), (10, 300, 'max')
     ]
 
     # Load dataset
