@@ -77,7 +77,7 @@ def read_benchmark(filename):
         with open(path, 'rb') as in_s:
             return pickle.load(in_s)
             
-    assert false
+    assert False
 
 
 def execute_benchmark(cpu):
@@ -167,7 +167,7 @@ def main():
     LOGGER.info("Tuning completed, executing benchmark")
     dataset = execute_benchmark(cpu)
     
-    #dataset = read_benchmark('tuning_benchmark_cn79')
+    # dataset = read_benchmark('tuning_benchmark_cn79')
     output_benchmark(dataset)
     
     LOGGER.info("Showing benchmark")
