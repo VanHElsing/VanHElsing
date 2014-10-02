@@ -221,10 +221,10 @@ def plot_theory_cv_nn():
 
 
 if __name__ == '__main__':
-    #result_tuples, axis_vals = plot_theory_e()
+    # result_tuples, axis_vals = plot_theory_e()
     # result_tuples, axis_vals = plot_theory_satallax()
     result_tuples, axis_vals = plot_real_training()
     # result_tuples, axis_vals = plot_real_test()
-    #result_tuples, axis_vals = plot_theory_cv_nn()
+    # result_tuples, axis_vals = plot_theory_cv_nn()
     plot_results(result_tuples, axis_vals)
-    #dump_results(result_tuples)
+    # dump_results(result_tuples)
