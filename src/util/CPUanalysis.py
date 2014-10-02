@@ -71,6 +71,15 @@ def compute_graph(dataset):
     return X, y
 
 
+def read_benchmark(filename):
+    path = os.path.join(PATH, filename)
+    if os.path.isfile(path):
+        with open(path, 'rb') as in_s:
+            return pickle.load(in_s)
+            
+    assert false
+
+
 def execute_benchmark(cpu):
     path = os.path.join(PATH, 'tuning_benchmark')
     path_tasks = os.path.join(PATH, 'tuning_benchmark_tasks')
@@ -99,7 +108,7 @@ def execute_benchmark(cpu):
             with open(path_tasks, 'wb') as out_s:
                 pickle.dump(tasks, out_s)
         
-        series_args = [1, 1, 2, 4, 8]
+        series_args = [2, 4, 8]
         dataset = []
         for dataset_arg in series_args:
             LOGGER.info("series Executing %i" % dataset_arg)
@@ -158,12 +167,13 @@ def main():
     LOGGER.info("Tuning completed, executing benchmark")
     dataset = execute_benchmark(cpu)
     
+    #dataset = read_benchmark('tuning_benchmark_cn79')
     output_benchmark(dataset)
     
-    #LOGGER.info("Showing benchmark")
-    #show_benchmark(dataset)
+    LOGGER.info("Showing benchmark")
+    show_benchmark(dataset)
     
-    #LOGGER.info("Showing ratios")
+    LOGGER.info("Showing ratios")
     show_ratios(cpu)
     
     pl.show()
