@@ -33,6 +33,10 @@ class NearestNeighborScheduler(StrategyScheduler):  # pylint: disable=too-many-i
             self.negscore_func = config.get('Learner', 'negscore_func')
         except ConfigParser.NoOptionError:
             self.negscore_func = 'max'
+        try:
+            self.try_auto = config.get('Learner', 'try_auto')
+        except ConfigParser.NoOptionError:
+            self.try_auto = False
         self.nr_of_neighbors = 2000
         self.model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)  # pylint: disable=unexpected-keyword-arg, no-value-for-parameter
         self._data_set = None
@@ -111,7 +115,13 @@ class NearestNeighborScheduler(StrategyScheduler):  # pylint: disable=too-many-i
         self.last_strategy, self.last_time, _s = min(zipped, key=operator.itemgetter(2))  # NOQA, pylint: disable=C0301
         assert self.last_time > 0
         strategy = self.data_set.strategies[self.last_strategy]
-        return strategy, min(self.last_time, time_left)
+        
+        if self.last_time <= time_left:
+            return strategy, self.last_time
+        elif self.try_auto:
+            return "protokoll_X----_schedauto_300", time_left
+        else:
+            return strategy, time_left
 
     def reset(self):
         if self._data_set is None:
