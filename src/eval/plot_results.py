@@ -38,7 +38,7 @@ def plot_results(result_tuples, axis_vals=None):
         for key in times:
             total_solved += results[key]
             solved_at_time.append(total_solved)
-        times.append(350)
+        times.append(300)
         print len(solved_at_time)
         solved_at_time.append(solved_at_time[-1])
         pl.plot(times, solved_at_time, plot_styles[plot_style_counter],
@@ -47,6 +47,33 @@ def plot_results(result_tuples, axis_vals=None):
         pl.axis(axis_vals)
     pl.legend(loc='lower right')
     pl.show()
+    
+
+def dump_results(result_tuples):
+    for res_file, res_label in result_tuples:
+        results = {}
+        with open(res_file, 'r') as res_stream:
+            for line in res_stream:
+                if line.startswith('#'):
+                    continue
+                time = float(line.split(',')[1])
+                if time not in results:
+                    results[time] = 1
+                else:
+                    results[time] += 1
+        total_solved = 0
+        solved_at_time = []
+        times = sorted(results.keys())
+        for key in times:
+            total_solved += results[key]
+            solved_at_time.append(total_solved)
+        times.append(300)
+        solved_at_time.append(solved_at_time[-1])
+        with open("output/real-training-%s.csv" % res_label.replace(' ', '-'), 'w') as s_out:
+            s_out.write("Time   Solved\n")
+            for x, y in zip(times, solved_at_time):
+                s_out.write("%f   %i\n" % (x, y))
+    return
 
 
 def plot_theory_satallax():
@@ -127,13 +154,15 @@ def plot_real_test_satallax():
 
 
 def plot_real_training():
-    axis_vals = [1, 350, 0, 1121]
+    axis_vals = [1, 300, 0, 1121]
     path = os.path.join(PATH, 'runs', 'real')
     e18 = (os.path.join(path, 'E', 'atp_eval_CASC_Train_E1.8'), 'E 1.8')
     e17 = (os.path.join(path, 'E', 'atp_eval_CASC_Train_E1.7'), 'E 1.7')
     emales = (os.path.join(path, 'E', 'atp_eval_CASC_Train_emales1.2'), 'E-MaLeS 1.2')
     # helsing_nn_wts = (os.path.join(path, 'E', 'atp_eval_CASC_Train_helsing_NN_with_basic_time_scaling'), 'Helsing NN wts')
     helsing_nn_wots = (os.path.join(path, 'E', 'atp_eval_CASC_Train_helsing_NN_without_time_scaling'), 'Helsing NN wots')
+    helsing_nnmax2 = (os.path.join(path, 'E', 'atp_eval_CASC_Training_helsing_NNmax2'), 'Helsing NNmax2')
+    
     # helsing_group1 = (os.path.join(path, 'E', 'atp_eval_CASC_Training_helsing_group1'), 'Helsing Group1')
     # helsing_group1rf = (os.path.join(path, 'E', 'atp_eval_CASC_Training_helsing_group1_RF'), 'Helsing Group1 RF')
     # helsing_group1rf2 = (os.path.join(path, 'E', 'atp_eval_CASC_Training_Group1RF_002'), 'Helsing Group1 RF2')
@@ -147,6 +176,7 @@ def plot_real_training():
     result_tuples.append(emales)
     # result_tuples.append(helsing_nn_wts)
     result_tuples.append(helsing_nn_wots)
+    result_tuples.append(helsing_nnmax2)
     # result_tuples.append(helsing_group1rf)
     # result_tuples.append(helsing_group1rf2)
     # result_tuples.append(helsing_group1dt)
@@ -179,20 +209,22 @@ def plot_theory_cv_nn():
     sets = [
         (4, 1, 300, 'max'), (4, 2, 300, 'max'), (4, 5, 300, 'max'),
         (4, 1, 300, 'median'), (4, 2, 300, 'median'), (4, 5, 300, 'median'),
-        (4, 1, 300, 'mean'), (4, 2, 300, 'mean'), (4, 5, 300, 'mean')
+        (4, 1, 300, 'mean'), (4, 2, 300, 'mean'), (4, 5, 300, 'mean'),
+        (4, 1, 300, 'meanmedian'), (4, 2, 300, 'meanmedian'), (4, 5, 300, 'meanmedian')
     ]
     
     # files = map(lambda (folds, neighbors, max_time, f): ("CV%i_NN%s%i_%i" % (folds, f, neighbors, max_time)), sets)
     files = [("CV%i_NN%s%i_%i" % (folds, f, neighbors, max_time)) for (folds, neighbors, max_time, f) in sets]
     # result_tuples = map(lambda f : (os.path.join(path, f), f), files)
-    result_tuples = [os.path.join(path, f) for f in files]
+    result_tuples = [(os.path.join(path, f), f) for f in files]
     return result_tuples, axis_vals
 
 
 if __name__ == '__main__':
-    result_tuples, axis_vals = plot_theory_e()
+    #result_tuples, axis_vals = plot_theory_e()
     # result_tuples, axis_vals = plot_theory_satallax()
-    # result_tuples, axis_vals = plot_real_training()
+    result_tuples, axis_vals = plot_real_training()
     # result_tuples, axis_vals = plot_real_test()
-    # result_tuples, axis_vals = plot_theory_cv_nn()
+    #result_tuples, axis_vals = plot_theory_cv_nn()
     plot_results(result_tuples, axis_vals)
+    #dump_results(result_tuples)
