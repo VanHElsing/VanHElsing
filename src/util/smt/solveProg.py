@@ -1,7 +1,5 @@
 import sys
-from src.DataSet import DataSet
-from src.data_util import remove_unsolveable_problems
-from src.IO import run_command
+import os
 from tempfile import NamedTemporaryFile
 
 def gen_prog(dataset, number_solved):
@@ -9,26 +7,23 @@ def gen_prog(dataset, number_solved):
 
     result = ""
 
-    result += "(benchmark test\n"
-    result += ":logic QF_UFLRA\n"
-    result += ":extrafuns ((Runtime Real Real) (Solved Real))\n"
-    result += ":formula\n"
-    result += "(and\n"
+    result += "(define Runtime::(-> real real))\n"
+    result += "(define Solved::real)\n"
     
     # All runtimes >= 0
-    result += "(and\n"
+    result += "(assert (and "
     for s in range(strat_count):
         result +="(>= (Runtime %d) 0) " % s
-    result += ")\n"
-    
-    # Sum of runtimes <= 300
-    result += "(>= 300 (+ \n"
-    for s in range(strat_count):
-        result += "(Runtime %d) " % s
     result += "))\n"
     
+    # Sum of runtimes <= 300
+    result += "(assert (>= 300 (+ "
+    for s in range(strat_count):
+        result += "(Runtime %d) " % s
+    result += ")))\n"
+    
     # Specify the number of problems solved
-    result += "(= Solved (+\n"
+    result += "(assert (= Solved (+\n"
     for p in range(problem_count):
         result += "(ite (or "
         for s in range(strat_count):
@@ -37,12 +32,13 @@ def gen_prog(dataset, number_solved):
                 t = 301
                 
             result += "(<= %f (Runtime %d)) " % (t, s)
-        result += ") 1 0)"
-    result += "))\n"
+        result += ") 1 0)\n"
+    result += ")))\n"
     
-    result += "(>= Solved %d)\n" % number_solved
+    result += "(assert (>= Solved %d))\n" % number_solved
     
-    result += "))"
+    result += "(check)\n"
+    result += "(show-model)\n"
     
     return result
 
@@ -51,14 +47,10 @@ def try_prog(dataset, number_solved):
         prog = gen_prog(dataset, number_solved)
         tmp_f.write(prog)
         tmp_f.flush()
-        result = run_command("./yices_smt %s" % tmp_f.name, 3600000)
+        result = run_command("./yices_main %s" % tmp_f.name, 3600000)
         return result[1].find("unsat") is -1
 
-def main():
-    dataset = DataSet()
-    dataset.load('E')
-    dataset = remove_unsolveable_problems(dataset)
-    
+def search_sat_prog(dataset):
     lowerbound = 1
     upperbound = 11000
     
@@ -73,7 +65,25 @@ def main():
         else:
             upperbound = i
     
+    return lowerbound  # Is equal to upperbound
+
+def main():
+    dataset = DataSet()
+    dataset.load('E')
+    dataset = remove_unsolveable_problems(dataset)
+    
+    search_sat_prog(dataset)
+    
+    # Show the program for the best amount of problems solved
+    # print gen_prog(dataset, 9945)
+    
     return 0
 
 if __name__ == '__main__':
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+
+    from src.DataSet import DataSet
+    from src.data_util import remove_unsolveable_problems
+    from src.IO import run_command
+
     sys.exit(main())
