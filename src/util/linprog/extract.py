@@ -3,6 +3,7 @@ import re
 
 REGEX_LINE = re.compile('\s*([0-9]+) ([0-9]+.[0-9]+)\s*')
 
+
 def main():
     result = []
     
@@ -25,6 +26,7 @@ def main():
             result.append((strat_i, runtime))
     
     print result
+
 
 if __name__ == '__main__':
     sys.exit(main())

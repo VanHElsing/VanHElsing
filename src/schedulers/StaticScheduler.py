@@ -7,23 +7,23 @@ BEST_STRAT = [(0, 0.155284), (2, 0.011533), (4, 5.185016), (5, 1.170449), (6, 0.
 class StaticScheduler(StrategyScheduler):
     def __init__(self, config=None):
         StrategyScheduler.__init__(self, config)
-        self._i = 0
-        self._strategies = None
+        self.i = 0
+        self.strategies = None
 
     def fit(self, data_set, max_time):
-        self._strategies = [(data_set.strategies[i], t) for (i, t) in BEST_STRAT]
+        self.strategies = [(data_set.strategies[i], t) for (i, t) in BEST_STRAT]
 
     def predict(self, time_left):
-        return self._strategies[self._i]
+        return self.strategies[self.i]
 
     def set_problem_and_features(self, problem_file, dummy_features):
         self.set_problem(problem_file)
 
     def set_problem(self, problem_file):
-        self._i = 0
+        self.i = 0
 
     def update(self):
-        self._i = (self._i + 1) % len(self._strategies)
+        self.i = (self.i + 1) % len(self.strategies)
 
     def reset(self):
-        self._i = 0
+        self.i = 0

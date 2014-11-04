@@ -1,8 +1,6 @@
 import numpy as np
 import os
 import sys
-import matplotlib.pylab as pl
-import multiprocessing as mp
 import operator
 
 try:
@@ -36,9 +34,9 @@ def main():
         X = np.array(X)
         y = np.array(y)
         
-        #tups = zip(X, y)
-        #tups.sort(key=operator.itemgetter(0))
-        #X, y = zip(*tups)
+        # tups = zip(X, y)
+        # tups.sort(key=operator.itemgetter(0))
+        # X, y = zip(*tups)
         
         for xi, yi in zip(X, y):
             if xi not in dataset_structured:
@@ -58,9 +56,6 @@ def main():
 if __name__ == "__main__":
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
     
-    from src.CPU import CPU, gen_tasks
-    from src.GlobalVars import PATH, LOGGER
-    from src.DataSet import DataSet
-    from src.data_util import remove_unsolveable_problems
+    from src.GlobalVars import PATH
     
     sys.exit(main())

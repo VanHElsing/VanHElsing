@@ -54,7 +54,7 @@ def choose_scheduler(scheduler_id):
                   'Group1': Group1Scheduler,
                   'Greedy': GreedyScheduler,
                   'GreedyPlus': GreedyPlusScheduler,
-                  'Static' : StaticScheduler
+                  'Static': StaticScheduler
                  }
     try:
         return schedulers[scheduler_id]

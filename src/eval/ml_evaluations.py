@@ -201,8 +201,9 @@ def set_up_parser():
                         help='The dataset file to fit and evaluate the Schedulers on.',
                         default=None)
     return parser
-    
-def benchmark_knn_cv():
+
+
+def benchmark_knn_cv(argv):
     '''
     Initiates cross-validation tests over several processor cores.
     The tests are only for specific NearestNeighborSchedulers, code should be
@@ -255,7 +256,7 @@ def benchmark_static(argv):
 
 def main(argv):
     return benchmark_static(argv)
-    # return benchmark_knn_cv()
+    # return benchmark_knn_cv(argv)
 
 
 if __name__ == '__main__':

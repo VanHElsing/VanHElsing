@@ -7,7 +7,6 @@ Created on May 19, 2014
 # pylint: disable=W0621, W0612, C0103
 import sys
 import os
-import operator
 import matplotlib.pyplot as pl
 from src.GlobalVars import PATH
 
@@ -77,6 +76,7 @@ def dump_results(result_tuples):
                 s_out.write("%f   %i\n" % (x, y))
     return
 
+
 def dump_min_result(result_tuples, name):
     timeline_elements = []
     timeline = dict()
@@ -110,7 +110,7 @@ def dump_min_result(result_tuples, name):
     for i in range(len(result_tuples)):
         results.append([])
     
-    state = len(result_tuples)*[sys.maxint]
+    state = len(result_tuples) * [sys.maxint]
     for key in timeline_elements:
         print key
         for i, total_solved in timeline[key]:

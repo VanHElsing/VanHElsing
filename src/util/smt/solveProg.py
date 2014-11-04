@@ -2,6 +2,7 @@ import sys
 import os
 from tempfile import NamedTemporaryFile
 
+
 def gen_prog(dataset, number_solved):
     problem_count, strat_count = dataset.strategy_matrix.shape
 
@@ -13,7 +14,7 @@ def gen_prog(dataset, number_solved):
     # All runtimes >= 0
     result += "(assert (and "
     for s in range(strat_count):
-        result +="(>= (Runtime %d) 0) " % s
+        result += "(>= (Runtime %d) 0) " % s
     result += "))\n"
     
     # Sum of runtimes <= 300
@@ -42,6 +43,7 @@ def gen_prog(dataset, number_solved):
     
     return result
 
+
 def try_prog(dataset, number_solved):
     with NamedTemporaryFile() as tmp_f:
         prog = gen_prog(dataset, number_solved)
@@ -49,6 +51,7 @@ def try_prog(dataset, number_solved):
         tmp_f.flush()
         result = run_command("./yices_main %s" % tmp_f.name, 3600000)
         return result[1].find("unsat") is -1
+
 
 def search_sat_prog(dataset):
     lowerbound = 1
@@ -61,11 +64,12 @@ def search_sat_prog(dataset):
         print result
         
         if result:
-            lowerbound = i+1
+            lowerbound = i + 1
         else:
             upperbound = i
     
     return lowerbound  # Is equal to upperbound
+
 
 def main():
     dataset = DataSet()
@@ -78,6 +82,7 @@ def main():
     # print gen_prog(dataset, 9945)
     
     return 0
+
 
 if __name__ == '__main__':
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
