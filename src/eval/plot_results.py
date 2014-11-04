@@ -5,7 +5,9 @@ Created on May 19, 2014
 '''
 # flake8: disable=F841, E265
 # pylint: disable=W0621, W0612, C0103
+import sys
 import os
+import operator
 import matplotlib.pyplot as pl
 from src.GlobalVars import PATH
 
@@ -74,6 +76,57 @@ def dump_results(result_tuples):
             for x, y in zip(times, solved_at_time):
                 s_out.write("%f   %i\n" % (x, y))
     return
+
+def dump_min_result(result_tuples, name):
+    timeline_elements = []
+    timeline = dict()
+    
+    for i in range(len(result_tuples)):
+        res_file, res_label = result_tuples[i]
+        results = {}
+        with open(res_file, 'r') as res_stream:
+            for line in res_stream:
+                if line.startswith('#'):
+                    continue
+                time = round(float(line.split(',')[1]), 1)
+                if time not in results:
+                    results[time] = 1
+                else:
+                    results[time] += 1
+        total_solved = 0
+        times = sorted(results.keys())
+        for key in times:
+            total_solved += results[key]
+            
+            timeline_elements.append(key)
+            if key not in timeline:
+                timeline[key] = []
+            timeline[key].append((i, total_solved))
+
+    timeline_elements = list(set(timeline_elements))
+    timeline_elements.sort()
+    
+    results = []
+    for i in range(len(result_tuples)):
+        results.append([])
+    
+    state = len(result_tuples)*[sys.maxint]
+    for key in timeline_elements:
+        print key
+        for i, total_solved in timeline[key]:
+            state[i] = total_solved
+            
+        min_value = min(state)
+        for i in range(len(result_tuples)):
+            if state[i] != sys.maxint:
+                results[i].append((key, state[i] - min_value))
+    
+    for i in range(len(result_tuples)):
+        res_file, res_label = result_tuples[i]
+        with open("output/%s-%s.csv" % (name, res_label.replace(' ', '-')), 'w') as s_out:
+            s_out.write("Time   Solved\n")
+            for x, y in results[i]:
+                s_out.write("%f   %i\n" % (x, y))
 
 
 def plot_theory_satallax():
@@ -226,5 +279,7 @@ if __name__ == '__main__':
     result_tuples, axis_vals = plot_real_training()
     # result_tuples, axis_vals = plot_real_test()
     # result_tuples, axis_vals = plot_theory_cv_nn()
-    plot_results(result_tuples, axis_vals)
+    # plot_results(result_tuples, axis_vals)
     # dump_results(result_tuples)
+    # dump_min_result(result_tuples, 'real-training')
+    dump_min_result(result_tuples, 'real-training')

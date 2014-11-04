@@ -11,6 +11,7 @@ import os
 import sys
 import multiprocessing as mp
 import ConfigParser
+
 from argparse import ArgumentParser
 from sklearn.cross_validation import KFold
 # pylint: disable=R0913
@@ -201,8 +202,7 @@ def set_up_parser():
                         default=None)
     return parser
     
-
-def main(argv):
+def benchmark_knn_cv():
     '''
     Initiates cross-validation tests over several processor cores.
     The tests are only for specific NearestNeighborSchedulers, code should be
@@ -238,11 +238,32 @@ def main(argv):
     pool.join()
 
     return 0
+    
+    
+def benchmark_static(argv):
+    dataset = DataSet()
+    dataset.load('E')
+    dataset = remove_unsolveable_problems(dataset)
+    
+    scheduler = StaticScheduler()
+    scheduler.fit(dataset, 300)
+
+    solved, score = eval_against_dataset(dataset, scheduler, 300, 'Static')
+    print solved, score
+    return 0
+
+
+def main(argv):
+    return benchmark_static(argv)
+    # return benchmark_knn_cv()
 
 
 if __name__ == '__main__':
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
     from src.data_util import load_dataset_from_file
+    from src.data_util import remove_unsolveable_problems
     from src.schedulers.util import choose_scheduler
     from src.GlobalVars import PATH, LOGGER
+    from src.DataSet import DataSet
+    from src.schedulers.StaticScheduler import StaticScheduler
     sys.exit(main(sys.argv[1:]))
