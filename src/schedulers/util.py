@@ -8,6 +8,7 @@ from src.schedulers.NearestNeighbor import NearestNeighborScheduler
 from src.schedulers.GreedyPlusScheduler import GreedyPlusScheduler
 from src.schedulers.GreedyScheduler import GreedyScheduler
 from src.schedulers.Group1Scheduler import Group1Scheduler
+from src.schedulers.StaticScheduler import StaticScheduler
 from src.schedulers.SchedulerTemplate import StrategyScheduler
 from src.IO import load_object, save_object
 
@@ -52,7 +53,8 @@ def choose_scheduler(scheduler_id):
                   'NN': NearestNeighborScheduler,
                   'Group1': Group1Scheduler,
                   'Greedy': GreedyScheduler,
-                  'GreedyPlus': GreedyPlusScheduler
+                  'GreedyPlus': GreedyPlusScheduler,
+                  'Static' : StaticScheduler
                  }
     try:
         return schedulers[scheduler_id]
