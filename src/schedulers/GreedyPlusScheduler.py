@@ -41,6 +41,21 @@ class GreedyPlusScheduler(StrategyScheduler):
         '''
         greedy_scheduler = GreedyScheduler(self.config)
         greedy_scheduler.fit(data_set, max_time)
+        
+        # For exp
+        prediction = greedy_scheduler.predict(max_time, 10)
+        greedy_scheduler.update()
+        self.inititial_predictions.append(prediction)
+
+        prediction = greedy_scheduler.predict(max_time, 60)
+        greedy_scheduler.update()
+        self.inititial_predictions.append(prediction)
+
+        prediction = greedy_scheduler.predict(max_time, 300)
+        greedy_scheduler.update()
+        self.inititial_predictions.append(prediction)
+        
+        """ Disabled for experiment
         while True:
             problem_nr = greedy_scheduler.data_set.strategy_matrix.shape[0]
             prediction = greedy_scheduler.predict(max_time,
@@ -52,6 +67,7 @@ class GreedyPlusScheduler(StrategyScheduler):
             solved_ratio = new_problems_solved / float(problem_nr)
             if solved_ratio < self.newly_solved_threshold:
                 break
+        """
         data_set = greedy_scheduler.data_set
         LOGGER.info('Picked %s strategies for initial greedy run',
                     len(self.inititial_predictions))
