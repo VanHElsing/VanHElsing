@@ -11,11 +11,21 @@ import os
 import sys
 import multiprocessing as mp
 import ConfigParser
+import ctypes
 
 from argparse import ArgumentParser
 from sklearn.cross_validation import KFold
 # pylint: disable=R0913
 
+if __name__ == '__main__':
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from src.schedulers.util import choose_scheduler
+from src.data_util import load_dataset_from_file
+from src.data_util import remove_unsolveable_problems
+from src.GlobalVars import PATH, LOGGER
+from src.DataSet import DataSet
+from src.schedulers.StaticScheduler import StaticScheduler
 
 def eval_against_dataset(dataset, scheduler, max_time=300, save_schedule_file='ml_eval'):
     '''
@@ -116,7 +126,8 @@ def ml_cv_eval(configuration, dataset, folds, max_time=300, save_schedule_file='
     LOGGER.info("TRAINING + PREDICTION (Cross-validation folds %i)", len(folds))
     sumsolved = 0
     sumscore = 0
-    for i, (train_idx, test_idx) in enumerate(folds):
+    
+    for i, (train_idx, test_idx) in folds:
         train_dataset = dataset.mask(train_idx)
         test_dataset = dataset.mask(test_idx)
 
@@ -138,6 +149,95 @@ def ml_cv_eval(configuration, dataset, folds, max_time=300, save_schedule_file='
             solved = 0
 
         LOGGER.info("Solved: {}".format(solved))
+        
+    avgscore = sumscore / len(folds)
+    LOGGER.info("Average score: {}".format(avgscore))
+    
+    return sumsolved, avgscore
+
+
+def localjob(args):
+        commonargs, localargs = args
+        
+        configuration, dataset, max_time, save_schedule_file = commonargs
+        i, (train_idx, test_idx) = localargs
+        
+        LOGGER.info("Fold: %i", i + 1)
+        
+        scheduler_id = configuration.get('Learner', 'scheduler')
+
+        scheduler_class = choose_scheduler(scheduler_id)
+        scheduler = scheduler_class(configuration)
+        
+        train_dataset = dataset.mask(train_idx)
+        test_dataset = dataset.mask(test_idx)
+
+        LOGGER.info("Fold: %i -- #train: %i/%i",
+                    i + 1, len(train_dataset.problems),
+                    len(dataset.problems))
+
+        LOGGER.info("Fitting model.")
+        scheduler.fit(train_dataset, max_time)
+
+        LOGGER.info("Evaluating model.")
+        solved, score = eval_against_dataset(test_dataset, scheduler, max_time, save_schedule_file)
+        
+        LOGGER.info("Solved: {}".format(solved))
+        return solved, score
+
+
+def ml_cv_eval_superasync(configuration, dataset, folds, max_time=300, save_schedule_file='ml_eval'):
+    '''
+    Evaluates a scheduler against a dataset using cross-validation
+
+    Parameters
+    ----------
+    configuration : String
+        Filename of the configuration file for the scheduler settings
+    dataset : DataSet
+        A dataset object containing problems to evaluate
+    folds : list [kfolds x problems]
+        List of masks with indices for each problem
+    max_time : double
+        The maximum time the scheduler can take for solving a problem
+    save_schedule_file : String
+        Filename for the output file
+    
+    Returns
+    -------
+    result : sumsolved, avgscore
+        Amount of solved problems and score relative to the best score possible,
+        averaged over all the folds.
+    '''
+    LOGGER.info("TRAINING + PREDICTION (Cross-validation folds %i)", len(folds))
+    sumsolved = 0
+    sumscore = 0
+    
+    jobs = []
+
+    commonargs = (configuration, dataset, max_time, save_schedule_file)
+    
+    for i, (train_idx, test_idx) in folds:
+        localargs = (i, (train_idx, test_idx))
+        args = (commonargs, localargs)
+        jobs.append(args)
+    
+    # Run jobs async
+    pool = mp.Pool()
+
+    result = pool.map(localjob, jobs)
+    pool.close()
+    pool.join()
+    
+    LOGGER.info("All jobs have joined main thread")
+    
+    sumsolved = 0
+    sumscore = 0.0
+    for solved, score in result:
+        sumsolved += solved
+        sumscore += score
+    
+    LOGGER.info("SumSolved: {}".format(sumsolved))
         
     avgscore = sumscore / len(folds)
     LOGGER.info("Average score: {}".format(avgscore))
@@ -255,16 +355,9 @@ def benchmark_static(argv):
 
 
 def main(argv):
-    return benchmark_static(argv)
-    # return benchmark_knn_cv(argv)
+    # return benchmark_static(argv)
+    return benchmark_knn_cv(argv)
 
 
 if __name__ == '__main__':
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-    from src.data_util import load_dataset_from_file
-    from src.data_util import remove_unsolveable_problems
-    from src.schedulers.util import choose_scheduler
-    from src.GlobalVars import PATH, LOGGER
-    from src.DataSet import DataSet
-    from src.schedulers.StaticScheduler import StaticScheduler
     sys.exit(main(sys.argv[1:]))
