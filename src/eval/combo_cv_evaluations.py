@@ -70,23 +70,12 @@ def init_smt_config():
     return ('smt', config)
 
 
-def main(argv):
-    data_path = os.path.join(PATH, "data", "E", "CV")
-    files = [f for f in os.listdir(data_path) if os.path.isfile(os.path.join(data_path, f)) ]
-    
-    # The current run is for these parameters only
-    n = 10
-    r = 7
-    
+def load_folds(n, r, dataset, data_path):
     combination_count = math.factorial(n) / (math.factorial(n - r) * math.factorial(r))
     
     train_test_folds = []
     train_train_folds = []
-    
-    dataset = DataSet()
-    dataset.load('E')
-    dataset = remove_unsolveable_problems(dataset)
-    
+
     for i in range(combination_count):
         train_file = 'CV_%d_%d_%d_train' % (n, r, i)
         test_file = 'CV_%d_%d_%d_test' % (n, r, i)
@@ -107,6 +96,23 @@ def main(argv):
         
         train_test_folds.append((i, (train_mask, test_mask)))
         train_train_folds.append((i, (train_mask, train_mask)))
+        break  # TODO remove
+    
+    return train_test_folds, train_train_folds
+
+
+def main(argv):
+    data_path = os.path.join(PATH, "data", "E", "CV")
+    
+    # The current run is for these parameters only
+    n = 10
+    r = 7
+    
+    dataset = DataSet()
+    dataset.load('E')
+    dataset = remove_unsolveable_problems(dataset)
+    
+    train_test_folds, train_train_folds = load_folds(n, r, dataset, data_path)
     
     schedule_path = os.path.join(PATH, 'runs', 'theory', 'E')
     
