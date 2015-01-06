@@ -8,6 +8,16 @@ import sys
 from sklearn.cross_validation import KFold
 from argparse import ArgumentParser
 
+if __name__ == '__main__':
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from src.data_util import load_dataset_from_config
+from src.GlobalVars import PATH, LOGGER
+from src.IO import load_config
+from src.schedulers.util import choose_scheduler
+from src.schedulers.util import save_scheduler
+from src.eval.ml_evaluations import eval_against_dataset
+
 
 def set_up_parser():
     '''
@@ -103,12 +113,4 @@ def learn(argv):
                         scheduler_id, exportfile)
 
 if __name__ == '__main__':
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-    from src.data_util import load_dataset_from_config
-    from src.GlobalVars import PATH, LOGGER
-    from src.IO import load_config
-    from src.schedulers.util import choose_scheduler
-    from src.schedulers.util import save_scheduler
-    from src.eval.ml_evaluations import eval_against_dataset
-
     sys.exit(learn(sys.argv[1:]))

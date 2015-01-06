@@ -7,6 +7,14 @@ import sys
 import ConfigParser
 from argparse import ArgumentParser
 
+if __name__ == '__main__':
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from src.GlobalVars import PATH, LOGGER
+from src.IO import load_config, save_object
+from src.data_util import remove_unsolveable_problems, \
+    load_or_generate_dataset
+
 
 def set_up_parser():
     """
@@ -82,11 +90,4 @@ def load_data(argv=sys.argv[1:]):
 
 
 if __name__ == '__main__':
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
-    from src.GlobalVars import PATH, LOGGER
-    from src.IO import load_config, save_object
-    from src.data_util import remove_unsolveable_problems, \
-        load_or_generate_dataset
-
     sys.exit(load_data())
