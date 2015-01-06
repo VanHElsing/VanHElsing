@@ -13,6 +13,14 @@ import os
 import sys
 from time import time
 
+if __name__ == '__main__':
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from src.GlobalVars import LOGGER
+from src.IO import load_config
+from src.RunATP import get_ATP_from_config
+from src.schedulers.util import init_scheduler
+
 
 def set_up_parser():
     '''
@@ -74,8 +82,8 @@ def helsing(argv):
 
     Returns
     -------
-    Result : boolean
-        True if a proof has been found
+    Result : boolean, float
+        True if a proof has been found, time used to find proof
     '''
     parser = set_up_parser()
     args = parser.parse_args(argv)
@@ -102,17 +110,17 @@ def helsing(argv):
             scheduler.update()
             time_left = args.time - (time() - start_time)
 
+    time_used = time() - start_time
+
     if proof_found:
         LOGGER.info("\n" + output)
-        return True
+        return True, time_used
     LOGGER.info("SZS status Timeout")
-    return False
+    return False, time_used
 
 if __name__ == '__main__':
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-    from src.GlobalVars import LOGGER
-    from src.IO import load_config
-    from src.RunATP import get_ATP_from_config
-    from src.schedulers.util import init_scheduler
-
-    sys.exit(helsing(sys.argv[1:]))
+    proof_found, time_used = helsing(sys.argv[1:])
+    if proof_found:
+        sys.exit(0)
+    else:
+        sys.exit(1)
