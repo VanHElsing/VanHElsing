@@ -37,7 +37,7 @@ def set_up_parser():
     return parser
 
 
-def load_data(argv=sys.argv[1:]):
+def load_data(argv=sys.argv[1:], mask=None):
     """
     input: Config file, (optional dataset)
     output: stores model in modelfile
@@ -59,6 +59,9 @@ def load_data(argv=sys.argv[1:]):
 
     # load dataset
     dataset = load_or_generate_dataset(args.inputfile, configuration)
+
+    if mask is not None:  # If not called from CLI, but from within some other piece of code, and a mask has been supplied
+        dataset = dataset.mask(mask)
 
     # remove unsolvable problems
     if configuration.getboolean('DataUtil', 'removeunsolvables'):
