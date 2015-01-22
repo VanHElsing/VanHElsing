@@ -11,6 +11,7 @@ import os
 import sys
 import multiprocessing as mp
 import ConfigParser
+import ctypes
 
 from argparse import ArgumentParser
 from sklearn.cross_validation import KFold
@@ -25,7 +26,6 @@ from src.data_util import remove_unsolveable_problems
 from src.GlobalVars import PATH, LOGGER
 from src.DataSet import DataSet
 from src.schedulers.StaticScheduler import StaticScheduler
-
 
 def eval_against_dataset(dataset, scheduler, max_time=300, save_schedule_file='ml_eval'):
     '''
