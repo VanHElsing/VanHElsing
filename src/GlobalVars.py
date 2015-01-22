@@ -15,7 +15,7 @@ except ImportError:
 PATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 EPATH = os.path.join(PATH, 'contrib', 'E', 'PROVER')
 LOGFILE = os.path.join(PATH, 'log')
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(name)-12s %(levelname)-8s' +
                     '%(message)s',
                     datefmt='%d-%m %H:%M:%S',

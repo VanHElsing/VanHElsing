@@ -4,6 +4,8 @@ import re
 import math
 import ConfigParser
 import tempfile
+import multiprocessing as mp
+from shutil import rmtree
 
 
 REGEX_FILE = re.compile('CV_([0-9]+)_([0-9]+)_([0-9]+)_(train|test)')
@@ -12,6 +14,7 @@ REGEX_FILE = re.compile('CV_([0-9]+)_([0-9]+)_([0-9]+)_(train|test)')
 def init_default_config():
     config = ConfigParser.SafeConfigParser()
     config.add_section('Learner')
+    config.add_section('Scheduler')
     config.add_section('ATP Settings')
     config.set('ATP Settings', 'features', 'E')
     return config
@@ -97,7 +100,6 @@ def load_folds(n, r, dataset, data_path):
         
         train_test_folds.append((i, (train_mask, test_mask)))
         train_train_folds.append((i, (train_mask, train_mask)))
-        break  # TODO remove
     
     return train_test_folds, train_train_folds
 
@@ -115,7 +117,32 @@ def combo_cv_eval_ml(configs, limits, dataset, folds, prefix, schedule_path):
             ml_cv_eval_superasync(config, dataset, folds, limit, filepath)
 
 
+def combo_cv_eval_atp_job(args):
+    try:
+        common_args, job_args = args
+        
+        (TPTP_path, config_file, limit, filepath) = common_args
+        (p_name) = job_args
+        
+        p_path = os.path.join(TPTP_path, 'Problems', p_name[:3], p_name)
+                            
+        proof_found, time_used = helsing(argv=['-c', config_file, '-t', str(limit), '-p', p_path])
+        LOGGER.info('%s: %s (%s)' % (p_name, proof_found, time_used))
+        
+        if proof_found:
+            with open(filepath, 'a+') as result_fs:
+                result_fs.write("%s,%f\n" % (p_name, time_used))
+    except:
+        print "Error in thread"
+        pass
+
+
+# Warning: the following function will modify configs
+# Make fresh copies if you want to reuse them
 def combo_cv_eval_atp(configs, limits, dataset, folds, prefix, schedule_path):
+    TPTP_path = os.getenv('TPTP')
+    assert TPTP_path is not None
+    
     for name, config in configs:
         for limit in limits:
             filename = "%s_%s_%d" % (prefix, name, limit)
@@ -125,17 +152,55 @@ def combo_cv_eval_atp(configs, limits, dataset, folds, prefix, schedule_path):
                 print "Skipping %s" % filename
                 continue
             
-            config_path = tempfile.mkdtemp(prefix="helsing")
-            
-            # Step 1: make configuration file
-            
-            # Step 2: dump data
-            
-            # Step 3: learn data
-            
-            # Step 4: execute eval
-            
-            print config_path
+            for i, (train_idx, test_idx) in folds:
+                config_path = tempfile.mkdtemp(prefix="helsing")
+                try:
+                    # Step 1: make configuration file
+                    export_file = os.path.join(config_path, "export.ss")
+                    data_file = os.path.join(config_path, "train.data")
+                    
+                    # Populate with specific paths and options
+                    config.set("Scheduler", "modelfile", export_file)
+                    config.set("Learner", "generatedataset", "True")
+                    config.set("Learner", "datasetfile", data_file)
+                    config.set("Learner", "exportmodel", "True")
+                    config.set("Learner", "exportfile", export_file)
+                    config.set("Learner", "evalkfolds", "False")  # We do this ourselves
+                    config.set("Learner", "evalwhole", "False")  # We do this ourselves
+                    config.set("Learner", "maxruntime", "300")  # Different from the eval runtime
+                    config.set("ATP Settings", "binary", "contrib/E/PROVER/eprover")  # TODO fetch this from the real config
+                    config.set("ATP Settings", "time", "--cpu-limit=")
+                    config.set("ATP Settings", "default", "-s --memory-limit=Auto --tstp-format --proof-object")
+                    
+                    config_file = os.path.join(config_path, "config.ini")
+                    with open(config_file, 'wb') as config_fs:
+                        config.write(config_fs)
+                    
+                    # Step 2: dump data
+                    save_object(dataset.mask(train_idx), data_file)
+                    
+                    # Step 3: learn data
+                    learn(argv=['-c', config_file])
+                    
+                    # Step 4: execute eval
+                    jobs = []
+                    
+                    common_args = (TPTP_path, config_file, limit, filepath)
+                    for p_idx in test_idx:
+                        p_name = dataset.problems[p_idx]
+                        job_args = (p_name)
+                        
+                        jobs.append((common_args, job_args))
+                    
+                    pool = mp.Pool()
+
+                    result = pool.map(combo_cv_eval_atp_job, jobs)
+                    pool.close()
+                    pool.join()
+                    
+                    LOGGER.info("All jobs have joined main thread")
+                finally:
+                    rmtree(config_path) #TODO: add again
             
 
 def main(argv):
@@ -172,4 +237,8 @@ if __name__ == '__main__':
     from src.GlobalVars import PATH
     from src.DataSet import DataSet
     from src.eval.ml_evaluations import ml_cv_eval_superasync
+    from src.IO import save_object
+    from src.learn import learn
+    from src.helsing import helsing
+    from src.GlobalVars import LOGGER
     sys.exit(main(sys.argv[1:]))
