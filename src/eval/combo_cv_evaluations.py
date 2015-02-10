@@ -4,6 +4,7 @@ import re
 import math
 import ConfigParser
 import tempfile
+import traceback
 import multiprocessing as mp
 from shutil import rmtree
 
@@ -116,25 +117,51 @@ def combo_cv_eval_ml(configs, limits, dataset, folds, prefix, schedule_path):
             
             ml_cv_eval_superasync(config, dataset, folds, limit, filepath)
 
-
 def combo_cv_eval_atp_job(args):
+    common_args, job_args = args
+    
+    (TPTP_path, config_file, limit, filepath) = common_args
+    (p_name) = job_args
+    
+    p_path = os.path.join(TPTP_path, 'Problems', p_name[:3], p_name)
+    
+    global stop_criterion
+    if stop_criterion.value:
+        print "Stop engaged"
+        return
+                   
     try:
-        common_args, job_args = args
-        
-        (TPTP_path, config_file, limit, filepath) = common_args
-        (p_name) = job_args
-        
-        p_path = os.path.join(TPTP_path, 'Problems', p_name[:3], p_name)
-                            
-        proof_found, time_used = helsing(argv=['-c', config_file, '-t', str(limit), '-p', p_path])
+        proof_found, time_used = helsing(argv=['-c', config_file, '-t', str(limit), '-p', p_path, '-s'])
         LOGGER.info('%s: %s (%s)' % (p_name, proof_found, time_used))
         
         if proof_found:
             with open(filepath, 'a+') as result_fs:
                 result_fs.write("%s,%f\n" % (p_name, time_used))
+        return
+    except KeyboardInterrupt:
+        stop_criterion.value = True
+        return
+    except ValueError as e:
+        print args
+        print e
+        print traceback.format_exc()
+        print "Error in thread (ValueError)"
+    except IOError as e:
+        print args
+        print e
+        print traceback.format_exc()
+        print "Error in thread (IOError)"
     except:
+        print args
+        print traceback.format_exc()
         print "Error in thread"
-        pass
+        print sys.exc_info()[0]
+    
+    stop_criterion.value = True
+    
+    with open(filepath, 'a+') as result_fs:
+        result_fs.write("%s,error\n" % p_name)
+    return
 
 
 # Warning: the following function will modify configs
@@ -145,14 +172,14 @@ def combo_cv_eval_atp(configs, limits, dataset, folds, prefix, schedule_path):
     
     for name, config in configs:
         for limit in limits:
-            filename = "%s_%s_%d" % (prefix, name, limit)
-            filepath = os.path.join(schedule_path, filename)
-            
-            if os.path.isfile(filepath):
-                print "Skipping %s" % filename
-                continue
-            
             for i, (train_idx, test_idx) in folds:
+                filename = "%s_%s_%d_%d" % (prefix, name, limit, i)
+                filepath = os.path.join(schedule_path, filename)
+            
+                if os.path.isfile(filepath):
+                    print "Skipping %s" % filename
+                    continue
+            
                 config_path = tempfile.mkdtemp(prefix="helsing")
                 try:
                     # Step 1: make configuration file
@@ -185,22 +212,28 @@ def combo_cv_eval_atp(configs, limits, dataset, folds, prefix, schedule_path):
                     # Step 4: execute eval
                     jobs = []
                     
+                    global stop_criterion
+                    stop_criterion = mp.Value('b', False)
+                    
                     common_args = (TPTP_path, config_file, limit, filepath)
                     for p_idx in test_idx:
                         p_name = dataset.problems[p_idx]
                         job_args = (p_name)
-                        
                         jobs.append((common_args, job_args))
                     
-                    pool = mp.Pool()
+                    pool = mp.Pool(maxtasksperchild=1)
 
                     result = pool.map(combo_cv_eval_atp_job, jobs)
                     pool.close()
                     pool.join()
                     
+                    if stop_criterion.value:
+                        LOGGER.info("Error occurred in child, stopping")
+                        exit(1)
+                    
                     LOGGER.info("All jobs have joined main thread")
                 finally:
-                    rmtree(config_path) #TODO: add again
+                    rmtree(config_path)
             
 
 def main(argv):
@@ -220,14 +253,16 @@ def main(argv):
     schedule_atp_path = os.path.join(PATH, 'runs', 'real', 'E')
     
     # Greedy, SMT, KNN max 2, Group1
-    configs = [init_greedy_config(), init_2NNmax_config(), init_smt_config()]
-    limits = [10, 60, 300]
+    #configs = [init_greedy_config(), init_2NNmax_config(), init_smt_config()]
+    #configs = [init_group1_config()]
+    configs = [init_2NNmax_config()]
+    limits = [300]
     
     #combo_cv_eval_ml(configs, limits, dataset, train_test_folds, "CV_%d_%d_train_test" % (n, r), schedule_ml_path)
     #combo_cv_eval_ml(configs, limits, dataset, train_train_folds, "CV_%d_%d_train_train" % (n, r), schedule_ml_path)
     
     combo_cv_eval_atp(configs, limits, dataset, train_test_folds, "CV_%d_%d_train_test" % (n, r), schedule_atp_path)
-    combo_cv_eval_atp(configs, limits, dataset, train_train_folds, "CV_%d_%d_train_train" % (n, r), schedule_atp_path)
+    #combo_cv_eval_atp(configs, limits, dataset, train_train_folds, "CV_%d_%d_train_train" % (n, r), schedule_atp_path)
 
     return 0
 
