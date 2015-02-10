@@ -156,6 +156,8 @@ class NearestNeighborScheduler(StrategyScheduler):  # pylint: disable=too-many-i
         local_good_problems = [i for i in range(lp_nr) if (self.local_strat_times[i, self.last_strategy] > self.last_time)]
         if len(local_good_problems) == 0:
             self.local_strat_times = None
+            self.nr_of_neighbors = min(self.nr_of_neighbors, len(good_problems))
+            self.model = NearestNeighbors(n_neighbors=self.nr_of_neighbors)  # pylint: disable=unexpected-keyword-arg, no-value-for-parameter
             self.model.fit(self.data_set.feature_matrix)
         else:
             s_nr = self.data_set.strategy_matrix.shape[1]
