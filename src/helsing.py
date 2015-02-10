@@ -45,6 +45,7 @@ and Sil van de Leemput
     parser.add_argument('-p', '--problem', help='The location of the problem.')
     parser.add_argument('-c', '--configuration',
                         help='Which configuration file to use.')
+    parser.add_argument('-s', '--silent', help='Suppress the output of proofs.', action='store_false')
     return parser
 
 
@@ -113,7 +114,8 @@ def helsing(argv):
     time_used = time() - start_time
 
     if proof_found:
-        LOGGER.info("\n" + output)
+        if args.silent:
+            LOGGER.info("\n" + output)
         return True, time_used
     LOGGER.info("SZS status Timeout")
     return False, time_used
