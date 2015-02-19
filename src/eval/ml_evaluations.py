@@ -176,11 +176,15 @@ def localjob(args):
                 i + 1, len(train_dataset.problems),
                 len(dataset.problems))
 
+    save_schedule_file_fold = "%s_%i" % (save_schedule_file, i)
+    if os.path.exists(save_schedule_file_fold):
+        LOGGER.info("Skipping fold.")
+
     LOGGER.info("Fitting model.")
     scheduler.fit(train_dataset, max_time)
 
     LOGGER.info("Evaluating model.")
-    solved, score = eval_against_dataset(test_dataset, scheduler, max_time, save_schedule_file)
+    solved, score = eval_against_dataset(test_dataset, scheduler, max_time, save_schedule_file_fold)
     
     LOGGER.info("Solved: {}".format(solved))
     return solved, score
@@ -231,6 +235,13 @@ def ml_cv_eval_superasync(configuration, dataset, folds, max_time=300, save_sche
     
     LOGGER.info("All jobs have joined main thread")
     
+    LOGGER.info("Consolidating results")
+    with open(save_schedule_file, 'a+') as output_stream:
+        for i, (_train_idx, _test_idx) in folds:
+            with open('%s_%i' % (save_schedule_file, i), 'r') as input_stream:
+                for line in input_stream.readlines():
+                    output_stream.write(line)
+
     sumsolved = 0
     sumscore = 0.0
     for solved, score in result:
@@ -241,7 +252,7 @@ def ml_cv_eval_superasync(configuration, dataset, folds, max_time=300, save_sche
         
     avgscore = sumscore / len(folds)
     LOGGER.info("Average score: {}".format(avgscore))
-    
+
     return sumsolved, avgscore
 
 
